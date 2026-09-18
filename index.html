@@ -1,0 +1,1345 @@
+<title>One Table Across Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,900;1,500&family=Archivo:wght@400;500;600&family=Frank+Ruhl+Libre:wght@500;700&family=Assistant:wght@300;400;600&display=swap">
+
+<style>
+:root{
+  --ground:#16120E;
+  --panel:#201A12;
+  --panel-2:#1B1610;
+  --band:#301D0E;
+  --line:#33281A;
+  --text:#ECE2D2;
+  --text-2:#D8CDBB;
+  --muted:#9A8B76;
+  --dim:#7A5236;
+  --accent:#F97316;
+  --f-display:"Playfair Display","Frank Ruhl Libre",Georgia,serif;
+  --f-body:"Archivo","Assistant","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--text-2);font-family:var(--f-body);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:0}
+
+/* tab bar */
+.bar{position:sticky;top:0;z-index:10;background:rgba(22,18,14,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:1000px;margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:8px}
+.tab{
+  background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-family:var(--f-body);font-size:13px;font-weight:600;letter-spacing:.06em;
+  padding:8px 20px;border-radius:2px;cursor:pointer;transition:color .12s,border-color .12s;
+}
+.tab:hover{color:var(--text-2);border-color:var(--dim)}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#16120E}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.langsw{margin-inline-start:auto;display:flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.langsw button{background:transparent;border:0;color:var(--muted);font-family:var(--f-body);font-size:11.5px;font-weight:700;letter-spacing:.08em;padding:8px 13px;cursor:pointer}
+.langsw button+button{border-inline-start:1px solid var(--line)}
+.langsw button:hover{color:var(--text)}
+.langsw button.on{background:var(--accent);color:#16120E}
+.langnote{margin:0 0 6px;padding:9px 14px;border-inline-start:3px solid #E2DCD1;background:#FAF7F1;font-size:12.5px;color:#8B857A}
+.printbtn{margin-inline-start:12px;background:transparent;border:1px solid var(--dim);color:var(--muted);font-family:var(--f-body);font-size:12px;font-weight:600;padding:8px 16px;border-radius:2px;cursor:pointer}
+.printbtn:hover{color:var(--text);border-color:var(--accent)}
+
+.wrap{max-width:1000px;margin:0 auto;padding:36px 24px 80px}
+.pane[hidden]{display:none!important}
+
+
+.slot{position:relative}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.slot.filled .ic,.slot.filled .lb{display:none}
+
+.assets{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:12px}
+.as{background:var(--panel-2);padding:10px 12px;min-height:76px}
+.as .k{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600;margin-bottom:7px}
+.thumbs{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tb{width:38px;height:38px;border:1px solid var(--line);background:var(--panel);display:block;overflow:hidden;flex:none}
+.tb.wide{width:66px}
+.tb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumbs .vid{width:100%;max-width:150px;border:1px solid var(--line);background:#000;display:none}
+.thumbs .vid.filled{display:block}
+.empty-hint{font-size:10.5px;color:var(--dim);font-style:italic}
+.as:has(.tb.filled) .empty-hint,.as:has(.vid.filled) .empty-hint{display:none}
+@media (max-width:820px){.assets{grid-template-columns:1fr 1fr}}
+
+
+/* ===== research ===== */
+#p-res .mkleg{display:inline-flex;align-items:center;font-size:12px;color:var(--rbody);margin-inline-end:16px}
+#p-res .mk{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;font-size:11px;font-weight:700;margin-inline-end:7px;vertical-align:-3px;flex:none}
+#p-res .mk.yes{background:#E4F0E7;color:#2F6B3A;border:1px solid #BCD4C1}
+#p-res .mk.no{background:#FBE9E3;color:#A33D1E;border:1px solid #E6C4B8}
+#p-res .shot:has(.mk.no) img{opacity:.82}
+
+#p-res .onebullet{padding:13px 18px;border-bottom:1px solid var(--rline);font-size:14px;line-height:1.75;color:var(--rbody);position:relative;padding-inline-start:34px}
+#p-res .onebullet::before{content:"";position:absolute;inset-inline-start:18px;top:21px;width:6px;height:6px;border-radius:50%;background:var(--rmut)}
+#p-res .onebullet b{color:var(--rink);font-weight:600}
+#p-res .lightrow{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:14px 18px;border-bottom:1px solid var(--rline);background:#FFFAF3}
+#p-res .lk2{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--racc);font-weight:700;padding-top:3px}
+#p-res .lv2{font-size:14px;line-height:1.8;color:var(--rbody)}
+#p-res .lv2 b{color:var(--rink);font-weight:600}
+@media (max-width:820px){#p-res .lightrow{grid-template-columns:1fr;gap:5px}}
+
+#p-res .legend2{display:grid;grid-template-columns:1fr;gap:1px;background:var(--rline);border:1px solid var(--rline);margin-top:14px}
+#p-res .lg2{background:var(--rcard);padding:13px 16px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+#p-res .lg2h{width:100%;font-size:11.5px;color:var(--rmut);margin-bottom:4px}
+#p-res .lg2h b{color:var(--rink);font-weight:600}
+#p-res .legend2 .lic{position:static;display:inline-block;border:1px solid;border-radius:20px;padding:3px 11px;font-size:10px}
+
+/* verdict = filled pill, square-ish, at the era header */
+#p-res .vd{border-radius:3px;font-weight:700}
+#p-res .vd.ok{color:#fff;background:#3F7A4C;border-color:#3F7A4C}
+#p-res .vd.mix{color:#3A2E06;background:#E0B94A;border-color:#E0B94A}
+#p-res .vd.bad{color:#fff;background:#B0472A;border-color:#B0472A}
+
+/* licence = outlined rounded chip with a leading dot, never filled */
+#p-res .lic{border-radius:20px;border:1px solid;background:transparent!important;font-weight:600;letter-spacing:.04em}
+#p-res .lic::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-inline-end:6px;vertical-align:middle;background:currentColor}
+#p-res .lic.free{color:#3F7A4C;border-color:#BCD4C1}
+#p-res .lic.edu{color:#8A6712;border-color:#E2D3A6}
+#p-res .lic.clear{color:#B0472A;border-color:#E6C4B8}
+#p-res .shot .lic{margin:0 10px 10px;align-self:flex-start;padding:4px 11px}
+@media (max-width:820px){#p-res .legend2{grid-template-columns:1fr}}
+
+.objname{padding:13px 18px;border-bottom:1px solid var(--line);background:var(--band);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.on-he{font-family:var(--f-display);font-size:19px;font-weight:900;color:var(--text)}
+.on-en{font-size:12px;letter-spacing:.08em;color:var(--dim);direction:ltr}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.cm{padding:13px 18px;background:var(--panel-2)}
+.ck{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.cm.scr .ck{color:var(--dim)}
+.cm.real .ck{color:var(--accent)}
+.cv{font-size:13.5px;line-height:1.7;color:var(--text-2)}
+.cv b{color:var(--text);font-weight:600}
+.cm.real.ok{box-shadow:inset 3px 0 0 #47603D}
+.cm.real.mix{box-shadow:inset 3px 0 0 #6E5A28}
+.cm.real.bad{box-shadow:inset 3px 0 0 #7A4433}
+@media (max-width:820px){.cmp{grid-template-columns:1fr}}
+
+.res-head{padding:30px 0 20px;border-bottom:1px solid var(--line)}
+.res-head p{margin:10px 0 0;font-size:14.5px;color:var(--muted);max-width:76ch;line-height:1.75}
+.tally{display:flex;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;flex-wrap:wrap}
+.ty{background:var(--panel);padding:12px 18px;flex:1 1 150px}
+.ty .n{font-family:var(--f-display);font-size:24px;font-weight:900;color:var(--accent);line-height:1}
+.ty .l{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+
+.era{margin-top:34px;border:1px solid var(--line);background:var(--panel)}
+.era-head{display:flex;align-items:baseline;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.era-y{font-family:var(--f-display);font-size:23px;font-weight:900;color:var(--accent);line-height:1}
+.era-p{font-size:14px;color:var(--text);font-weight:600}
+.era-s{font-size:11px;color:var(--dim);border:1px solid var(--line);padding:3px 8px;border-radius:2px}
+.vd{margin-inline-start:auto;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:2px}
+.vd.ok{color:#8FBF7A;border:1px solid #47603D}
+.vd.bad{color:#E08A6E;border:1px solid #7A4433}
+.vd.mix{color:#D9B85C;border:1px solid #6E5A28}
+
+.find{padding:14px 18px;border-bottom:1px solid var(--line)}
+.find li{font-size:14px;line-height:1.75;color:var(--text-2);margin-bottom:7px}
+.find li:last-child{margin-bottom:0}
+.find b{color:var(--text);font-weight:600}
+.find .no{color:#E08A6E;font-weight:600}
+.find .yes{color:#8FBF7A;font-weight:600}
+.find ul{margin:0;padding-inline-start:18px}
+
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:16px 18px}
+.shots.one{grid-template-columns:minmax(0,420px)}
+.shots.one .shot img{aspect-ratio:auto;max-height:340px;object-fit:contain;padding:8px}
+.shots.one .cap{font-size:13px;line-height:1.65}
+.note-row{padding:13px 18px;font-size:13.5px;color:var(--dim);font-style:italic;line-height:1.7;border-bottom:1px solid var(--line)}
+.note-row b{color:var(--text-2);font-style:normal;font-weight:600}
+.shot{border:1px solid var(--line);background:var(--panel-2);display:flex;flex-direction:column}
+.shot img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#fff;cursor:zoom-in}
+.shot .cap{padding:8px 10px;font-size:11.5px;line-height:1.5;color:var(--text-2);flex:1}
+.lic{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:4px 10px;border-top:1px solid var(--line)}
+.lic.free{color:#8FBF7A}
+.lic.edu{color:#D9B85C}
+.lic.clear{color:#E08A6E}
+
+#lb{position:fixed;inset:0;background:rgba(10,8,6,.95);display:none;align-items:center;justify-content:center;z-index:99;cursor:zoom-out;padding:24px}
+#lb.on{display:flex}
+#lb img{max-width:100%;max-height:100%;object-fit:contain}
+
+
+/* ===== research: light surface ===== */
+body.res-mode{background:#F2EFE9}
+#p-res{
+  --rbg:#F2EFE9; --rcard:#FFFFFF; --rink:#1B1917; --rbody:#4C4740; --rmut:#8B857A;
+  --rline:#E2DCD1; --racc:#B35A12; --rband:#FAF7F1;
+  background:var(--rbg);color:var(--rbody);padding:0 0 40px;
+}
+#p-res .res-head{border-bottom:1px solid var(--rline);padding:34px 0 22px}
+#p-res .res-head h2{color:var(--rink);font-size:30px}
+#p-res .res-head p{color:var(--rmut)}
+#p-res .res-head p b{color:var(--rink)}
+#p-res .tally{background:var(--rline);border:1px solid var(--rline)}
+#p-res .ty{background:var(--rcard)}
+#p-res .ty .n{color:var(--racc)}
+#p-res .ty .l{color:var(--rmut)}
+#p-res .ty .l b{color:var(--rink)}
+
+#p-res .era{border:1px solid var(--rline);background:var(--rcard);border-radius:3px;overflow:hidden;box-shadow:0 1px 2px rgba(27,25,23,.04)}
+#p-res .era-head{background:var(--rband);border-bottom:1px solid var(--rline)}
+#p-res .era-y{color:var(--racc)}
+#p-res .era-p{color:var(--rink)}
+#p-res .era-s{color:var(--rmut);border-color:var(--rline)}
+#p-res .vd.ok{color:#2F6B3A;border-color:#B6CDB9;background:#EFF5F0}
+#p-res .vd.mix{color:#8A6712;border-color:#E0D2A8;background:#FBF6E9}
+#p-res .vd.bad{color:#A33D1E;border-color:#E8C6B8;background:#FBF0EC}
+
+#p-res .objname{background:#FFF9F0;border-bottom:1px solid var(--rline)}
+#p-res .on-he{color:var(--rink)}
+#p-res .on-en{color:var(--rmut)}
+
+#p-res .cmp{background:var(--rline);border-bottom:1px solid var(--rline)}
+#p-res .cm{background:var(--rcard)}
+#p-res .cm.scr{background:#FBFAF7}
+#p-res .cm.scr .ck{color:var(--rmut)}
+#p-res .cm.real .ck{color:var(--racc)}
+#p-res .cv{color:var(--rbody)}
+#p-res .cv b{color:var(--rink)}
+#p-res .cm.real.ok{box-shadow:inset 3px 0 0 #4E8A58}
+#p-res .cm.real.mix{box-shadow:inset 3px 0 0 #C2A03C}
+#p-res .cm.real.bad{box-shadow:inset 3px 0 0 #C0603E}
+
+#p-res .find{border-bottom:1px solid var(--rline)}
+#p-res .find li{color:var(--rbody)}
+#p-res .find b{color:var(--rink)}
+#p-res .find .no{color:#A33D1E}
+#p-res .find .yes{color:#2F6B3A}
+#p-res .note-row{color:var(--rmut);border-bottom:1px solid var(--rline);background:#FBFAF7}
+#p-res .note-row b{color:var(--rbody)}
+
+#p-res .shots,#p-res .shots.one{display:flex;flex-wrap:wrap;gap:14px;padding:18px}
+#p-res .shot{flex:1 1 0;min-width:190px;border:1px solid var(--rline);background:#FCFBF9;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s}
+#p-res .shot:hover{box-shadow:0 3px 10px rgba(27,25,23,.10)}
+#p-res .shot img{width:100%;height:210px;aspect-ratio:auto;object-fit:contain;background:#fff;padding:12px}
+#p-res .shot .cap{flex:1}
+#p-res .shot:first-child{box-shadow:inset 0 3px 0 var(--racc)}
+#p-res .shot:first-child .cap{background:#FFFBF4}
+#p-res .cap{color:var(--rbody);font-size:12.5px;line-height:1.6;padding:10px 12px}
+#p-res .cap b{color:var(--rink)}
+#p-res .lic{border-top:1px solid var(--rline)}
+#p-res .lic.free{color:#2F6B3A;background:#F2F7F3}
+#p-res .lic.edu{color:#8A6712;background:#FBF7EC}
+#p-res .lic.clear{color:#A33D1E;background:#FCF2EE}
+@media (max-width:700px){#p-res .shots.one .shot:first-child{grid-column:span 1}}
+
+/* ===== family tree ===== */
+.tree-head{padding:30px 0 22px;border-bottom:1px solid var(--line)}
+.tree-head h2{margin:0 0 8px}
+.tree-head code{font-family:var(--f-mono,monospace);font-size:12.5px;color:var(--accent);background:var(--panel);padding:1px 6px;border-radius:2px}
+.tree-head p{margin:0;font-size:14.5px;color:var(--muted);max-width:74ch;line-height:1.75}
+.branchkey{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--muted)}
+.branchkey span{display:flex;align-items:center;gap:7px}
+.bdot{width:10px;height:10px;border-radius:50%;flex:none}
+
+.node{position:relative;padding:22px 0 0}
+.node.sepharad,.node.ashkenaz{padding-inline-start:26px;border-inline-start:2px solid var(--line)}
+.node.sepharad{border-inline-start-color:#B5722B}
+.node.ashkenaz{border-inline-start-color:#5C7391}
+
+.nhead{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin-bottom:12px}
+.nyear{font-family:var(--f-display);font-size:26px;font-weight:900;color:var(--accent);line-height:1}
+.nscene{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--dim);border:1px solid var(--line);padding:3px 8px;border-radius:2px}
+.nplace{font-size:14px;color:var(--text);font-weight:600}
+.nbranch{margin-inline-start:auto;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.nbranch.sepharad{color:#C98A45}
+.nbranch.ashkenaz{color:#8AA3C0}
+.nbranch.trunk{color:var(--dim)}
+.nbranch.merge{color:var(--accent)}
+
+.chars{display:flex;gap:14px;flex-wrap:wrap}
+.ch{width:152px;background:var(--panel);border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.slot{aspect-ratio:3/4;background:var(--panel-2);border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--dim)}
+.slot .ic{font-size:22px;line-height:1;opacity:.5}
+.slot .lb{font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.ch .meta{padding:10px 11px}
+.ch .role{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.35}
+.ch .age{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ch .code{font-size:9.5px;letter-spacing:.09em;color:var(--dim);margin-top:5px}
+.ch.lead{border-color:var(--dim)}
+.ch.lead .slot{background:#251C12}
+
+.nochar{font-size:13px;color:var(--dim);font-style:italic;padding:10px 0}
+.link{margin-top:12px;background:#22190F;border-inline-start:2px solid var(--accent);padding:9px 13px;font-size:13px;color:var(--text-2);line-height:1.6}
+.link b{color:var(--accent);font-weight:600}
+.link.gap{border-inline-start-color:#8A5A5A;background:#231616}
+.link.gap b{color:#C88}
+
+.refs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:12px}
+.rf{background:var(--panel-2);padding:9px 11px;min-height:54px}
+.rf .k{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.rf .v{font-size:12px;color:var(--dim);font-style:italic;margin-top:4px}
+
+.splitbar{margin:34px 0 6px;padding:13px 18px;background:var(--band);border-inline-start:3px solid var(--accent);font-size:14px;color:var(--text)}
+.splitbar b{color:var(--accent);font-weight:600}
+@media (max-width:820px){.refs{grid-template-columns:1fr 1fr}.ch{width:132px}}
+
+.orig{display:flex;flex-direction:column;gap:18px;padding:28px 0 10px}
+.orig .pg{display:block;width:100%;height:auto;border:1px solid var(--line)}
+
+/* cover */
+.cover{text-align:center;padding:22px 0 40px;border-bottom:1px solid var(--line)}
+.kicker{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--f-display);font-weight:900;font-size:clamp(36px,6vw,58px);line-height:1.06;margin:16px 0 8px;color:var(--text)}
+.sub{font-family:var(--f-display);font-style:italic;font-size:21px;color:var(--muted);margin:0 0 20px}
+.spec{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.site{margin-top:22px;font-size:12px;letter-spacing:.14em;color:var(--dim)}
+
+h2{font-family:var(--f-display);font-size:27px;font-weight:900;color:var(--text);margin:46px 0 6px}
+.lead{font-size:15px;color:var(--text-2);margin:0 0 22px;max-width:72ch}
+.quote-box{border-inline-start:3px solid var(--accent);background:var(--panel);padding:18px 22px;margin:22px 0;font-size:15.5px;color:var(--text);line-height:1.75}
+.quote-box b{font-weight:600}
+
+.motifs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+.motif{background:var(--panel);padding:20px 22px}
+.motif .num{font-family:var(--f-display);font-size:26px;font-weight:900;color:var(--accent);line-height:1}
+.motif h3{font-size:16px;font-weight:600;color:var(--text);margin:9px 0 7px}
+.motif p{margin:0;font-size:14px;line-height:1.7;color:var(--text-2)}
+
+.specs{margin-top:26px;border-top:1px solid var(--line)}
+.specrow{display:grid;grid-template-columns:180px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
+.speck{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;padding-top:3px}
+.specv{font-size:14.5px;line-height:1.75;color:var(--text-2)}
+.specv b{color:var(--text);font-weight:600}
+
+.act{display:flex;align-items:baseline;gap:14px;background:var(--band);border-inline-start:3px solid var(--accent);padding:12px 18px;margin:44px 0 0}
+.act-n{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.act-name{font-family:var(--f-display);font-size:21px;font-weight:900;color:var(--text)}
+
+.scene{background:var(--panel);border-bottom:1px solid var(--ground);padding:20px 22px}
+.scene:nth-child(even){background:var(--panel-2)}
+.s-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.s-n{font-family:var(--f-display);font-size:20px;font-weight:900;color:var(--dim);line-height:1}
+.s-year{font-family:var(--f-display);font-size:29px;font-weight:900;color:var(--accent);line-height:1;letter-spacing:-.01em}
+.s-time{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.06em;direction:ltr;unicode-bidi:isolate}
+.s-dur{margin-inline-start:auto;font-size:11px;font-weight:600;color:var(--accent);border:1px solid var(--dim);border-radius:2px;padding:3px 9px}
+
+.f{display:grid;grid-template-columns:120px 1fr;gap:18px;padding:9px 0;border-top:1px solid var(--line)}
+.f:first-of-type{border-top:0}
+.fk{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);font-weight:600;padding-top:4px}
+.fv{font-size:14.5px;line-height:1.75;color:var(--text-2)}
+.f.place .fv{color:var(--text);font-weight:600}
+.f.emotion .fv{font-family:var(--f-display);font-style:italic;color:var(--muted)}
+
+.note{display:grid;grid-template-columns:180px 1fr;gap:20px;padding:15px 0;border-bottom:1px solid var(--line)}
+.note dt{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;padding-top:3px}
+.note dd{margin:0;font-size:14.5px;line-height:1.75;color:var(--text-2)}
+.pull{font-family:var(--f-display);font-style:italic;font-size:20px;line-height:1.6;color:var(--text);text-align:center;padding:34px 24px;margin-top:34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.foot{margin-top:30px;font-size:11.5px;letter-spacing:.14em;color:var(--dim);text-align:center}
+
+/* RTL pane */
+.pane[dir="rtl"] .fk,
+.pane[dir="rtl"] .speck,
+.pane[dir="rtl"] .note dt{text-align:right}
+
+@media print{
+  @page{size:A4;margin:12mm}
+  .bar{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .scene,.motif,.act{break-inside:avoid}
+  h2{break-after:avoid}
+}
+@media (max-width:820px){
+  .motifs{grid-template-columns:1fr}
+  .f,.specrow,.note{grid-template-columns:1fr;gap:4px}
+}
+
+/* ===== wardrobe ===== */
+.wsp{width:100%;border-collapse:collapse}
+.wsp th{text-align:start;width:74px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;vertical-align:top;padding:11px 0}
+.wsp td{vertical-align:top;padding:11px 14px 11px 0;font-size:13.5px;line-height:1.7}
+.wsp tr+tr th,.wsp tr+tr td{border-top:1px solid var(--line)}
+.wch{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 16px}
+.wch span{font-size:11.5px;padding:4px 10px;border-radius:2px}
+.wav{padding:14px 18px 0}
+.wav h4{margin:0 0 9px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:600}
+.wtbl{padding:4px 18px 14px}
+@media (max-width:820px){.wsp th{width:58px;font-size:10px}.wsp td{font-size:12.5px}}
+
+/* ===== wardrobe: light surface ===== */
+body.wear-mode{background:#F2EFE9}
+#p-wear{
+  --rbg:#F2EFE9; --rcard:#FFFFFF; --rink:#1B1917; --rbody:#4C4740; --rmut:#8B857A;
+  --rline:#E2DCD1; --racc:#B35A12; --rband:#FAF7F1;
+  background:var(--rbg);color:var(--rbody);padding:0 0 40px;
+}
+#p-wear .res-head{border-bottom:1px solid var(--rline);padding:34px 0 22px}
+#p-wear .res-head h2{color:var(--rink);font-size:30px;margin-top:0}
+#p-wear .res-head p{color:var(--rmut)}
+#p-wear .res-head p b{color:var(--rink)}
+#p-wear .tally{background:var(--rline);border:1px solid var(--rline)}
+#p-wear .ty{background:var(--rcard)}
+#p-wear .ty .n{color:var(--racc)}
+#p-wear .ty .l{color:var(--rmut)}
+#p-wear .ty .l b{color:var(--rink)}
+#p-wear .era{border:1px solid var(--rline);background:var(--rcard);border-radius:3px;overflow:hidden;box-shadow:0 1px 2px rgba(27,25,23,.04)}
+#p-wear .era-head{background:var(--rband);border-bottom:1px solid var(--rline)}
+#p-wear .era-y{color:var(--racc)}
+#p-wear .era-p{color:var(--rink)}
+#p-wear .era-s{color:var(--rmut);border-color:var(--rline)}
+#p-wear .vd.ok{color:#2F6B3A;border:1px solid #B6CDB9;background:#EFF5F0}
+#p-wear .vd.mix{color:#8A6712;border:1px solid #E0D2A8;background:#FBF6E9}
+#p-wear .wsp th{color:var(--racc)}
+#p-wear .wsp td{color:var(--rbody)}
+#p-wear .wsp b{color:var(--rink);font-weight:600}
+#p-wear .wsp tr+tr th,#p-wear .wsp tr+tr td{border-top:1px solid var(--rline)}
+#p-wear .note-row{color:var(--rmut);border-bottom:1px solid var(--rline);background:#FBFAF7;font-style:normal}
+#p-wear .note-row b{color:var(--rink);font-weight:600}
+#p-wear .wav h4{color:#A33D1E}
+#p-wear .wch span{background:#FBF0EC;color:#A33D1E;border:1px solid #E8C6B8}
+#p-wear .shots{display:flex;flex-wrap:wrap;gap:14px;padding:18px}
+#p-wear .shot{flex:1 1 250px;min-width:250px;max-width:340px;border:1px solid var(--rline);background:#FCFBF9;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s}
+#p-wear .shot:hover{box-shadow:0 3px 10px rgba(27,25,23,.10)}
+#p-wear .shot img{width:100%;height:290px;aspect-ratio:auto;object-fit:contain;background:#fff;padding:10px;cursor:zoom-in}
+#p-wear .cap{color:var(--rbody);font-size:12.5px;line-height:1.6;padding:10px 12px;flex:1}
+#p-wear .cap b{color:var(--rink)}
+#p-wear .bdg{display:flex;flex-wrap:wrap;gap:4px;padding:0 12px 10px}
+#p-wear .bdg span{font-size:9.5px;font-weight:600;letter-spacing:.06em;padding:3px 7px;border-radius:2px;border:1px solid}
+#p-wear .bdg .jw{color:#2F6B3A;background:#EFF5F0;border-color:#B6CDB9}
+#p-wear .bdg .nj{color:#A33D1E;background:#FBF0EC;border-color:#E8C6B8}
+#p-wear .bdg .tm{color:#8B857A;background:#FBFAF7;border-color:#E2DCD1}
+#p-wear .bdg .tm.ex{color:#8A6712;background:#FBF6E9;border-color:#E0D2A8}
+#p-wear .hsec{border-top:1px solid var(--rline);background:#FBFAF7}
+#p-wear .hsec h4{margin:0;padding:14px 18px 0;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--racc);font-weight:700}
+#p-wear .hsec .sub{margin:4px 0 0;padding:0 18px;font-size:12px;color:var(--rmut)}
+#p-wear .hsec .shot img{height:320px;background:#fff}
+#p-wear .era-row{margin-top:34px;display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:14px;align-items:start}
+#p-wear .era-row>.era{margin-top:0}
+#p-wear .gside{display:flex;flex-direction:column;gap:10px;position:sticky;top:64px}
+#p-wear .gside h4{margin:0;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--racc);font-weight:700}
+#p-wear .gside .shot{min-width:0;max-width:none;flex:none}
+#p-wear .gside .shot img{height:250px;background:#808080;padding:0}
+#p-wear .gside .shot.wide img{height:auto}
+#p-wear .gside .cap{font-size:11px;padding:7px 9px;line-height:1.5}
+@media (min-width:1440px){
+  #p-wear .era-row{display:block;position:relative}
+  #p-wear .gside{position:absolute;top:0;right:calc(100% + 18px);width:200px}
+}
+@media (max-width:820px){#p-wear .era-row{grid-template-columns:1fr}#p-wear .gside{position:static}}
+#p-wear .use{padding:0 12px 9px;font-size:11.5px;line-height:1.5;color:#2F6B3A}
+#p-wear .bdg .lc{color:#A33D1E;background:#FBF0EC;border-color:#E8C6B8}
+#p-wear .wlang{display:flex;gap:6px;margin-top:16px}
+#p-wear .wlang button{font:600 11.5px/1 var(--f-body);letter-spacing:.08em;padding:7px 15px;border:1px solid var(--rline);background:var(--rcard);color:var(--rmut);border-radius:2px;cursor:pointer}
+#p-wear .wlang button:hover{color:var(--rink);border-color:var(--racc)}
+#p-wear .wlang button.on{background:var(--racc);border-color:var(--racc);color:#fff}
+#p-wear[dir="ltr"] .era-s,#p-wear[dir="ltr"] .cap,#p-wear[dir="ltr"] .use{text-align:left}
+#p-wear .bdg .lf{color:#2F6B3A;background:#EFF5F0;border-color:#B6CDB9}
+</style>
+
+<div class="bar">
+  <div class="bar-in" role="tablist">
+    <button class="tab" id="t-script" role="tab" aria-selected="true" aria-controls="p-en">Script</button>
+    <button class="tab" id="t-res" role="tab" aria-selected="false" aria-controls="p-res">מחקר נרות</button>
+    <button class="tab" id="t-wear" role="tab" aria-selected="false" aria-controls="p-wear">לבוש תקופתי</button>
+    <div class="langsw" id="langsw">
+      <button type="button" data-lang="he">עב</button><button type="button" data-lang="en" class="on">EN</button>
+    </div>
+    <button class="printbtn" onclick="window.print()">Save as PDF</button>
+  </div>
+</div>
+
+<div id="lb"><img alt=""></div>
+<div class="wrap">
+  <div class="pane" id="p-en" dir="ltr" role="tabpanel" aria-labelledby="t-en"><div class="orig"><img class="pg" loading="lazy" src="assets/pages/page-01.jpg" alt="Page 1 of the original script" loading="eager"><img class="pg" loading="lazy" src="assets/pages/page-02.jpg" alt="Page 2 of the original script" loading="eager"><img class="pg" loading="lazy" src="assets/pages/page-03.jpg" alt="Page 3 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-04.jpg" alt="Page 4 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-05.jpg" alt="Page 5 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-06.jpg" alt="Page 6 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-07.jpg" alt="Page 7 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-08.jpg" alt="Page 8 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-09.jpg" alt="Page 9 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-10.jpg" alt="Page 10 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-11.jpg" alt="Page 11 of the original script" loading="lazy"><img class="pg" loading="lazy" src="assets/pages/page-12.jpg" alt="Page 12 of the original script" loading="lazy"></div></div>
+  <div class="pane" id="p-he" dir="rtl" role="tabpanel" aria-labelledby="t-he" hidden></div>
+  <div class="pane" id="p-res" dir="rtl" role="tabpanel" aria-labelledby="t-res" hidden></div>
+  <div class="pane" id="p-wear" dir="rtl" role="tabpanel" aria-labelledby="t-wear" hidden></div>
+</div>
+
+<script>
+const T = {
+he:{
+ kicker:"Shabbat Experience",
+ title:"שולחן אחד לאורך הזמן",
+ sub:"להבת היום השביעי",
+ spec:"תסריט וידאו &middot; 3:06 דקות &middot; 27 סצנות &middot; ללא קריינות",
+ threadH:"החוט המקשר",
+ threadLead:"הלהבה היא הגיבורה. אין קריינות. הרציפות נבנית באמצעות ארבעה מוטיבים ויזואליים שחוזרים בכל תקופה.",
+ pledge:`משפחה אחת, וצאצאיה, חוצה 3,000 שנות היסטוריה סביב שולחן השבת. בכל דור מתחלפים לשולחן הארץ, השפה, המנגינה והמתכון; הלהבה והמחווה נשארות. <b>לדור ודור.</b>`,
+ motifs:[
+  {t:"האור והשולחן",p:`כל סצנת שבת נפתחת או נסגרת בלהבה שנדלקת בין ערביים, והמצלמה אינה עוזבת את השולחן: בין התקופות, העולם שסביבו הוא שמשתנה. יש לסירוגין שני סוגי מעבר: חיתוכי התאמה על הלהבה, שבהם להבה של תקופה אחת "הופכת" ללהבה של הבאה, ומורפים רציפים, שבהם קירות, אור, חפצים, מאכלים ולבוש עוברים גלגול בתנועה אחת בזמן שהמשפחה נשארת ליד השולחן. החדר נוסע בזמן לנגד עינינו.`},
+  {t:"המחווה",p:`ידי אישה מקיפות את הנרות ומכסות את עיניה; ידו של אב או של סב מונחת על ראש ילד, ברכת הילדים. אותה מחווה בדיוק, באותה כוריאוגרפיה, בכל תקופה ותקופה.`},
+  {t:"הפמוטים",p:`זוג פמוטי כסף הוא החפץ המורש. הוא מופיע, מזדקן, מוסתר, נעטף, נטמן, נמצא ומצוחצח לאורך כל הסרט. כשהמשפחה מתפצלת בגלות (סצנה 6), הלהבה נחצית לשתיים: שני הענפים, ספרד ואשכנז, עושים דרכים מקבילות ונפגשים שוב סביב אותו שולחן בסצנה 25.`},
+  {t:"הפנים החוזרות",p:`הצאצאים נושאים את אותן פנים: יש לשמר דמיון משפחתי, העיניים, חיוך אופייני, לאורך כל הדורות, כאילו פנים אחד חוצים את המאות. כלל סבירות: מזקינים את אותה דמות רק כשהפער בין הסצנות נכנס בתוך תוחלת חיי אדם, למשל הילדה שעל האונייה ב‑1905 היא האם הבוגרת של 1935; לרוחב מאות רחוקות, מי שאנו רואים הוא צאצא בעל אותם תווי פנים, ולעולם לא אותו אדם.`}
+ ],
+ specs:[
+  {k:"טקסט על המסך",v:`כיתוב אחד לכל תקופה, ובו השנה או המאה בגופן גדול והמקום מתחתיה, למשל "70 לספירה &middot; יהודה הקדומה" או "1492 &middot; טולדו, ספרד". טיפוגרפיה סריפית, בפינה התחתונה; הכיתוב מתמוסס יחד עם המורף אל התקופה הבאה. <b>אין מילים נוספות עד לכרטיס הסיום.</b>`},
+  {k:"השולחן כציר זמן",v:`האוכל הוא סמן תקופה חשוב לא פחות מהתלבושת: לחם שטוח שנשבר ביד &rarr; דג בתבלינים והדרים &rarr; חלה, גפילטע פיש ומרק עוף &rarr; זיתים וסלט ישראלי טרי &rarr; השולחן הגלובלי שיש בו הכול יחד. בכל תקופה צריך להופיע בפריים המאכל המזוהה שלה.`},
+  {k:"פסקול",v:`מנגינה אחת, <b>שלום עליכם</b>, שמתפתחת עם התקופות: נבל עתיק &rarr; עוד ספרדי &rarr; כינור כליזמר &rarr; פסנתר קאמרי &rarr; כמעט דממה מוחלטת בזמן המלחמה &rarr; קולות א‑קפלה בתחייה &rarr; עיבוד מלא בן זמננו. <b>המוזיקה מספרת את מה שהקריינות אינה אומרת.</b>`},
+  {k:"פלטה כללית",v:`ענבר של נר על כחולי דמדומים עמוקים. הסצנות היחידות שיוצאות מהפלטה הזאת הן סצנות השבר (6, 10, 19), מחוסרות רוויה עד כדי מונוכרום כמעט מלא: <b>הלהבה היא נקודת הצבע היחידה.</b>`}
+ ],
+ scenesH:"הסצנות",
+ acts:[
+  {n:"Prologue",name:"פרולוג, בראשית",from:1,to:2},
+  {n:"Act I",name:"מערכה ראשונה, שורשים (העת העתיקה)",from:3,to:7},
+  {n:"Act II",name:"מערכה שנייה, שתי דרכים (ספרד ואשכנז, זו לצד זו בזמן)",from:8,to:15},
+  {n:"Act III",name:"מערכה שלישית, מעברים (העולם המודרני)",from:16,to:20},
+  {n:"Act IV",name:"מערכה רביעית, איחוד (שולחן ימינו)",from:21,to:27}
+ ],
+ keys:{place:"מקום / תקופה",visual:"ויזואלי",emotion:"רגש",ref:"התייחסויות",trans:"מעבר"},
+ notesH:"הערות סיום, לאמן",
+ notes:[
+  {k:"משכים",v:`27 סצנות, סך הכול 3:06. המשכים המצוינים הם יעד; אפשר להתאים שנייה אחת לכל כיוון בכל סצנה לפי הקצב של הפסקול, תוך שמירה על סך הזמן.`},
+  {k:"מה לעולם לא משתנה",v:`שתי להבות &middot; מחוות ההקפה וכיסוי העיניים &middot; היד על ראש הילד &middot; הקלוז‑אפ על עיניים שמשקפות להבה (סצנות 5, 15, 26) &middot; פמוטי הירושה &middot; הדמיון המשפחתי לאורך הדורות.`},
+  {k:"מה תמיד משתנה",v:`אדריכלות ונוף &middot; לבוש &middot; אוכל (לחם שטוח &rarr; דג בהדרים &rarr; חמין &rarr; דפינה &rarr; צ'ולנט וגפילטע פיש &rarr; סלט ישראלי &rarr; השולחן הגלובלי שיש בו הכול) &middot; חפצי הטקס (נר חרס &rarr; יודנשטרן &rarr; פמוטים &rarr; נרות מודרניים) &middot; מנגינת הפסקול, אותו שיר בעיבוד חדש לכל תקופה.`},
+  {k:"מעברים",v:`שני מנגנונים, לסירוגין: חיתוך התאמה על הלהבה לקפיצות במקום, ומורף רציף של הסביבה סביב השולחן, בסגנון "מסע בזמן", לקפיצות בזמן בתוך אותו מקום או אותה מערכה. כיתוב השנה והמקום מלווה כל תפנית.`},
+  {k:"טון",v:`הסרטון אינו מלמד הלכות ואינו מורה על מעשה. הוא מראה מה עשו משפחות במשך שלושת אלפים שנה כשהן מדליקות שני אורות בערב שישי בין ערביים, ומדוע שום אימפריה, גזירה או מאה לא הצליחו לכבות אותם.`}
+ ],
+ pull:`&ldquo;הסרטון אינו מלמד הלכות ואינו מורה על מעשה: הוא מראה את יופייה של מסורת ששום אימפריה, גזירה או מאה לא הצליחו לכבות.&rdquo;`
+}};
+
+const TIMES=["0:00 – 0:07","0:07 – 0:14","0:14 – 0:20","0:20 – 0:27","0:27 – 0:34","0:34 – 0:42","0:42 – 0:48","0:48 – 0:55","0:55 – 1:02","1:02 – 1:09","1:09 – 1:17","1:17 – 1:24","1:24 – 1:30","1:30 – 1:37","1:37 – 1:45","1:45 – 1:51","1:51 – 1:57","1:57 – 2:03","2:03 – 2:11","2:11 – 2:18","2:18 – 2:24","2:24 – 2:30","2:30 – 2:36","2:36 – 2:42","2:42 – 2:50","2:50 – 2:58","2:58 – 3:06"];
+const DURS=[7,7,6,7,7,8,6,7,7,7,8,7,6,7,8,6,6,6,8,7,6,6,6,6,8,8,8];
+const YEARS={
+ en:["In the Beginning","The Seventh Day","13th c. BCE","1st c. BCE","1st c. BCE","70 CE","5th c. CE","12th c.","13th c.","1492","1540","17th c.","1800","1840","1840","1900","1905","1935","1941","1946","1952","1975","2005","2023","2026","2026","L'dor Vador"],
+ he:["בראשית","היום השביעי","המאה ה‑13 לפנה״ס","המאה ה‑1 לפנה״ס","המאה ה‑1 לפנה״ס","70 לספירה","המאה ה‑5","המאה ה‑12","המאה ה‑13","1492","1540","המאה ה‑17","1800","1840","1840","1900","1905","1935","1941","1946","1952","1975","2005","2023","2026","2026","לדור ודור"]
+};
+
+const HE=[
+{place:"הקוסמוס, ששת ימי בראשית",
+ visual:`חושך מוחלט. אור מתפרץ: ערפיליות, ימים נבקעים, הרים עולים, ציפורים במעוף, אדם עומד מול השקיעה. שש "פעימות" של בריאה בקצב מואץ, כל אחת מסחררת מקודמתה.`,
+ emotion:"יראה, סחרחורת, אנרגיה.",
+ ref:`טיימלפסים קוסמיים; אור זהוב של "שעת קסם"; המצלמה תמיד נעה קדימה.`},
+{place:"היום השביעי",
+ visual:`כל תנועה נעצרת בבת אחת. דממה. העולם כולו בשוט רחב, דומם ושלם, בין ערביים. ממרכז הפריים נולדת להבה קטנה באוויר, אור השבת הראשון. המצלמה נסחפת לאיטה אל עבר הלהבה עד שהיא ממלאת את המסך.`,
+ emotion:"שלווה מוחלטת; ההקלה שבעצירה.",
+ ref:`ניגוד קיצוני של קצב מול סצנה 1. בראשית ב׳, א׳-ג׳ כהשראה רעיונית: "ויכל אלוהים ביום השביעי".`,
+ trans:"דרך הלהבה &rarr; סצנה 3."},
+{place:"מדבר סיני &middot; המאה ה‑13 לפנה\"ס, השבת הראשונה של עם",
+ visual:`מחנה אוהלים בין ערביים, ההר במרחק. באור בוקר מואץ, ידיים אוספות מנה כפולה של מן, נוצצת כטל על החול; עם שקיעת השמש המחנה כולו נדם: מדורות נמוכות, משפחות מתכנסות מול האוהלים, איש אינו אוסף דבר. שתי מנות מן מונחות מכוסות בבד, העובר של שתי החלות תחת כיסוין.`,
+ emotion:"גילוי; עם שלם שלומד לעצור בפעם הראשונה.",
+ ref:`שמות ט"ז, המנה הכפולה של המן: הדור הראשון ששומר שבת, עודנו במדבר. דיונות בין ערביים שעוברות מזהב לכחול; קנה המידה האפי של המחנה, האינטימיות של הידיים האוספות.`},
+{place:"ירושלים &middot; המאה ה‑1 לפנה\"ס, סמטאות אבן, המקדש במרחק",
+ visual:`דמדומי זהב על אבן הגיר. שופר נשמע מרחוק ומכריז על כניסת השבת (ויזואלית: יונים ממריאות). בבית פשוט, אם צעירה מדליקה את שתי הפתילות של נר שמן. היא עושה את המחווה: הידיים מקיפות את האור, ואז מכסות את העיניים.`,
+ emotion:"שלווה חגיגית; העולם מאט.",
+ ref:`אור שעת זהב על אבן ירושלמית; בגדי פשתן וצמר; נר החרס בעל שתי הלהבות, העובר של שני הנרות.`},
+{place:"ירושלים &middot; אותו לילה, בתוך הבית",
+ visual:`המשפחה יושבת על כריות רצפה, בכותנות פשתן פשוטות, סביב שולחן אבן נמוך. לחם שטוח נשבר ביד ומחולק; יין נמזג מכד חרס אל גביע קרמי. האב מרים את הגביע (קידוש מוקדם), ואז מניח את ידו על ראש בנו הקטן. הילד בוהה בשתי הלהבות, קלוז‑אפ על עיניו והלהבות משתקפות בהן.`,
+ emotion:"אינטימיות, שייכות.",
+ ref:`קאראווג׳ו במפתח ביתי: מקור אור יחיד (הנר), ופנים שעולות מתוך החשכה. הקלוז‑אפ הזה על עיניים עם להבה משתקפת יחזור בכל דור ודור.`},
+{place:"ירושלים &middot; 70 לספירה, החורבן",
+ visual:`הצבע מתנקז מן התמונה. עשן עולה מן המקדש ברקע. המשפחה (נכדיה של סצנה 5) נמלטת בדרך לילית; האם מגינה בידה על להבת נר בתוך בד. בפרשת דרכים המשפחה נחצית לשתי קבוצות ההולכות לכיוונים מנוגדים. הלהבה האחת מתפצלת לשתיים, אחת עם כל קבוצה.`,
+ emotion:"אובדן, יציאה לגלות, אך האור אינו כבה.",
+ ref:`כמעט מונוכרום; רק שתי הלהבות בענבר. קומפוזיציה רחבה: שני אורות קטנים מתרחקים זה מזה בתוך החשכה.`},
+{place:"בבל (מסופוטמיה) &middot; המאה ה‑5 לספירה",
+ visual:`חצר על גדות הפרת, תמרים ורימונים על השולחן. חכמים וילדים סביב מגילות קלף, שנגללות ומונחות בצד כשנרות השמן נדלקים: הלימוד מפנה מקום לשולחן. מחוות הידיים מעל האור, זהה.`,
+ emotion:"המשכיות; המסורת הופכת לטקסט, והטקסט הופך לשולחן.",
+ ref:`כחולים עמוקים של לילה מסופוטמי, נרות שמן רבים, בדים מפוספסים. תקופת הישיבות הגדולות של בבל.`},
+{place:"קורדובה, ספרד &middot; המאה ה‑12, תור הזהב (הענף הספרדי)",
+ visual:`חצר מורית עם אריחי אזולז׳ו ועץ רימון. בגדים איבריים עשירים. שולחן שופע: דג אפוי בתבלינים ים תיכוניים והדרים, זיתים, זעפרן, סיר חרס חתום של חמין בדרכו לתנור הקהילתי. משורר פורט על עוד; הסבתא הספרדייה, צאצאית המשפחה הבבלית ובעלת אותם תווי פנים, מדליקה כעת פמוטי כסף בפעם הראשונה (וכאן נולד החפץ המורש). פיליגרן אנדלוסי על הפמוטים.`,
+ emotion:"פאר, גאווה, תרבות בפריחה.",
+ ref:`אדריכלות אל‑אנדלוס; אור חמים דרך קשתות; קליגרפיה עברית וערבית זו לצד זו בכתבי היד שעל השולחן.`},
+{place:"חבל הריין (גרמניה) &middot; המאה ה‑13 (הענף האשכנזי)",
+ visual:`מן החום האנדלוסי, חיתוך אל קור הצפון: חלל פנים גותי בקורות עץ כהות. יודנשטרן, נר שמן תלוי בצורת כוכב, מורד מן התקרה ונדלק. על השולחן, בפעם הראשונה, שתי כיכרות קלועות תחת כיסוי רקום קטן. שלג בחלון. הענף האחר של משפחת סצנה 6, באותו קשת של מאות, בקצה האחר של אירופה.`,
+ emotion:"התכנסות פנימה, חום כנגד הקור.",
+ ref:`נר הכוכב האשכנזי של ימי הביניים (יודנשטרן); חללי פנים מקורות עץ; צמת החלה מבשרת ויזואלית את צמת נר ההבדלה.`},
+{place:"טולדו &middot; 1492, צו הגירוש",
+ visual:`הצבע מתנקז שוב. קלף חתום ננעץ בדלת. בתוך הבית, ידיים עוטפות בחיפזון את פמוטי הכסף בצעיף ומחביאות אותם בתיבה. ברקע, בנמל, ספינות. המשפחה יוצאת לדרך; ילדה מביטה לאחור.`,
+ emotion:"שבר, פחד, וההחלטה השקטה לשאת את המסורת הלאה.",
+ ref:`כמעט מונוכרום; הבהוב הכסף של הפמוטים הוא השתקפות האור היחידה. האינקוויזיציה וגירוש ספרד.`},
+{place:"ליסבון &middot; בסביבות 1540, תחת האינקוויזיציה (אנוסים)",
+ visual:`פעמונים ותופים ברחוב: מבעד לסדק בחלון, הבת צופה בתהלוכת האינקוויזיציה החולפת, לפידים, דגלים, צללים ארוכים על הקיר. במרתף, האם מדליקה שני נרות בתוך כד חרס, כדי שלא ייצא אור אל הרחוב, ועושה את מחוות כיסוי העיניים בדממה מוחלטת. הלהבות רועדות כשהתופים חולפים, ומחזיקות מעמד.`,
+ emotion:"פחד ומסירות בתמונה אחת; אמונה ששורדת במחתרת.",
+ ref:`מנהג היסטורי מתועד של אנוסים תחת האינקוויזיציה: נרות מוסתרים בתוך כלים. קיארוסקורו קיצוני; האיום הוא צליל וצל בלבד, ללא אלימות מפורשת; האור שבתוך הכד כלב פועם.`},
+{place:"סלוניקי (האימפריה העות׳מאנית) &middot; המאה ה‑17 (הענף הספרדי, חופשי שוב)",
+ visual:`מרפסת פתוחה מעל הים האגאי, ניגוד מכוון למרתף של הסצנה הקודמת: כאן השולחן בחוץ, ללא פחד. מפה רקומה, רימונים, פסטליקוס. שלושה דורות שרים בלאדינו (ויזואלית: פיות ששרים, ללא קול מוקלט מובלט). פמוטי הכסף, שהוצאו מן התיבה, חזרו אל השולחן.`,
+ emotion:"הקלה, שמחה ים תיכונית, המסורת נושמת אוויר פתוח.",
+ ref:`סלוניקי, "ירושלים דבלקן". כחול אגאי בין ערביים, פנסים עות׳מאניים, רקמת חוטי זהב.`},
+{place:"פאס, מרוקו &middot; בסביבות 1800 (הענף הספרדי)",
+ visual:`חצר ריאד, אריחי זליג׳ ירוקים וכחולים. סיר דפינה מורם מן הגחלים שבהן לן כל הלילה. תבלינים בקעריות נחושת קטנות; קפטנים רקומים; הסבתא מברכת את הילדים ביד על ראשו של כל אחד, אותה מחווה כמו בסצנה 5.`,
+ emotion:"חום, שפע חושי, ריח כמעט נראה לעין.",
+ ref:`אור מסונן דרך סורגי משרבייה; אדים עולים מן הסיר בתלתלים זהובים.`},
+{place:"שטעטל, תחום המושב &middot; בסביבות 1840, יום שישי אחר הצהריים (הענף האשכנזי)",
+ visual:`הבהילות של ערב שבת: שוק רחוב, אווזים ודגים, ילדים רצים עם ענפי פרחים. בבית, ידיים מקומחות קולעות חלה. נער נושא את סיר הצ'ולנט המשפחתי אל תנור האופה, שם ילינו עשרות סירים זהים. השמש שוקעת; החנויות נסגרות אחת אחת.`,
+ emotion:"המולה שמחה שמאטה, עיירה שלמה עוצרת את נשימתה.",
+ ref:`שאגאל בלי הסוריאליזם: הפלטה והחיבה, בביצוע ריאליסטי. אור של שעות אחר הצהריים המאוחרות בחורף הפולני.`},
+{place:"אותו שטעטל &middot; ליל שבת",
+ visual:`שוט רחב של רחוב מושלג: בכל חלון שני נרות דולקים, עשרות זוגות להבות בתוך הלילה. בתוך בית העץ, האם במטפחת ראש מסורתית מדליקה את פמוטי הכסף. על השולחן: חלה, גפילטע פיש ומרק עוף מהביל; האב שר שלום עליכם ומתנדנד קלות, והנער בוהה בנרות. קלוז‑אפ: עיני הנער והלהבות משתקפות בהן, אותו מסגור בדיוק כמו בסצנה 5.`,
+ emotion:`שיא ה"קסם המשפחתי", חום מוחלט מוקף בקור.`,
+ ref:`התמונה החתומה של הסרט: חלונות דולקים בשלג. פסקול: שלום עליכם בכליזמר לוקח את המנגינה.`},
+{place:"וינה &middot; בסביבות 1900",
+ visual:`סלון בורגני: פסנתר, קריסטל, עיתונים בגרמנית. אותה משפחה, עירונית ואלגנטית כעת, אבל על שידת השיש אותם פמוטים ישנים, מצוחצחים לרגע. האם הצעירה מסירה את כפפותיה כדי להדליק נרות; הסב מחייך.`,
+ emotion:"מודרניות ומסורת מנהלות משא ומתן על מקום, והמסורת נשארת.",
+ ref:`קלימט באווירה (זהבים, דגמים), חללי פנים וינאיים של הבל אפוק.`},
+{place:"נמל המבורג &rarr; אונייה &middot; בסביבות 1905",
+ visual:`ידיים עוטפות את הפמוטים בצעיף צמר, שיקוף מדויק של מחוות 1492 (סצנה 10). מזוודת עור נסגרת בנקישה. על הסיפון הצפוף בשעת שקיעה, אישה מדליקה גפרור ומגינה על הלהבה בגופה; מעגל קטן של נוסעים מתקבץ סביב האור.`,
+ emotion:"תקווה מחובקת אל החזה; השבת נכנסת לתוך מזוודה.",
+ ref:`צילומי ההגירה הגדולה (גוני ספיה); רוח, ים, והלהבה הזעירה מול האוקיינוס העצום.`},
+{place:"פראסה אונזה, ריו דה ז׳ניירו &middot; בסביבות 1935",
+ visual:`בית שורה של מהגרים; מבעד לצוהר הפתוח, חום טרופי וחשמלית חולפת. מבטאים ויזואליים ברזילאיים: רצפת אריחים הידראוליים, כד מי ליים לצד היין. האם, הילדה מן האונייה (סצנה 17) שגדלה, מדליקה את הנרות; בתה הקטנה מחקה את המחווה לצידה, בידיים עדיין מגושמות.`,
+ emotion:"רוך הלמידה; העברה שמתרחשת לנגד עינינו.",
+ ref:`פראסה אונזה, הרובע היהודי של ריו בשנות השלושים; אור ענברי טרופי, מאוורר תקרה שמסתובב לאט.`},
+{place:"גטו ורשה &middot; 1941",
+ visual:`כמעט מונוכרום. חדר קר, חלונות אטומים בעיתונים. על ארגז, שני גדמי נרות: בלי פמוטים, בלי לחם קלוע, כמעט בלי אוכל. ובכל זאת: האם עושה את המחווה במלואה, ההקפה וכיסוי העיניים; האב מניח את ידו על ראש בנו. שתי הלהבות הזעירות הן הצבע היחיד בתמונה. חיוך קצר עובר ביניהם, התרסה ורוך.`,
+ emotion:"הסצנה השקטה ביותר בסרט. כבוד שאינו נתון למשא ומתן; אור כהתנגדות.",
+ ref:`אין תמונות מפורשות של אלימות, הטרגדיה חיה בחוסר. הפסקול מידלדל לכדי קול אחד מוחזק, כמעט דממה.`},
+{place:"מחנה עקורים, אירופה &middot; 1946",
+ visual:`חדר אוכל מאולתר בצריף. ניצולים בבגדים שנתרמו מרכיבים יחד שולחן ארוך. מישהו מצא שני נרות; מישהו אחר, קמח לחלה קטנה ולא מושלמת. גבר מדליק את הגפרור ביד רועדת. אנשים מביטים זה בזה, ושרים. הצבע חוזר אל התמונה לאט, החל מן הלהבה.`,
+ emotion:"השבת החופשית הראשונה. אבל ותחייה סביב אותו שולחן.",
+ ref:`"הצתת" הצבע מחדש בהדרגה על פני הפריים היא נקודת המפנה הרגשית של הסרט. קולות א‑קפלה לוקחים בחזרה את המנגינה.`},
+{place:"תל אביב, ישראל &middot; 1952",
+ visual:`דירת חלוצים בהירה וצנועה; מאוורר תקרה מסתובב, אור ים תיכוני חזק. הפמוטים, שנפרשו מאותו צעיף של המסע, חוזרים אל השולחן ליד החלון הפתוח. חולצות עבודה פשוטות, פרחי בר בכוס; על השולחן: זיתים, סלט ישראלי טרי, יין מקומי. שבת חילונית, שטופת שמש, שנחגגת בשירים, בלי בית כנסת, עם אותו אור.`,
+ emotion:"הגעה; המסורת נכנסת גם לתפילה וגם לשיר.",
+ ref:`תל אביב של שנות החמישים (באוהאוס לבן, תריסים); שולחנות פשוטים בין ערביים; ניגוד מכוון לאור הדמדומים האירופי של הסצנות הקודמות.`},
+{place:"מוסקבה &middot; 1975, יהודי הדממה",
+ visual:`דירה סובייטית זעירה, וילונות מוגפים, הד ויזואלי ישיר למרתף מתקופת האינקוויזיציה (סצנה 11). נרות דולקים על השולחן; ספר בעל כריכה מזויפת מסתיר סידור. צעירים מקשיבים לזקן שמלמד את הברכה בקול נמוך. בחלון, פתח בווילון מדליף חוט אור אל הרחוב החשוך.`,
+ emotion:"ההיסטוריה חורזת את עצמה: שוב מסתתרים, שוב מתנגדים, שוב מעבירים הלאה.",
+ ref:`תקופת הסרבנים; פלטה סובייטית קרה כנגד הענבר של הנר.`},
+{place:"מטרופולין &middot; בסביבות 2005, עידן המסכים",
+ visual:`רדת ליל שישי, במבט מחוץ לבניין: עשרות חלונות מהבהבים בכחול, טלוויזיות, מסכים, הטלפונים הסלולריים הראשונים. בתוך הדירה, המשפחה מפוזרת, כל אחד מול מסך. השמש נוגעת באופק; המסכים כבים אחד אחד והאור הכחול נכנע לענבר: האם מדליקה נרות והחדר כולו משנה טמפרטורה. מבעד לחלון, גם חלונות כחולים אחרים הופכים לזהובים.`,
+ emotion:"איחוד מחדש בתוך הבית פנימה; מנוחה שמומצאת מחדש לעולם שאינו נכבה לעולם.",
+ ref:`ניגוד כרומטי של כחול קר מול ענבר; כיבוי המסכים כהדלקת הנרות החדשה. הטכנולוגיה משתנה, המחווה נשארת, חוסנה של המסורת בעידן הדיגיטלי.`},
+{place:"תל אביב &middot; יום שישי, אוקטובר 2023, אחרי השבעה באוקטובר",
+ visual:`כיכר ציבורית בין ערביים: שולחן שבת ארוך ערוך לעשרות מקומות, וכיסאות ריקים, ובכל אחד סרט צהוב. נרות מרצדים ברוח בראש השולחן. חיתוך אל תוך בית: ליד שולחן המשפחה, כיסא ריק אחד עם אותו סרט צהוב; האם מדליקה נרות ועושה את המחווה; הקולות שרים בשקט רב יותר, אך אינם מפסיקים. מבעד לחלון, העיר כולה נדלקת, חלון אחר חלון.`,
+ emotion:"אבל ועקשנות של אור; שירה גם בקול רועד.",
+ ref:`שולחן השבת הריק שבכיכר החטופים (תל אביב, 2023) כהתייחסות מן המציאות; סרטים צהובים; ללא תמונות אלימות, ההיעדר אומר הכול. הד ישיר לוורשה (סצנה 19): שוב, האור הוא התשובה.`},
+{place:"סאו פאולו &middot; היום (2026), יום שישי בין ערביים",
+ visual:`דירה בת זמננו, העיר נראית מבעד לחלון. טלפונים מונחים אחד אחד בתוך סל, איש אינו מורה על כך, כולם יודעים. סביב השולחן המשפחה רב־גונית באופן גלוי: גילים, מוצאים ופנים שונים, אורחים מכל רקע. על השולחן שני זוגות הפמוטים, הזוג הספרדי בפיליגרן (סצנה 8) והזוג הפשוט שניצל מאירופה, יחד בפעם הראשונה: שני הענפים של משפחת סצנה 6, מאוחדים מחדש בנישואין, 1,900 שנה לאחר מכן. הסבתא מדליקה; ילדה קטנה על ברכיה עושה איתה את המחווה. האב מברך את ילדיו. צחוק, צלחות שעוברות מיד ליד: שולחן השבת הגלובלי, חלה, דפינה לצד גפילטע פיש, סלטים ים תיכוניים, כל תקופה בסרט מוגשת יחד.`,
+ emotion:"מלאות; כל חוט בסרט נפגש סביב השולחן הזה.",
+ ref:`אור טבעי חמים וקו רקיע שמחשיך; המצלמה מקיפה את השולחן לאט ואוספת פרטים מכל התקופות הקודמות (הרקמה, הצמה, הכסף, כד החרס שמחזיק עכשיו פרחים).`},
+{place:"אותו בניין, מרפסת גג &middot; מוצאי שבת, הבדלה",
+ visual:`שמי כוכבים מעל העיר. המשפחה עומדת במעגל. נר ההבדלה הקלוע נדלק, פתילים רבים ולהבה אחת (תמונת התזה של הסרט: גדילים רבים, אור אחד). יין נמזג עד גדותיו; קופסת הבשמים עוברת מיד ליד, וכל פנים נשענות פנימה אל הריח; ילדים מרימים את ידיהם כדי לראות את האור משתקף על ציפורניהם. הלהבה מכובה ביין, psss, וקו עשן דק עולה.`,
+ emotion:"מתיקות הפרידה; סיום שכבר מבטיח את ההתחלה הבאה.",
+ ref:`יש להשתמש בתמונת השער (שולחן הבדלה על מרפסת, שמי כוכבים, גביע כסף) כהתייחסות הפקה ישירה. הקלוז‑אפ האחרון: עיני הילדה והלהבה משתקפת בהן, אותו מסגור בדיוק כמו בסצנות 5 ו‑15.`},
+{place:"מן המרפסת אל כדור הארץ &middot; קודה",
+ visual:`המצלמה עולה מן המרפסת בטרוולינג אנכי: זוג הלהבות שבחלון הופך לשתי נקודות אור; ואז השכונה, העיר, היבשת, ונקודות אור זהות נדלקות ברחבי הגלובוס עם השקיעה, אזור זמן אחר אזור זמן, כגל של אור שעוקב אחרי הדמדומים סביב כדור הארץ. נקודות האור מסתדרות בעדינות למערך הסמל המנוקד של SMV. כרטיס אחרון על רקע שחור: "Le Dor Va Dor, from generation to generation". לוגו SMV.`,
+ emotion:"שייכות למשהו עצום; הלהבה של בית אחד היא הלהבה של כולם.",
+ ref:`מבט לילי על כדור הארץ; "גל" הנרות שעוקב אחרי קו השקיעה הוא נכון אסטרונומית, השבת מגיעה אזור זמן אחר אזור זמן.`}
+];
+
+function render(lang, scenes, el){
+  const t = T[lang];
+  const durWord = lang==="he" ? "שניות" : "s";
+  let h = `
+    <div class="cover">
+      <div class="kicker">${t.kicker}</div>
+      <h1>${t.title}</h1>
+      <p class="sub">${t.sub}</p>
+      <div class="spec">${t.spec}</div>
+      <div class="site">sixmillionvoices.org</div>
+    </div>
+    <h2>${t.threadH}</h2>
+    <p class="lead">${t.threadLead}</p>
+    <div class="quote-box">${t.pledge}</div>
+    <div class="motifs">` +
+    t.motifs.map((m,i)=>`<div class="motif"><div class="num">${i+1}</div><h3>${m.t}</h3><p>${m.p}</p></div>`).join("") +
+    `</div><div class="specs">` +
+    t.specs.map(x=>`<div class="specrow"><div class="speck">${x.k}</div><div class="specv">${x.v}</div></div>`).join("") +
+    `</div><h2>${t.scenesH}</h2>`;
+
+  t.acts.forEach(a=>{
+    h += `<div class="act"><span class="act-n">${a.n}</span><span class="act-name">${a.name}</span></div>`;
+    for(let n=a.from; n<=a.to; n++){
+      const s = scenes[n-1];
+      h += `<article class="scene">
+        <div class="s-head"><span class="s-n">${n}</span><span class="s-year">${YEARS[lang][n-1]}</span><span class="s-time">${TIMES[n-1]}</span><span class="s-dur">${DURS[n-1]}${lang==="he"?" "+durWord:durWord}</span></div>
+        <div class="f place"><div class="fk">${t.keys.place}</div><div class="fv">${s.place}</div></div>
+        <div class="f"><div class="fk">${t.keys.visual}</div><div class="fv">${s.visual}</div></div>
+        <div class="f emotion"><div class="fk">${t.keys.emotion}</div><div class="fv">${s.emotion}</div></div>
+        <div class="f"><div class="fk">${t.keys.ref}</div><div class="fv">${s.ref}</div></div>
+        ${s.trans ? `<div class="f"><div class="fk">${t.keys.trans}</div><div class="fv">${s.trans}</div></div>` : ""}
+      </article>`;
+    }
+  });
+
+  h += `<h2>${t.notesH}</h2><dl>` +
+    t.notes.map(x=>`<div class="note"><dt>${x.k}</dt><dd>${x.v}</dd></div>`).join("") +
+    `</dl><p class="pull">${t.pull}</p>
+     <div class="foot">SIXMILLIONVOICES.ORG &middot; ONE TABLE ACROSS TIME</div>`;
+
+  el.innerHTML = h;
+}
+
+render("he", HE, document.getElementById("p-he"));
+
+
+const TREE=[
+{n:1,year:"בראשית",place:"הקוסמוס",branch:"trunk",chars:[]},
+{n:2,year:"היום השביעי",place:"העולם כולו",branch:"trunk",chars:[]},
+{n:3,year:"המאה ה‑13 לפנה״ס",place:"מדבר סיני",branch:"trunk",
+ chars:[{code:"—",role:"ידיים אוספות מן",age:"לא מזוהה"}],
+ gap:"התסריט לא אומר אם אלה אבות המשפחה. <b>שאלה לביאה:</b> האם השושלת מתחילה כאן או בירושלים?"},
+{n:4,year:"המאה ה‑1 לפנה״ס",place:"ירושלים, בין ערביים",branch:"trunk",
+ chars:[{code:"W‑1",role:"האם הצעירה",age:"כ‑28",lead:true}]},
+{n:5,year:"המאה ה‑1 לפנה״ס",place:"ירושלים, בתוך הבית",branch:"trunk",
+ chars:[{code:"W‑1",role:"האם",age:"כ‑28"},{code:"M‑1",role:"האב",age:"כ‑32"},{code:"C‑1",role:"הבן",age:"כ‑6",lead:true}],
+ link:"<b>אותו לילה של סצנה 4.</b> אותן דמויות בדיוק. כאן נולד <b>קלוז־אפ העיניים</b> — הצופה לומד את הסימן המשפחתי."},
+{n:6,year:"70 לספירה",place:"ירושלים, החורבן",branch:"trunk",
+ chars:[{code:"W‑2",role:"האם הנמלטת",age:"כ‑30",lead:true}],
+ gap:"התסריט כותב <b>״נכדי סצנה 5״</b>, אבל הפער הוא 70–170 שנה. זה ארבעה־חמישה דורות, לא נכדים. <b>צריך תיקון או ניסוח אחר.</b>"},
+{n:7,year:"המאה ה‑5",place:"בבל, גדות הפרת",branch:"sepharad",
+ chars:[{code:"—",role:"חכמים וילדים",age:"לא מזוהה"}],
+ gap:"סצנה 8 קוראת לזה <b>״המשפחה הבבלית״</b>, אז זה צומת בשושלת — אבל אין בו אף דמות מוגדרת."},
+{n:8,year:"המאה ה‑12",place:"קורדובה, תור הזהב",branch:"sepharad",
+ chars:[{code:"W‑3",role:"הסבתא הספרדייה",age:"כ‑65",lead:true}],
+ link:"<b>האמירה המפורשת היחידה על דמיון בתסריט:</b> ״צאצאית המשפחה הבבלית, <b>עם אותן פנים</b>״. כאן נולדים פמוטי הכסף."},
+{n:9,year:"המאה ה‑13",place:"חבל הריין",branch:"ashkenaz",
+ chars:[],
+ gap:"<b>הענף האשכנזי נולד בסצנה הזאת — ואין בה אף דמות.</b> מי מדליק את היודנשטרן? חור שצריך למלא."},
+{n:10,year:"1492",place:"טולדו, הגירוש",branch:"sepharad",
+ chars:[{code:"W‑4",role:"הילדה שמביטה לאחור",age:"כ‑8",lead:true}]},
+{n:11,year:"1540",place:"ליסבון, מרתף האנוסים",branch:"sepharad",
+ chars:[{code:"W‑4",role:"האם (או הסבתא)",age:"כ‑56"},{code:"C‑2",role:"הבת בתריס",age:"כ‑12",lead:true}],
+ link:"<b>חוליה תוך־חיים שהתסריט לא כותב:</b> 48 שנה מ‑1492. הילדה שהביטה לאחור בטולדו יכולה להיות <b>אותה אישה כאן</b>, בת 56."},
+{n:12,year:"המאה ה‑17",place:"סלוניקי, מרפסת מעל האגאי",branch:"sepharad",
+ chars:[{code:"—",role:"שלושה דורות שרים",age:"לא מזוהה"}]},
+{n:13,year:"1800",place:"פאס, חצר ריאד",branch:"sepharad",
+ chars:[{code:"W‑5",role:"הסבתא המברכת",age:"כ‑68",lead:true}],
+ link:"<b>שים לב:</b> כאן <b>אישה</b> מברכת יד על ראש הילדים, לא גבר. בסצנות 5, 19 ו‑25 זה האב. מוטיב הברכה לא שייך למגדר אחד."},
+{n:14,year:"1840",place:"שטעטל, יום שישי אחה״צ",branch:"ashkenaz",
+ chars:[{code:"C‑3",role:"הנער עם סיר הצ׳ולנט",age:"כ‑10",lead:true}]},
+{n:15,year:"1840",place:"אותו שטעטל, ליל שבת",branch:"ashkenaz",
+ chars:[{code:"W‑6",role:"האם במטפחת",age:"כ‑36"},{code:"M‑2",role:"האב ששר",age:"כ‑40"},{code:"C‑3",role:"הנער",age:"כ‑10",lead:true}],
+ link:"<b>אותו ערב של סצנה 14.</b> אותו נער. <b>קלוז־אפ העיניים חוזר</b> — 1,900 שנה אחרי סצנה 5, אותו מסגור בדיוק."},
+{n:16,year:"1900",place:"וינה, סלון בורגני",branch:"ashkenaz",
+ chars:[{code:"W‑7",role:"האם הצעירה",age:"כ‑30"},{code:"C‑3",role:"הסב המחייך",age:"כ‑68",lead:true}],
+ link:"<b>חוליה שהתסריט לא כותב:</b> 60 שנה מ‑1840. <b>הנער מהשטעטל הוא הסב כאן.</b> התסריט אומר ״אותה משפחה״ — וזה בדיוק מי."},
+{n:17,year:"1905",place:"נמל המבורג ← אונייה",branch:"ashkenaz",
+ chars:[{code:"W‑7",role:"האישה עם הגפרור",age:"כ‑35"},{code:"W‑8",role:"הילדה על הסיפון",age:"כ‑8",lead:true}],
+ link:"<b>5 שנים מווינה.</b> אותם אנשים. הפמוטים נעטפים — <b>שיקוף מדויק של תנועת 1492</b>."},
+{n:18,year:"1935",place:"פראסה אונזה, ריו",branch:"ashkenaz",
+ chars:[{code:"W‑8",role:"האם",age:"כ‑38"},{code:"W‑9",role:"הבת הקטנה",age:"כ‑5",lead:true}],
+ link:"<b>כתוב במפורש בתסריט:</b> האם כאן היא <b>הילדה מהאונייה</b>, בוגרת. אותה דמות, שני גילים."},
+{n:19,year:"1941",place:"גטו ורשה",branch:"ashkenaz",
+ chars:[{code:"W‑10",role:"האם",age:"כ‑35"},{code:"M‑3",role:"האב",age:"כ‑38"},{code:"C‑4",role:"הבן",age:"כ‑8",lead:true}],
+ gap:"<b>חור:</b> מי שנסע לריו ב‑1905 לא היה בוורשה ב‑1941. <b>מה הקשר בין שני הקווים?</b> התסריט לא אומר."},
+{n:20,year:"1946",place:"מחנה עקורים, אירופה",branch:"ashkenaz",
+ chars:[{code:"C‑4",role:"הניצול שמדליק",age:"כ‑13",lead:true}],
+ link:"<b>חוליה שהתסריט לא כותב, והיא החזקה בסרט:</b> 5 שנים מוורשה. <b>הבן מסצנה 19 הוא מי שמדליק כאן.</b> אותו ילד, אחרי."},
+{n:21,year:"1952",place:"תל אביב",branch:"ashkenaz",
+ chars:[{code:"C‑4",role:"מי שמניח את הפמוטים",age:"כ‑19",lead:true}],
+ gap:"<b>בטקסט אין אף דמות — רק הפמוטים.</b> וכתוב ״מאותו צעיף של המסע״, אבל צעיף המסע נסע לריו. <b>מי הביא אותם לכאן?</b> החוליה מ‑1946 פותרת את זה."},
+{n:22,year:"1975",place:"מוסקבה",branch:"ashkenaz",
+ chars:[{code:"M‑4",role:"הזקן שמלמד",age:"כ‑75",lead:true}],
+ gap:"<b>קו נפרד.</b> אין בתסריט קשר בין מוסקבה לשאר. ענף שנשאר מאחורי מסך הברזל?"},
+{n:23,year:"2005",place:"מטרופולין, עידן המסכים",branch:"ashkenaz",
+ chars:[{code:"W‑11",role:"האם שמדליקה",age:"כ‑40",lead:true}]},
+{n:24,year:"2023",place:"תל אביב, אוקטובר",branch:"ashkenaz",
+ chars:[{code:"W‑11",role:"האם",age:"כ‑58",lead:true}],
+ link:"<b>18 שנה.</b> יכולה להיות אותה אישה."},
+{n:25,year:"2026",place:"סאו פאולו",branch:"merge",
+ chars:[{code:"W‑9",role:"הסבתא שמדליקה",age:"כ‑96",lead:true},{code:"M‑5",role:"האב שמברך",age:"כ‑45"},{code:"W‑12",role:"הילדה על הברכיים",age:"כ‑5",lead:true}],
+ link:"<b>שני הענפים נפגשים.</b> שני זוגות הפמוטים על אותו שולחן. <b>והקשת הארוכה בסרט:</b> הבת הקטנה מריו 1935 היא הסבתא כאן — 91 שנה, אישה אחת, שלוש סצנות."},
+{n:26,year:"2026",place:"מרפסת גג, הבדלה",branch:"merge",
+ chars:[{code:"W‑12",role:"הילדה",age:"כ‑5",lead:true}],
+ link:"<b>אותו ערב של סצנה 25.</b> <b>קלוז־אפ העיניים בפעם השלישית</b> — התשלום של מה שנלמד בסצנה 5."},
+{n:27,year:"לדור ודור",place:"מהמרפסת אל כדור הארץ",branch:"merge",chars:[]}
+];
+
+const P=n=>`assets/scenes/scene-${String(n).padStart(2,"0")}`;
+const BR={trunk:"גזע אחד",sepharad:"ספרד",ashkenaz:"אשכנז",merge:"איחוד"};
+const REFKEYS=["לבוש","נרות ומקור אור","כלים ואוכל","מקום ואדריכלות"];
+
+function renderTree(el){
+  let h=`<div class="tree-head">
+    <h2>עץ המשפחה</h2>
+    <p>הדמויות הראשיות בלבד, סצנה אחר סצנה, מבראשית ועד היום. כל משבצת ריקה ממתינה לתמונה. הקווים הכתומים הם קשרים שבהם <b>אותו אדם</b> ממשיך מסצנה לסצנה; הקווים האדומים הם חורים בתסריט שצריך לסגור מול ביאה.<br><br><b>המשבצות מתמלאות מעצמן.</b> מעלים קובץ בשם הנכון לתוך <code>assets/scenes/scene-NN/</code>, מרעננים את הדף, והתמונה נכנסת למקומה. פירוט השמות ב‑README של כל סצנה.</p>
+    <div class="branchkey">
+      <span><i class="bdot" style="background:var(--dim)"></i>גזע אחד, עד החורבן</span>
+      <span><i class="bdot" style="background:#B5722B"></i>ענף ספרד</span>
+      <span><i class="bdot" style="background:#5C7391"></i>ענף אשכנז</span>
+      <span><i class="bdot" style="background:var(--accent)"></i>איחוד, 2026</span>
+    </div>
+  </div>`;
+
+  TREE.forEach(nd=>{
+    if(nd.n===7) h+=`<div class="splitbar"><b>כאן הלהבה מתפצלת.</b> מסצנה 6 ואילך שני ענפים נעים במקביל, ונפגשים שוב רק בסצנה 25, אחרי 1,900 שנה.</div>`;
+    if(nd.n===25) h+=`<div class="splitbar"><b>כאן הענפים נסגרים.</b> נישואין מאחדים את שני הקווים, ושני זוגות הפמוטים עומדים יחד לראשונה.</div>`;
+
+    h+=`<div class="node ${nd.branch}">
+      <div class="nhead">
+        <span class="nyear">${nd.year}</span>
+        <span class="nscene">סצנה ${nd.n}</span>
+        <span class="nplace">${nd.place}</span>
+        <span class="nbranch ${nd.branch}">${BR[nd.branch]}</span>
+      </div>`;
+
+    if(nd.chars.length){
+      h+='<div class="chars">'+nd.chars.map(c=>`
+        <div class="ch${c.lead?" lead":""}">
+          <div class="slot">
+            ${c.code==="—"?"":`<img src="${P(nd.n)}/2-elements/${c.code}.png" alt="" onload="this.closest('.slot').classList.add('filled')" onerror="this.remove()">`}
+            <span class="ic">◻</span><span class="lb">תמונה</span>
+          </div>
+          <div class="meta">
+            <div class="role">${c.role}</div>
+            <div class="age">${c.age}</div>
+            <div class="code">${c.code}</div>
+          </div>
+        </div>`).join("")+'</div>';
+    } else {
+      h+='<div class="nochar">אין דמויות בסצנה זו.</div>';
+    }
+
+    if(nd.link) h+=`<div class="link">${nd.link}</div>`;
+    if(nd.gap)  h+=`<div class="link gap">${nd.gap}</div>`;
+
+    if(nd.chars.length){
+      const d=P(nd.n);
+      h+=`<div class="assets">
+        <div class="as"><div class="k">רפרנסים</div><div class="thumbs">`+
+          [1,2,3,4].map(i=>`<span class="tb"><img src="${d}/1-references/ref-${i}.jpg" alt="" onload="this.closest('.tb').classList.add('filled')" onerror="this.closest('.tb').remove()"></span>`).join("")+
+        `<span class="empty-hint">ref-1.jpg …</span></div></div>
+        <div class="as"><div class="k">רקע</div><div class="thumbs">
+          <span class="tb wide"><img src="${d}/2.5-background/background.png" alt="" onload="this.closest('.tb').classList.add('filled')" onerror="this.closest('.tb').remove()"></span>
+          <span class="empty-hint">background.png</span></div></div>
+        <div class="as"><div class="k">חפצים</div><div class="thumbs">`+
+          [1,2,3,4,5,6].map(i=>`<span class="tb"><img src="${d}/2-elements/prop-${i}.png" alt="" onload="this.closest('.tb').classList.add('filled')" onerror="this.closest('.tb').remove()"></span>`).join("")+
+        `<span class="empty-hint">prop-1.png …</span></div></div>
+        <div class="as"><div class="k">סרטון סופי</div><div class="thumbs">
+          <video class="vid" src="${d}/3-video-after-ai/final.mp4" controls preload="metadata" onloadedmetadata="this.classList.add('filled')" onerror="this.remove()"></video>
+          <span class="empty-hint">final.mp4</span></div></div>
+      </div>`;
+    }
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+
+const RES=[
+{sc:"3",y:"המאה ה‑13 לפנה״ס",pl:"מדבר סיני",v:"ok",vt:"התסריט צודק",
+ f:["<span class='yes'>אין נר שבת בתקופה הזאת — ואסור להוסיף אחד.</span> הדלקת נרות היא תקנה רבנית; המקור הראשון הוא משנה שבת פרק ב׳, שנערכה בערך ב‑200 לספירה. פער של כ‑1,400 שנה.",
+     "מדורות פתוחות כמו שכתוב. <b>הדלק צריך לקרוא כשיחים, קוצים וגללים</b> — בסיני אין עצי הסקה.",
+     "<span class='no'>הכיסוי על המן לא נמצא בשמות ט״ז.</span> מטלית צמר או שיער עיזים לא צבועה, לא כיסוי חלה מודרני.",
+     "<b>הערת יושר:</b> אין ממצא ארכיאולוגי למחנה ישראלי בסיני. כל רפרנס כאן הוא אנלוגיה מאתרים כנעניים ומצריים."],
+ im:[["sinai-camp-fire-generated.jpg","<b>מחנה במדבר בשקיעה — מדורה של קוצים וגללים, אוהלים משיער עיזים, בלי אנשים.</b> נוצר מהמחקר המאומת (Higgsfield)","free","y"],["met-34-126-62-lachish-lamp.jpg","לכיש, מאה 8–7 לפנה״ס — הצורה שורדת ללא שינוי. <b>CC0</b>","free","y"]]},
+
+{sc:"4–6",y:"מאה 1 לפנה״ס – 70",pl:"ירושלים",v:"bad",vt:"שתי פתילות — אנכרוניזם",
+ f:["<span class='no'>״שתי הפתילות״ מוקדמות ב‑1,200 שנה.</span> משנה שבת פרק ב׳ מחוקקת חומרים, לעולם לא מספר — והשם תמיד ביחיד: <b>״בהדלקת הנר״</b> (ב׳ ו׳), <b>״הדליקו את הנר״</b> (ב׳ ז׳).",
+     "המקור הראשון לשניים: <b>ראבי״ה, בונן, בערך 1200</b> — חבל הריין. חידוש אשכנזי שהספרדים אימצו רק אחר כך.",
+     "<b>והארכיאולוגיה מסכימה:</b> חמישה פריטים נבדקו, כולל שברים מחפירות רחבת הכותל עם מספר רשות העתיקות בדיו על החרס. <b>לכולם זרבובית אחת וחור פתילה אחד.</b>",
+     "<span class='yes'>אישה מדליקה — מאומת</span> (משנה שבת ב׳ ו׳). והמנהג במאה ה‑1 מאומת מבחוץ אצל יוספוס ואצל פרסיוס הרומי.",
+     "<b>מתנה לסצנה 6:</b> משנה שבת ב׳ ה׳ מתירה <b>לכבות</b> את הנר מפני גויים או ליסטים. אם שמכבה כשרומא מתקרבת היא הלכה אותנטית — וחזקה יותר מלהגן על להבה בבד."],
+ im:[["carlos-X0027-herodian-lamp.jpg","נר הרודיאני קלאסי. פתח מילוי מרכזי, <b>זרבובית אחת, חור פתילה אחד</b>","edu","y"],["carlos-X0188-herodian-lamp.jpg","נר הרודיאני שני, חרס אדמדם","edu","y"]]},
+
+{sc:"7",y:"המאה ה‑5",pl:"בבל",v:"mix",vt:"נכון, עם שני תיקונים",
+ f:["<span class='yes'>הדלקה ואז שולחן — מאומת, וזו ממש ההלכה.</span> רבא בבלי שבת כ״ה ע״ב: חובה לאכול לאור הנר.",
+     "<span class='no'>המגילות אנכרוניסטיות.</span> התלמוד הבבלי במאה ה‑5 לא היה כתוב. התיקון: <b>מגילות תורה לילדים</b> (גיטין ס׳ ע״א), והמבוגרים <b>מדקלמים מהזיכרון</b>.",
+     "<span class='no'>״נרות רבים״</span> — החובה היא נר אחד. כמה מנורות שמאירות חדר בסדר; זוג טקסי לא.",
+     "<b>אין מנורת שבת יהודית מזוהה מבבל.</b> היהודים השתמשו בכלי שכניהם. אסור ״לייהד״ את המנורה.",
+     "<b>לפרומפט:</b> שמן שומשום (לא זית — זה מוצר ארץ‑ישראלי), פתילות פשתן, חרס. <b>אפס נרות שעווה</b> — אסורים במשנה שבת ב׳ א׳."],
+ im:[["met-32-150-163-ctesiphon-house-lamp.jpg","מנורת חרס ססאנית <b>שנחפרה מבית מגורים בקטסיפון</b> — זו המנורה שעומדת על השולחן. <b>CC0</b>","free","y"],["met-32-150-183-ctesiphon-sooted.jpg","הגרסה הגדולה — <b>פיח שחור כבד סביב הנחיר</b>, עדות לבערה. <b>CC0</b>","free","y"]]},
+
+{sc:"8",y:"המאה ה‑12",pl:"קורדובה",v:"bad",vt:"שלוש טעויות",
+ f:["<span class='no'>פמוטי כסף מוקדמים ב‑300–400 שנה.</span> <b>הרמב״ם, יליד קורדובה 1138</b>, פוסק בהלכות שבת פרק ה׳ כולו במונחי שמנים ופתילות. המנורה היהודית העתיקה ביותר בעולם היא מהמאה ה‑14, גרמנית, <b>ותלויה</b>.",
+     "<span class='no'>התאריך הפוך.</span> תור הזהב הוא אמצע המאה ה‑10. ב‑<b>1148 המווחידון כובשים את קורדובה</b> — להתאסלם, לעזוב או למות. משפחת הרמב״ם חיה כאנוסים.",
+     "<span class='no'>״אזולז׳ו״ שגוי</span> כמונח וכחומר. פנים בית במאה ה‑12: <b>גבס מגולף, לבנים, טיח צבוע, קשתות פרסה</b> — בלי אריחים צבעוניים.",
+     "<b>הפיליגרן נשאר</b> — רק מעבירים אותו מהפמוט לגוף המנורה או לשרשרת.",
+     "<b>מלכודת:</b> בית הכנסת של קורדובה שמצלמים היום נבנה ב‑1315, תחת שלטון נוצרי."],
+ im:[["met-467751-spanish-silver-15c.jpg","","free","y"]]},
+
+{sc:"9",y:"המאה ה‑13",pl:"חבל הריין",v:"mix",vt:"החפץ נכון, הפרטים לא",
+ f:["<span class='yes'>מנורת הכוכב התלויה מאומתת</span> מהמאה ה‑12 באזור הנכון.",
+     "<span class='no'>״יודנשטרן״ היא מילה מהמאה ה‑16.</span> בימי הביניים זו הייתה תאורה אירופית רגילה, גם בבתים נוצריים.",
+     "<span class='no'>מנגנון ההנמכה המשונן הוא מהמאה ה‑18.</span> ב‑1250 מורידים מוו או משרשרת.",
+     "<b>ברונזה, לא כסף. וקטנה</b> — 17 עד 35 ס״מ. לא נברשת.",
+     "<span class='no'>החלה הקלועה מאוחרת ב‑200 שנה</span> — קליעה מתחילה במאה ה‑15 באוסטריה ובדרום גרמניה. והמילה ״חלה״ ללחם מופיעה בערך ב‑1470. <b>שתי כיכרות הן תלמודיות</b>, אז ״בפעם הראשונה״ הפוך באלף שנה.",
+     "<b>הצעה:</b> ״שתי כיכרות עגולות פשוטות תחת מטלית פשתן״, ולהעביר את רגע הקליעה לסצנה אוסטרית במאה ה‑15."],
+ im:[["london-1374-hanging-star-lamp-12c.jpg","מנורת כוכב תלויה, צפון אירופה, מאה 12. שש זרבוביות, מגדל פתוח, <b>וו תלייה — בלי מסילה</b>, וקערת טפטוף מתחת","clear","y"]]},
+
+{sc:"10",y:"1492",pl:"טולדו",v:"bad",vt:"נמל + פמוטים",
+ f:["<span class='no'>לטולדו אין נמל.</span> היא יושבת 529 מ׳ מעל פני הים, יותר מ‑300 ק״מ מכל חוף. הטחו שָיִיט רק בקטע הפורטוגזי.",
+     "<b>ומה שקרה מרגש יותר:</b> קהילת טולדו יצאה <b>ביבשה לפורטוגל</b>. כ‑100,000 יהודי קסטיליה חצו את הגבול; ז׳ואאו השני גבה שמונה קרוזדוס לראש. <b>הגולים האחרונים יצאו בתשעה באב.</b>",
+     "<b>התמונה הנכונה:</b> הדרך משער ביסאגרה, הערוץ והגשר למטה, שיירות פרדות מערבה.",
+     "<span class='no'>פמוטי כסף אנכרוניסטיים</span> — שפת המקורות אחידה: <i>candil</i>, <i>torcidas</i>, <i>azeite</i>.",
+     "<span class='yes'>אבל המעשה נכון:</span> צו אלהמברה אסר להוציא זהב וכסף — ובדיוק לכן משפחות הטמינו כסף בקיץ 1492. <b>עוטפים את המנורה התלויה שמורדת מהשרשרת, או גביע קידוש.</b>"],
+ im:[["met-467751-spanish-silver-15c.jpg","","free","y"]]},
+
+{sc:"11",y:"1540",pl:"ליסבון",v:"mix",vt:"ההסתרה מאומתת, הכד חלש",
+ f:["<span class='yes'>ההסתרה מתועדת היטב.</span> מנורות שמן שנוקו וקיבלו פתילות חדשות בשישי, נדלקו במרתף מאחורי דלת סגורה, <b>ונשארו לבעור עד שכבו מעצמן</b>.",
+     "<b>משפט איזבל לופס, טולדו 1516–1518:</b> משרתת העידה על מרתף עם מנורות תלויות שלא כיבו אותן. איזבל נשרפה על המוקד ב‑30.11.1518. ומגוארדה 1543: <i>״limpavam os candeeiros, pondo‑lhes novas torcidas״</i>.",
+     "<span class='no'>אבל ״נרות בכד חרס״ נשען על בסיס רעוע</span> — מגיע מגיטליץ 1996 דרך קארו בארוחה 1961. התיעוד המוצק הוא <b>האתנוגרפיה של בלמונטה, שמואל שוורץ 1917</b> — מאה ה‑20 שמוקרנת אחורה.",
+     "<b>נקודה הלכתית שמחדדת:</b> <b>אסור לכבות את האור.</b> כיסוי שיחנוק אותו שגוי — כד פתוח מלמעלה או חדר סגור זה הנכון.",
+     "<span class='yes'>העיתוי מושלם:</span> בית הדין בליסבון הוקם 16.7.1540, האוטו‑דה‑פה הראשון 26.9.1540.",
+     "<b>אזהרה:</b> הסיפור על ״לוסיאנה לומברוזו מאווילה 1715״ הוא מקור דברני בלי אסמכתא. <b>לא לשים על המסך.</b>"],
+ im:[["alhambra-119028-candil-pie-alto-late15-16c.jpg","<b>קנדיל דה פיה אלטו מודחאר, מחצית שנייה של המאה 15 עד מחצית ראשונה של המאה 16</b> — בול בחלון של 1540. הצורה המדויקת","clear","y"]]},
+
+{sc:"12",y:"המאה ה‑17",pl:"סלוניקי",v:"bad",vt:"הצורה שגויה, לא המתכת",
+ f:["<span class='no'>זוג עומד על השולחן שגוי.</span> הנכון: <b>מנורת שמן תלויה מעל השולחן</b>. שמן זית — שולחן ערוך או״ח רס״ד ו׳, ויוסף קארו לימד בסלוניקי לפני צפת.",
+     "<span class='yes'>אבל כסף בסדר גמור</span> — למוזיאון היהודי של יוון יש מנורה תלויה מכסף. <b>האנכרוניזם הוא הצורה, לא המתכת.</b>",
+     "<b>תיקון שמשפר את הרגע:</b> החפץ שיוצא מהתיבה <b>חוזר לוו שלו ותלוי מעל השולחן</b>, ובוער כל הלילה.",
+     "<b>ומתאים בול לסלוניקי:</b> זו הייתה חממה קבלית — שבתי צבי הכריז שם על עצמו כמשיח. <b>מנורה מרובת פתילות או בת שבעה אורות</b> מבוססת יותר משני נרות.",
+     "<span class='no'>אוכל:</span> פסטליקוס במילוי <b>בשר וצנוברים</b>, לא תפוחי אדמה. ועל שולחן עות׳מאני של המאה ה‑17: <b>בלי עגבניות, תפוחי אדמה, פלפלים ותירס.</b>",
+     "<b>אין מנורה מסלוניקי מהמאה ה‑17 בשום אוסף.</b> התרבות החומרית הושמדה פעמיים — שרפת 1917 וגירוש 1943."],
+ im:[["met-467751-spanish-silver-15c.jpg","","free","y"]]},
+
+{sc:"13",y:"1800",pl:"פאס",v:"bad",vt:"קנדיל תלוי, לא פמוטים",
+ f:["<span class='no'>לא פמוטים — קנדיל פליז שתלוי או נתלה על הקיר.</span> מנהגי יהדות מרוקו: <b>״מצווה מן המובחר שהאם תדליק נרות שמן״</b>.",
+     "<b>אנטומיית הקנדיל:</b> מגש שמן עם זרבוביות, גזע מגולף, <b>גב פתוח בצורת אגס עם ציפורים בתבליט</b>, ומוט או וו תלייה. <b>פליז</b> — ויהודים היו חרשי המתכת של מרוקו, ופאס הייתה מרכז הפליז.",
+     "<span class='yes'>דפינה נכון</span> לפאס. <span class='yes'>זליג׳ נכון</span> — פאס היא בירת הזליג׳.",
+     "<span class='no'>״משרבייה״ שגוי למרוקו</span> — צורה מזרחית. הנכון: <b>חצר פתוחה לשמיים, סורגי ארז מגולפים, גבס מנוקב</b>.",
+     "<span class='no'>תפוחי אדמה לא היו בדפינה של 1800</span> — חיטה, חומוס, פול, ביצים, תמרים.",
+     "<b>ללבוש:</b> הלבוש הטקסי בפאס הוא <b>כְּסְוָוה אל‑כְּבִּירָה</b>, קטיפה ברקמת חוטי זהב."],
+ im:[["mahj-kandil-morocco-hero.jpg","קנדיל מרוקאי, פליז. גב מנוקב בצורת אגס, חלון בקשת פרסה, <b>שש ציפורים בתבליט</b>, ומוט תלייה","clear","y"]]},
+
+{sc:"14–15",y:"1840",pl:"שטעטל",v:"mix",vt:"הפמוטים נכונים — אבל פליז",
+ f:["<span class='yes'>זוג פמוטים נכון.</span> הצורה האזורית: גזע בלאסטר, בסיס כיפתי על כן מרובע, ו<b>״תחתוניות״ — שכבות עלים משוננים לאורך הגזע</b>.",
+     "<span class='no'>אבל פליז, לא כסף.</span> פליז הוא החומר של בית שטעטל רגיל; כסף הוא עירוני ואמיד.",
+     "<b>מלכודת תיארוך:</b> פראז׳ה הוורשאי התחיל לייצר <b>אלפקה רק ב‑1849</b> — תשע שנים אחרי הסצנה.",
+     "<span class='no'>״עשרות זוגות זהים״ — טקסטורה שגויה.</span> הרמ״א: בפולין נהגו <b>שלושה או ארבעה</b>. כדאי לגוון מחלון לחלון.",
+     "<span class='no'>ובעיית החלון:</span> הרמ״א או״ח רס״ג י׳ — <b>עיקר ההדלקה על השולחן</b>. נרות בחלון זה <b>חנוכה</b>. <b>התיקון:</b> נרות על שולחנות <b>שנראים מבעד לחלונות</b>. אותה תמונה, נכונה.",
+     "<span class='yes'>גפילטע פיש נכון.</span> <b>אבל צ׳ולנט הוא צהרי שבת</b>, לא ליל שישי."],
+ im:[["imj-371064-poland-brass-BEST.jpg","פמוטי <b>פליז</b>, פולין. גזע בלאסטר, מגש טפטוף משונן, בסיס כיפתי על כן מרובע — <b>המודל לבית שטעטל</b>","edu","y"]]},
+
+{sc:"16",y:"1900",pl:"וינה",v:"mix",vt:"פמוטים נכונים, האווירה לא",
+ f:["<span class='yes'>זוג פמוטי כסף מסותת נכון</span> לבית בורגני מרכז‑אירופי, וכבר היה ירושה ב‑1900.",
+     "<span class='no'>״קלימט באווירה״ מתנגש עם התיעוד.</span> הסלון היהודי הווינאי המאומת הוא <b>היסטוריציסטי/ביידרמאייר</b> — עץ כהה, מראה מסולסלת, נברשת פליז. קלימט ייקרא כאנכרוניזם של <b>מעמד</b>.",
+     "<span class='no'>״שידת שיש״ לא מתועדת</span> — ובצילום המאומת <b>הפמוטים על השולחן</b>, לא על השידה. מתיישב עם פסק הרמ״א.",
+     "<span class='no'>כפפות הן לבוש רחוב</span>, מסירים בכניסה. לא מנהג שבת.",
+     "<b>בונוס:</b> בצילום יש <b>ארבעה פמוטים</b>, לא שניים."],
+ im:[["imj-371064-poland-brass-BEST.jpg","","free","y"]]},
+
+{sc:"17",y:"1905",pl:"נמל המבורג",v:"bad",vt:"הנר על הסיפון לא מתועד",
+ f:["<span class='no'>אין תיעוד להדלקה על סיפון.</span> דוח ועדת ההגירה האמריקאית (1911) — <b>אפס אזכורים</b> של שבת, נר או פנס. הסיפון התחתון היה <b>מואר בחשמל</b>. ולהבה גלויה על סיפון צפוף היא הדבר שחברת ספנות לא הייתה מרשה.",
+     "<span class='yes'>ומה שכן מתועד ומצולם: שבת ביבשה</span>, בבתי המחסה של <i>הילפספריין</i> לאורך המסלול.",
+     "<b>״חגיגת שבת במקלט הרוסי, שטטין״ 1907:</b> שולחן ארוך תחת מפה לבנה, זוג נרות דקים, מנורת נפט תלויה, שלטים בעברית ויידיש, גבר עם כוס קידוש, <b>ואישה מימין, ראשה מכוסה, ידיה מורמות אל פניה</b>. אותו מסע, אותן שנים, ומצולם באמת.",
+     "<b>הערה:</b> צילומי אולמות המהגרים הם <b>1909</b>, לא 1905. ו״גווני ספיה״ הם מוסכמת הדפסה — המקור שחור‑לבן."],
+ im:[["ushmm-1992-8-28-ossowski-pair-escaped-berlin.jpg","<b>זוג הפמוטים של הרב אוסובסקי, שיצאו מברלין ב-1938.</b> פח מוטבע, ארבע קומות, צווארוני מטרייה. <b>ללא הגבלות</b>","free","y"],["match-flame-CCBYSA.jpg","<b>גפרור דולק</b> — ״אישה מדליקה גפרור ומגינה על הלהבה בגופה״. להבה של 2–3 ס״מ, אור חם על היד בלבד. <b>CC BY-SA</b>","free","y"]]},
+
+{sc:"18",y:"1935",pl:"פראסה אונזה, ריו",v:"mix",vt:"נכון — אבל חצי אמת",
+ f:["<b>פראסה אונזה לא הייתה ״הרובע היהודי״. היא הייתה <span class='yes'>הרובע האפרו‑יהודי</span>.</b> באותם בניינים — משפחות דוברות יידיש ותושבים שחורים מבאהיה. גם שכונת המהגרים היהודית <b>וגם ערש הסמבה</b>.",
+     "<span class='yes'>חשמליות מאומתות.</span> <span class='yes'>אריחים הידראוליים</span> היו בשיאם בריו של שנות ה‑30.",
+     "<b>טיפולוגיית בית השורה</b> — חנות למטה, מגורים למעלה — היא בדיוק הסיבה שהמהגרים התרכזו שם.",
+     "<span class='no'>״כד מי ליים ליד היין״ לא אומת.</span> אין מקור לזה כפריט על שולחן שבת ברזילאי.",
+     "<b>העיתוי בטוח:</b> פראסה אונזה נהרסה למען שדרת ורגס בין 1941 ל‑1944. ב‑1935 השכונה שלמה."],
+ im:[["imj-371064-poland-brass-BEST.jpg","","free","y"]]},
+
+{sc:"19",y:"1941",pl:"גטו ורשה",v:"mix",vt:"מדויק — עם פרט טוב יותר",
+ f:["<span class='yes'>שמירת שבת בגטו מתועדת ברמה הגבוהה ביותר.</span> ארכיון רינגלבלום נקרא <b>עונג שבת</b> כי הצוות נפגש בשבתות. ורבי קלונימוס קלמן שפירא, האדמו״ר מפיאסצנה, <b>קיים טיש בכל שבת בגטו</b>.",
+     "<b>אבל התסריט מחמיר מדי.</b> בצילום המתועד רואים <b>תערובת: נר אחד בפמוט פליז אמיתי, ונר שני תקוע בכוס שתייה.</b>",
+     "<b>וזה חזק יותר</b> — בית שנפשט חתיכה‑חתיכה קורא אחרת מבית שמעולם לא היה בו כלום.",
+     "<b>אזהרה:</b> יש צילום ביד ושם שמסומן ״גטו ורשה 1941״ ועולה בכל חיפוש — <b>והוא לא קשור לשבת.</b> ילדים יחפים על מדרכה. לא למשוך אותו לפי הכיתוב."],
+ im:[["yadvashem-33-1785-woman-lighting.jpg","<b>נר אחד בפמוט פליז, נר שני בכוס שתייה.</b> בית שנפשט חתיכה־חתיכה","clear","y"]]},
+
+{sc:"20",y:"1946",pl:"מחנה עקורים",v:"ok",vt:"מדויק ומאומת",
+ f:["<span class='yes'>התחייה הדתית במחנות מתועדת.</span> בלנדסברג פעלה <b>אגודה לשמירת שבת</b>, וייצור בשר כשר התחיל בתחילת 1946.",
+     "<b>והפרט המדויק:</b> בצילום מעברסברג — <b>נר אחד בכוס שתייה, נר שני תחוב בפחית שימורים</b>, ובקבוק <i>Streit's</i> ממשלוחי הסיוע האמריקאיים. <b>לוגיקת הפרופ מתועדת, לא הומצאה.</b>",
+     "<b>ניואנס:</b> קמח הגיע דרך מנות UNRRA ורוב המחנות הפעילו מאפייה — אז החלה הייתה לרוב <b>לחם מאפיית המחנה שעוצב לשבת</b>."],
+ im:[["ushmm-59483-ebelsberg-tin-can-candle.jpg","","free","y"]]},
+
+{sc:"21",y:"1952",pl:"תל אביב",v:"mix",vt:"האוכל נכון, שניים לא",
+ f:["<span class='yes'>האוכל הוא הבסיס ההיסטורי הכי חזק בתסריט.</span> ירקות טריים מקומיים, זיתים, יין כרמל — כולם סבירים בצנע.",
+     "<span class='no'>״סלט ישראלי״ שם אנכרוניסטי.</span> ב‑1952 קראו לזה <b>סלט קצוץ</b>. ״סלט ישראלי״ הוא מטבע לשון של הגולה.",
+     "<span class='no'>מאוורר התקרה לא סביר.</span> לרוב הבתים לא היה מקרר ולא תנור — <b>סיר הפלא היה סטנדרט</b> — והיו הפסקות חשמל. <b>הנכון: תריסים, חלון פתוח, תקרה גבוהה.</b>",
+     "<b>והפריט הכי טוב במחקר כולו:</b> אקוורל של <b>אלברט דב סיגל</b>, ניצול שהגיע באניית <i>פאן יורק</i>, צייר את שולחן השבת של עצמו בישראל. <b>וספה מתחת לחלון פתוח</b> — בדיוק כמו בתסריט. <b>וזה הפריט היחיד בכל המחקר עם ״ללא הגבלות שימוש״.</b>"],
+ im:[["imj-371064-poland-brass-BEST.jpg","","free","y"]]},
+
+{sc:"22",y:"1975",pl:"מוסקבה",v:"mix",vt:"הרעיון נכון, הפרטים לא",
+ f:["<span class='no'>״ספר עם כריכה מזויפת״ לא מתועד.</span> נשמע כמו העברה מה‑<i>Tarnschriften</i> הגרמניים.",
+     "<b>ומה שאמיתי הרבה יותר מצולם:</b> <b>סידור השלום, מוסקבה 1956</b> — הסידור היחיד שהודפס חוקית אחרי המלחמה. <b>3,000 עותקים למיליוני יהודים</b>, צילום‑אופסט, <b>בלי תרגום ובלי הוראות</b> — בכוונה, כדי שצעיר לא יוכל ללמוד ממנו לבד.",
+     "<b>וסמיזדט:</b> כתב העת <i>תרבות</i>, 13 גיליונות 1975–1979, שלימד חגים ומנהגים. פיזית — <b>ארבעה עמודים מוקטנים על נייר דק כמו נייר סיגריות, מקופל</b>.",
+     "<b>הערה על הטון:</b> עורכי <i>יהודים בברית המועצות</i> <b>הדפיסו שם וכתובת בית בעמוד הראשון</b> של כל 21 הגיליונות. התנועה הייתה פומבית ומתריסה לא פחות מחשאית.",
+     "<span class='no'>החוק אסר ייצור פריטי דת יהודיים</span> — בתי כנסת לא הורשו לייצר אפילו נרות נשמה. <b>נרות פרפין סובייטיים במחזיקים מאולתרים.</b>",
+     "<span class='no'>״פלטה סובייטית קרה״ שגויה.</span> הצילומים הצבעוניים המאומתים <b>חמים</b> — טפט חום‑צהוב, אור ענברי, עץ כהה."],
+ im:[["soviet-majolica-candlestick-bystrushkin.jpg","<b>פמוט מיוליקה סובייטי</b>, ברוניסלב ביסטרושקין (1926–1977), בית החרושת לומונוסוב. <b>לא פמוט יהודי — וזה בדיוק העניין:</b> החוק אסר ייצור פריטי דת, אז מה שעמד על השולחן היה מחזיק חילוני רגיל. <b>CC BY-SA</b>","free","y"]]},
+
+{sc:"23",y:"2005",pl:"עידן המסכים",v:"ok",vt:"אין בעיה היסטורית",
+ f:["<b>בדיקה אחת:</b> <span class='no'>האייפון הוא 2007.</span> ב‑2005 — CRT או מסך שטוח מוקדם, לפטופ מסורבל, טלפונים מתקפלים.",
+     "<b>ופרט מהמציאות:</b> בתים רבים משתמשים ב<b>נרונים בכוסות זכוכית</b> ולא בנרות ארוכים, ומדליקים לא פעם על <b>משטח המטבח</b> ולא על שולחן האוכל.",
+     "<b>לשוט:</b> נרות חמים 2000–2700K מול אור מסך קר — זה ניגוד אמיתי, וזו ההצדקה הכי חזקה לתמונה."],
+ im:[["contemporary-candlesticks-2007-CCBYSA.jpg","הסטאפ הביתי הרגיל — פמוטי כסף עם <b>נרונים בכוסות זכוכית</b>. <b>CC BY-SA</b>","free","y"]]},
+
+{sc:"24",y:"2023",pl:"תל אביב, אוקטובר",v:"bad",vt:"הסרט הצהוב לא נכון לתאריך",
+ f:["<span class='yes'>התאריך מאומת:</span> השולחן הוקם ב<b>שישי, 20.10.2023</b> — וזה אכן היה יום שישי. הגה אותו <b>דוד סוויסה</b> עם פורום המשפחות. <b>203 כיסאות</b> מול 212 חטופים.",
+     "<span class='no'>אבל בשני הצילומים המאומתים אין ולו סרט צהוב אחד.</span> על כל כיסא היה <b>שלט ״HOSTAGE״ עם צללית אפורה</b>. הסרט הצהוב הפך לסמל הדומיננטי <b>רק מאוחר יותר</b> — עד ינואר 2024 הוא כבר היה סיכת דש בינלאומית.",
+     "<b>זה משפיע על שני מקומות</b> — התסריט שם סרט צהוב גם בכיכר וגם על הכיסא בבית.",
+     "<span class='no'>״כיכר החטופים״ היה שם לא רשמי</span> אז. העירייה שינתה רשמית רק ב‑2026.",
+     "<span class='no'>נרות דולקים בראש השולחן — לא מאומת.</span> נרות היו על השולחן; אין צילום שמראה אותם דולקים.",
+     "<b>מה שכן מתועד:</b> מפה לבנה, צלחות בדוגמה כחולה, לחמניות חלה, תפוחים ירוקים, ורדים לבנים, <b>בקבוקי תינוק, צלחות ילדים כתומות, וכיסא אוכל לתינוק עם סינר מצויר</b>."],
+ im:[["modern-shabbat-candlesticks-CCBYSA.jpg","<b>פמוטי כסף בני־זמננו</b> עם נרונים בכוסות זכוכית על מגש — הסטאפ הביתי הרגיל היום. <b>CC BY-SA</b>","free","y"],["hostages-table-20oct2023-night.jpg","שולחן הכיכר, 20.10.2023 בערב — <b>שלטי HOSTAGE על המשענות, בלי סרטים צהובים</b>","clear","y"],["hostages-table-20oct2023-daylight.jpg","אותו יום, אור יום","clear","y"]]},
+
+{sc:"25–26",y:"2026",pl:"סאו פאולו והבדלה",v:"mix",vt:"ההבדלה נכונה, התזה נשברת",
+ f:["<span class='no'>״פיליגרן = ספרדי, חלק = אירופי״ לא מחזיק.</span> פיליגרן כסף הוא טכניקה מרכז‑אירופית לא פחות. מתוך ארבעה מגדלי בשמים שנבדקו, <b>שניים מהיפים הם אוסטריים</b> — אחד מלינץ.",
+     "<b>הניגוד האמיתי הוא שמן מול נר, ואופקי מול אנכי:</b> מנורת פליז מרוקאית נמוכה ורחבה, מול <b>זוג עמודי כסף פולני גבוה</b>. ניגוד מתועד, ומצטלם חזק יותר.",
+     "<b>ומתנה:</b> הקהילה בסאו פאולו היא בעיקרה אשכנזית. ההגירה המרוקאית לברזיל הלכה <b>לאמזונס</b> — בלם ומנאוס — והצאצאים נדדו דרומה. <b>מרוקו ← אמזונס ← סאו פאולו.</b> שני זוגות הפמוטים הם סופם של <b>שני מסעות שונים לגמרי</b>.",
+     "<span class='yes'>״פתילים רבים, להבה אחת״ היא הדרישה ההלכתית</span> — הרמ״א: ״נר שיש לו שתי פתילות נקרא אבוקה״. התזה מדויקת.",
+     "<span class='no'>אבל הסדר הפוך:</span> הנר מכובה <b>ביין שנשפך על הצלחת, אחרי ששתו</b> — לא בכוס מלאה. <b>ובונוס:</b> טובלים מהיין ומעבירים על העיניים.",
+     "<b>הציפורניים זה כולם</b>, לא רק הילדים. הרמ״א נותן את הבימוי: ציפורני <b>ימין</b>, כוס ב<b>שמאל</b>, אצבעות מכופפות כך שרואים ציפורניים וכף יד יחד.",
+     "<b>ושתי הבחנות לשולחן המעורב:</b> <b>מגדל הבשמים אשכנזי</b> — ספרדים משתמשים ב<b>ענפי הדס טריים</b>. ו<b>אשכנזים עומדים בהבדלה, ספרדים יושבים.</b> להעביר גם מגדל וגם הדס באותו מעגל — זה בדיוק מה שהסרט אומר.",
+     "<span class='no'>ודפינה בליל שישי היא טעות</span> — דפינה, כמו צ׳ולנט, היא <b>צהרי שבת</b>. זה כל הרעיון שלה."],
+ im:[["met-467751-spanish-silver-15c.jpg","","free","y"],["imj-371064-poland-brass-BEST.jpg","","free","y"]]}
+];
+
+
+const OBJ={
+ "3":{name:"מנורת צלחת פתוחה עם זרבובית מצוננת",en:"Open saucer lamp, pinched spout",
+   scr:"״מדורות נמוכות, משפחות מתכנסות מול האוהלים״ — אין נר שבת בתסריט",
+   m:"ok", v:"מתאים במדויק.",
+   light:"אש לא מייצרים, אש מעבירים: קיסם או קש נטבל בגחלי האח ונישא ביד חופנת. הוא נוגע ב<b>קצה הפתילה בחוד הצביטה</b> — לא בשמן ולא בגוף. השהיה של 3–8 שניות: זחילה כתומה, חוט עשן, ורק אז הלהבה עומדת."},
+
+ "4–6":{name:"נר הרודיאני מגולף בסכין",en:"Herodian knife-pared lamp",
+   scr:"״מדליקה את <b>שתי הפתילות</b> של נר שמן״ · ״נר החרס בעל <b>שתי הלהבות</b>״",
+   m:"bad", v:"לא מתאים. צריך להיות <b>פתילה אחת</b> — מנורת חרס עם זרבובית אחת וחור פתילה אחד, שמן זית.",
+   light:"האש מועברת מגחלי האח בקיסם, או מנר דולק אחר. <b>הלהבה נכנסת נמוך מהצד אל קצה הפתילה שבחוד הזרבובית.</b> המנורה יושבת בכף היד, הזרבובית מופנית החוצה. 3–8 שניות עד שהיא נתפסת."},
+
+ "7":{name:"מנורת חרס ססאנית",en:"Sasanian wheel-made clay lamp",
+   scr:"״<b>נרות השמן</b> נדלקים״ · ״<b>נרות שמן רבים</b>״",
+   m:"mix", v:"המנורה נכונה, המספר לא. צריך להיות <b>נר אחד</b> — כמה מנורות שמאירות חדר בסדר, זוג טקסי לא.",
+   light:"אותה העברה מהאח. <b>שמן שומשום</b> ולא זית, <b>פתילת פשתן</b> או בד מקופל. הפתילה חייבת לשתות שמן 40–60 דקות לפני — פתילה יבשה לא נדלקת."},
+
+ "8":{name:"קַנְדִיל — מנורת שמן איברית",en:"Candil de piquera / bronze candil",
+   scr:"״מדליקה <b>פמוטי כסף בפעם הראשונה</b>, פיליגרן אנדלוסי״",
+   m:"bad", v:"לא מתאים. צריך להיות <b>קנדיל</b> — חרס לבית רגיל, ברונזה יצוקה לאמידים, עם מכסה על ציר ומלקחיים בשרשרת. הפיליגרן עובר לגוף המנורה.",
+   light:"קיסם גופרית נדלק בגחלת ונושא את האש. <b>הלהבה מונחת לאורך כל קצה הפתילה שבחוד הזרבובית ונמשכת לאורכו</b> — לא נוגעים בנקודה אחת. אסור לנשוף על להבה טרייה."},
+
+ "9":{name:"מנורת כוכב תלויה",en:"Hanging star lamp",
+   scr:"״<b>יודנשטרן</b> — מנורת שמן בצורת כוכב — <b>מורדת מהתקרה</b> ונדלקת״",
+   m:"mix", v:"החפץ נכון, המנגנון לא. צריך להיות <b>מוט ברזל קשיח</b> — בלי מסילה ובלי שרשרת, והמנורה לא מתנדנדת.",
+   light:"<b>המנורה נשארת תלויה</b>, 80–100 ס״מ מעל השולחן. עומדים ליד השולחן ומושיטים יד עם קיסם בגובה סנטר־מצח — בלי שרפרף. מדליקים <b>מהזרבובית הרחוקה אל הקרובה</b>, כדי שהיד לא תעבור מעל להבה. שש זרבוביות ≈ 15–25 שניות."},
+
+ "10":{name:"מנורה תלויה על שלוש שרשראות",en:"Hanging lamp on three chains",
+   scr:"״ידיים עוטפות את <b>פמוטי הכסף</b> בצעיף ומחביאות בתיבה״",
+   m:"bad", v:"לא מתאים. צריך להיות <b>המנורה התלויה שמורדת מהשרשרת שלה</b>, או גביע קידוש מכסף.",
+   light:null},
+
+ "11":{name:"קַנְדֵיירוֹ — מנורת שמן פורטוגזית",en:"Candeeiro",
+   scr:"״מדליקה <b>שני נרות בתוך כד חרס</b>, שלא ייצא אור אל הרחוב״",
+   m:"mix", v:"ההסתרה נכונה, החפץ לא. צריך להיות <b>מנורת שמן עם פתילות חדשות</b> — וכד פתוח מלמעלה, לא כיסוי חונק.",
+   light:"<b>מנורה נקייה ופתילות חדשות</b> — בדיוק מה שצו האמונה של האינקוויזיציה מונה כסימן יהדות. האש נוגעת בקצה הפתילה שבזרבובית, והמנורה נשארת לבעור <b>עד שתכבה מעצמה</b>."},
+
+ "12":{name:"קַנְדִיל תלוי — זכוכית בטבעת מתכת",en:"Hanging kandil",
+   scr:"״<b>פמוטי הכסף</b>, שהוצאו מן התיבה, <b>חזרו אל השולחן</b>״",
+   m:"bad", v:"לא מתאים. צריך להיות <b>מנורה תלויה מעל השולחן</b> — כסף בסדר גמור, מה ששגוי הוא שהיא עומדת.",
+   light:"<b>מים ראשונים (רבע), אחר כך שמן (שלושה רבעים), אחר כך המצוף — ורק אז האש.</b> הקיסם יורד <b>לתוך פתח הגביע</b> אל קצה הפתילה שבדיסקית הפקק הצפה. אסור להדליק מצוף לפני שמניחים אותו — הוא מתהפך ומבקע את הזכוכית."},
+
+ "13":{name:"קַנְדִיל מרוקאי — גב פתוח עם ציפורים",en:"Moroccan kandil",
+   scr:"<b>לא מצוין בתסריט.</b> הסבתא היא דמות ההדלקה, אך חפץ האור לא מתואר",
+   m:"bad", v:"חסר. צריך להיות <b>קנדיל פליז שתלוי או נתקע בקיר</b> — לא עומד על שולחן.",
+   light:"הפתילות נשזרו במהלך השבוע מרצועות בד ישן ושותות שמן מבעוד מועד. <b>בשמיעת השופר</b> היא עוזבת הכל, ניגשת, <b>מברכת ואז מדליקה</b>: מושיטה יד מעלה, מטה את הקיסם כלפי מטה ונוגעת <b>בכל זרבובית בתורה</b>. ביום חול פתילה אחת, בשבת ארבע או שש."},
+
+ "14–15":{name:"פמוטי ״תחתוניות״ מזרח־אירופיים",en:"'Petticoat' candlesticks",
+   scr:"״האם מדליקה את <b>פמוטי הכסף</b>״ · ״בכל חלון <b>שני נרות</b>״",
+   m:"mix", v:"הצורה נכונה, שלושה פרטים לא. צריך להיות <b>פליז</b> ולא כסף, <b>שלושה־ארבעה</b> נרות ולא שניים, <b>ועל השולחן</b> ולא בחלון.",
+   light:"גפרור. <b>מדליקים ואז מברכים</b> — והידיים עולות לעיניים <b>בלי רגע אחד של התבוננות בלהבות</b>. הכיסוי רצוף עד המילה האחרונה, והדבר הראשון שהיא רואה הוא האור. ב‑1840 הפתילה לא מכלה את עצמה: מספריים על השולחן, קיצוץ כל 20–30 דקות."},
+
+ "16":{name:"פמוטי כסף מסותתים",en:"Spun silver candlesticks",
+   scr:"״על שידת השיש, <b>אותם פמוטים ישנים</b>. האם <b>מסירה כפפות</b> כדי להדליק״",
+   m:"mix", v:"הפמוטים נכונים, ההקשר לא. צריכים לעמוד <b>על השולחן</b> ולא על שידה, ואין כפפות — הן לבוש רחוב.",
+   light:"כמו בשטעטל — אבל ב‑1900 הפתילה קלועה ומכלה את עצמה: <b>אין מספריים, והלהבה עומדת דומם.</b>"},
+
+ "17":{name:"נרות דקים בפמוטים פשוטים",en:"Plain tapers, ashore",
+   scr:"״על הסיפון הצפוף, <b>אישה מדליקה גפרור</b> ומגינה על הלהבה בגופה״",
+   m:"bad", v:"לא מתאים. צריך להיות <b>הדלקה ביבשה</b>, בבית מחסה של הילפספריין — שם היא גם מצולמת.",
+   light:"אותו רצף אשכנזי: גפרור, הדלקה, ידיים לעיניים, ברכה."},
+
+ "18":{name:"הפמוטים שנדדו — אותו זוג מסצנה 17",en:"The travelled candlesticks",
+   scr:"״האם — <b>הילדה מן האונייה</b>, שגדלה — <b>מדליקה את הנרות</b>״",
+   m:"ok", v:"מתאים. <b>אותו זוג</b> שנעטף בצעיף בנמל המבורג ב‑1905.",
+   light:"רצף אשכנזי: גפרור, הדלקה, ידיים לעיניים בלי להביט בלהבות, ברכה. <b>נרות פרפין לבנים</b> ופתילה קלועה, על השולחן."},
+
+ "19":{name:"מאולתר — פמוט + כוס שתייה",en:"Improvised: candlestick + glass",
+   scr:"״על ארגז, <b>שני גדמי נרות — בלי פמוטים</b>״",
+   m:"mix", v:"כמעט. בצילום המתועד יש <b>תערובת</b>: נר אחד בפמוט פליז אמיתי, נר שני בכוס שתייה.",
+   light:"נר בכוס לא עומד מעצמו: <b>אפר תנור, שעווה מותכת בתחתית, או טריזי נייר</b>. הכוס חוסמת רוח — הלהבה עומדת דומם וגבוהה, והזכוכית הופכת לפנס."},
+
+ "20":{name:"מאולתר — כוס ופחית שימורים",en:"Improvised: glass and tin",
+   scr:"״<b>מישהו מצא שני נרות</b>; מישהו אחר, קמח לחלה קטנה״",
+   m:"ok", v:"מדויק ומאומת.",
+   light:"הפחית אטומה, ולכן <b>כל האור עולה מעלה</b>: הפנים מוארות, השולחן לא. השפה החתוכה נושאת את ההבזק החזק בפריים, והפח מתחמם עד כדי כך שצריך סמרטוט."},
+
+ "21":{name:"פמוטים — הזוג שנדד",en:"The candlesticks that travelled",
+   scr:"״הפמוטים, שנפרשו מאותו צעיף של המסע, <b>חוזרים אל השולחן ליד החלון הפתוח</b>״",
+   m:"ok", v:"מתאים לגמרי.",
+   light:"רצף אשכנזי רגיל."},
+
+ "22":{name:"נר פרפין סובייטי במחזיק חילוני",en:"Soviet paraffin candle, secular holder",
+   scr:"״<b>נרות דולקים</b> על השולחן״",
+   m:"ok", v:"הנרות נכונים.",
+   light:"גפרור רגיל."},
+
+ "23":{name:"פמוטים בני־זמננו / נרונים בכוס",en:"Contemporary candlesticks",
+   scr:"״<b>האם מדליקה את הנרות</b> והחדר משנה טמפרטורה״",
+   m:"ok", v:"מתאים.",
+   light:"גפרור או מצית, לרוב <b>נרונים בכוסות זכוכית</b>, ולעיתים קרובות על משטח המטבח ולא על שולחן האוכל."},
+
+ "24":{name:"נרות על שולחן הכיכר",en:"Candles on the square's table",
+   scr:"״נרות מרצדים ברוח״",
+   m:"bad", v:"חלקית. נרות היו על השולחן.",
+   light:null},
+
+ "25–26":{name:"נר הבדלה קלוע (אֲבוּקָה)",en:"Braided Havdalah candle",
+   scr:"״<b>פתילים רבים, להבה אחת</b>״ · ״מכובה ביין״",
+   m:"mix", v:"התזה מדויקת, הסדר הפוך. הנר מכובה <b>ביין שנשפך על הצלחת, אחרי ששתו</b> — לא בכוס מלאה.",
+   light:"<b>לא מדליקים פתיל־פתיל.</b> מעבירים את הגפרור לרוחב הכתר בתנועת מטאטא; כל פתיל נתפס תוך 1–3 שניות, וכולם דולקים תוך 5–10 שניות. <b>ואז 10–30 שניות</b> עד שהלהבות נשענות פנימה ומתמזגות לאחת. הכיבוי: <b>הסססס אחד קצר, פחות משנייה.</b>"}
+};
+
+const LIC={free:"חופשי מסחרית",edu:"חינוכי בלבד",clear:"דורש רישוי"};
+
+const ERA={"3": ["המאה ה‑13 לפנה״ס", "13th century BCE", "מדבר סיני", "Sinai desert"], "4–6": ["המאה ה‑1 לפנה״ס – 70 לספירה", "1st century BCE – 70 CE", "ירושלים", "Jerusalem"], "7": ["המאה ה‑5", "5th century", "בבל", "Babylonia"], "8": ["המאה ה‑12", "12th century", "קורדובה", "Córdoba"], "9": ["המאה ה‑13", "13th century", "חבל הריין", "The Rhineland"], "10": ["1492", "1492", "טולדו", "Toledo"], "11": ["1540", "1540", "ליסבון", "Lisbon"], "12": ["המאה ה‑17", "17th century", "סלוניקי", "Salonika"], "13": ["1800", "1800", "פאס", "Fez"], "14–15": ["1840", "1840", "שטעטל", "Shtetl, Pale of Settlement"], "16": ["1900", "1900", "וינה", "Vienna"], "17": ["1905", "1905", "נמל המבורג", "Port of Hamburg"], "18": ["1935", "1935", "פראסה אונזה, ריו", "Praça Onze, Rio de Janeiro"], "19": ["1941", "1941", "גטו ורשה", "Warsaw Ghetto"], "20": ["1946", "1946", "מחנה עקורים", "Displaced persons camp"], "21": ["1952", "1952", "תל אביב", "Tel Aviv"], "22": ["1975", "1975", "מוסקבה", "Moscow"], "23": ["2005", "2005", "מטרופולין", "A metropolis"], "24": ["2023", "2023", "תל אביב, אוקטובר", "Tel Aviv, October"], "25–26": ["2026", "2026", "סאו פאולו והבדלה", "São Paulo and Havdalah"]};
+const CAP={"met-467751-spanish-silver-15c.jpg": ["<b>פמוט השושלת הספרדית</b> — החפץ שעובר בדורות, מסצנה 8 ועד סצנה 25. פמוט כסף, ספרד, המאה ה‑15", "<b>The Sephardi dynasty’s candlestick</b> — the object handed down through the generations, from scene 8 to scene 25. Silver candlestick, Spain, 15th century"], "sinai-camp-fire-generated.jpg": ["מחנה במדבר בשקיעה: מדורה של קוצים וגללים, אוהלים משיער עיזים. הדמיה", "A desert camp at dusk: a fire of thorn brush and dung, goat-hair tents. Visualisation"], "megiddo-A28299-saucer-lamp.jpg": ["מנורת צלחת פתוחה, תל מגידו, 1300–1200 לפנה״ס", "Open saucer lamp, Tel Megiddo, 1300–1200 BCE"], "megiddo-A28301-pinched-spout.jpg": ["מנורת צלחת עם זרבובית מצוננת, מגידו", "Saucer lamp with pinched spout, Megiddo"], "met-34-126-62-lachish-lamp.jpg": ["מנורת צלחת, לכיש, המאה ה‑8–7 לפנה״ס", "Saucer lamp, Lachish, 8th–7th century BCE"], "carlos-X0027-herodian-lamp.jpg": ["נר הרודיאני, זרבובית אחת", "Herodian lamp, single nozzle"], "carlos-X0188-herodian-lamp.jpg": ["נר הרודיאני, חרס אדמדם", "Herodian lamp, reddish clay"], "met-32-150-163-ctesiphon-house-lamp.jpg": ["מנורת חרס ססאנית מבית מגורים, קטסיפון", "Sasanian clay lamp from a house, Ctesiphon"], "met-32-150-183-ctesiphon-sooted.jpg": ["מנורת חרס ססאנית עם סימני בעירה, קטסיפון", "Sasanian clay lamp with burn marks, Ctesiphon"], "alhambra-bronze-candil-despabiladera.jpg": ["קנדיל ברונזה עם מלקחיים בשרשרת, מדינת אלבירה, המאה ה‑10", "Bronze candil with chained wick-pick, Madinat Ilbira, 10th century"], "arqua-candil-piquera-12c.jpg": ["קנדיל חרס, המאה ה‑12", "Clay candil, 12th century"], "almeria-candil-four-nozzle.jpg": ["קנדיל בעל ארבע זרבוביות, אלמריה", "Four-nozzle candil, Almería"], "london-1374-hanging-star-lamp-12c.jpg": ["מנורת כוכב תלויה עם קערת טפטוף, המאה ה‑12", "Hanging star lamp with drip dish, 12th century"], "sister-haggadah-hanging-lamps-14c.jpg": ["הגדת האחות, קטלוניה, המאה ה‑14: מנורות תלויות", "Sister Haggadah, Catalonia, 14th century: hanging lamps"], "sister-haggadah-lamp-detail.jpg": ["פרט: גביע זכוכית על שלוש שרשראות", "Detail: glass beaker on three chains"], "museo-sefardi-candil-piquera.jpg": ["קנדיל חרס, המוזיאון הספרדי, טולדו", "Clay candil, Museo Sefardí, Toledo"], "alhambra-119028-candil-pie-alto-late15-16c.jpg": ["קנדיל מודחאר, סוף המאה ה‑15 – אמצע המאה ה‑16", "Mudéjar candil, late 15th – mid 16th century"], "cordoba-plain-candil-highres-CCBYSA.jpg": ["קנדיל חרס פשוט, קורדובה", "Plain clay candil, Córdoba"], "gonzalezmarti-DO6-candil-manises.jpg": ["קנדיל מזוגג, מניסס", "Glazed candil, Manises"], "jmg-silver-hanging-lamp.jpg": ["מנורה תלויה מכסף, המוזיאון היהודי של יוון", "Silver hanging lamp, Jewish Museum of Greece"], "jmg-kandil-glass-brass-hanging.jpg": ["קנדיל: גביע זכוכית בטבעת פליז על שלוש שרשראות", "Kandil: glass beaker in a brass ring on three chains"], "jmg-tin-hanging-lamp.jpg": ["מנורה תלויה מפח", "Tin hanging lamp"], "mahj-kandil-morocco-hero.jpg": ["קנדיל מרוקאי מפליז עם מוט תלייה", "Moroccan brass kandil with suspension rod"], "imj-371064-poland-brass-BEST.jpg": ["זוג פמוטי פליז, פולין", "Pair of brass candlesticks, Poland"], "yu-411047-russia-brass-petticoat.jpg": ["פמוט פליז מזרח־אירופי", "Eastern European brass candlestick"], "jmb-2004-69-0-candlestick-pair.jpg": ["זוג פמוטי כסף, גרמניה, 1888–1915", "Pair of silver candlesticks, Germany, 1888–1915"], "jmw-1026-vienna-jewish-parlour-CC0.jpg": ["סלון יהודי, וינה, 1899", "Jewish parlour, Vienna, 1899"], "jmb-aram-candlestick-refugee-family.jpg": ["פמוט כסף של משפחה שנמלטה מאירופה", "Silver candlestick of a refugee family"], "ushmm-1992-8-28-ossowski-pair-escaped-berlin.jpg": ["זוג פמוטים שיצא מברלין עם משפחת אוסובסקי, 1938", "Candlesticks carried out of Berlin by the Ossowski family, 1938"], "ushmm-1990-129-1-silver-1908.jpg": ["פמוט כסף, 1908", "Silver candlestick, 1908"], "ushmm-2008-328-1-slim-plain-pair.jpg": ["זוג פמוטים פשוט", "Plain pair of candlesticks"], "stettin-shelter-shabbat-1907-KEY.jpg": ["הדלקת נרות בבית מחסה למהגרים, שטטין, 1907", "Candle lighting in an emigrant shelter, Stettin, 1907"], "brass-candlestick-hero.jpg": ["פמוט פליז", "Brass candlestick"], "pressed-drinking-glasses-czech.jpg": ["כוסות שתייה מזכוכית מוטבעת", "Pressed-glass drinking glasses"], "yadvashem-33-1785-woman-lighting.jpg": ["הדלקת נרות: נר בפמוט ונר בכוס", "Candle lighting: one candle in a candlestick, one in a glass"], "DP-camp-candelabra-1945-a.jpg": ["פמוט שנעשה במחנה עקורים, 1945", "Candlestick made in a displaced persons camp, 1945"], "DP-camp-candelabra-1945-b.jpg": ["אותו פמוט, החלק השני", "The same candlestick, second part"], "tin-can-used-as-cup-1939.jpg": ["פחית שימורים ששימשה ככלי", "Tin can used as a vessel"], "wedel-candy-tin-DP-camp.jpg": ["פחית ממחנה עקורים", "Tin from a displaced persons camp"], "ushmm-59483-ebelsberg-tin-can-candle.jpg": ["שולחן שבת, מחנה עברסברג: נר בכוס ונר בפחית", "Sabbath table, Ebelsberg camp: a candle in a glass and one in a tin"], "elefant-silver-shabbat-candlesticks-early1950s.jpg": ["פמוטי כסף, ראשית שנות החמישים", "Silver candlesticks, early 1950s"], "soviet-majolica-candlestick-bystrushkin.jpg": ["פמוט סובייטי חילוני, מיוליקה", "Soviet secular candlestick, majolica"], "contemporary-candlesticks-2007-CCBYSA.jpg": ["פמוטי כסף עם נרונים בכוסות זכוכית", "Silver candlesticks with tea-lights in glass cups"], "modern-shabbat-candlesticks-CCBYSA.jpg": ["פמוטי כסף בני־זמננו", "Contemporary silver candlesticks"], "hostages-table-20oct2023-night.jpg": ["שולחן השבת בכיכר, 20 באוקטובר 2023", "The Sabbath table in the square, 20 October 2023"], "hostages-table-20oct2023-daylight.jpg": ["אותו שולחן, אור יום", "The same table, daylight"], "havdalah-candle-object-swiss-museum.jpg": ["נרות הבדלה קלועים, המוזיאון היהודי של שווייץ", "Braided Havdalah candles, Jewish Museum of Switzerland"], "braided-candle-ten-wicks-CCBYSA.jpg": ["נר הבדלה קלוע בוער, עשר פתילות", "Braided Havdalah candle alight, ten wicks"]};
+const OBJ_EN={"3": {"name": "Open saucer lamp, pinched spout", "scr": "“Low fires, families gathered before their tents” — no Sabbath lamp in the script", "v": "Accurate as written.", "one": "A Sabbath lamp would be anachronistic here by some 1,400 years; Sabbath lighting is a rabbinic ordinance of around 200 CE.", "light": "Fire is carried, not made: a twig or straw is lit in the hearth embers and brought over cupped in the hand. It touches the <b>wick tip at the pinch</b>, never the oil or the body. The wick takes 3–8 seconds to catch."}, "4–6": {"name": "Herodian knife-pared lamp", "scr": "“Lights the <b>two wicks</b> of an oil lamp” · “the clay lamp with <b>two flames</b>”", "v": "Should be <b>one wick</b>: a clay lamp with a single nozzle and a single wick hole, burning olive oil.", "one": "The earliest source for two lights is Ra’aviah of Bonn, around 1200 CE; every lamp of the period examined has one wick.", "light": "Fire is brought from the hearth on a splinter or from another lit lamp. The flame comes in <b>low from the side to the wick tip at the end of the nozzle</b>. The lamp rests in the palm with the nozzle pointing away."}, "7": {"name": "Sasanian clay lamp", "scr": "“The <b>oil lamps</b> are lit” · “<b>multiple oil lamps</b>”", "v": "The lamp is right; the number is not. Should be <b>one lamp</b>. Several lamps lighting a room are fine; a ritual pair is not.", "one": "No distinctly Jewish Sabbath lamp is known from Sasanian Babylonia; households used the same clay lamps as their neighbours.", "light": "The same transfer from the hearth. <b>Sesame oil</b> rather than olive oil, a <b>flax</b> or folded-cloth wick. The wick must soak in oil beforehand or it will not light."}, "8": {"name": "Candil — Iberian oil lamp", "scr": "“Lights <b>silver candlesticks for the first time</b>, Andalusian filigree”", "v": "Should be a <b>candil</b>: clay for an ordinary home, cast bronze for a wealthy one, with a hinged lid and a chained wick-pick. The filigree can move to the lamp.", "one": "Maimonides, born in Córdoba in 1138, writes the laws of Sabbath lighting entirely in terms of oils and wicks; candlesticks appear in the 15th century.", "light": "A sulphur-tipped splint is lit at an ember. <b>The flame is laid along the whole exposed tip of the wick at the spout</b> and drawn along it, not dabbed at one point."}, "9": {"name": "Hanging star lamp", "scr": "“A <b>Judenstern</b> — a star-shaped oil lamp — <b>is lowered from the ceiling</b> and lit”", "v": "The object is right; the mechanism is not. Should hang from a <b>rigid iron rod</b>, with no rack and no chain, and it does not swing.", "one": "The toothed lowering rack dates from the 18th century and the name “Judenstern” from the 16th.", "light": "<b>The lamp stays hanging</b>, 80–100 cm above the table. Standing at the table, she reaches up with a splint at chin-to-forehead height and lights <b>from the farthest spout to the nearest</b>, so her hand never passes over a flame."}, "10": {"name": "Hanging lamp on three chains", "scr": "“Hands wrap the <b>silver candlesticks</b> in a shawl and hide them in a chest”", "v": "Should be <b>the hanging lamp, taken down from its chain</b>, or a silver kiddush cup.", "one": "The act is right — the Alhambra Decree forbade taking gold and silver out, so families hid them — only the object is wrong.", "light": null}, "11": {"name": "Candeeiro — Portuguese oil lamp", "scr": "“Lights <b>two candles inside a clay jar</b> so no light escapes to the street”", "v": "The concealment is right; the object is not. Should be <b>an oil lamp with new wicks</b>, in a jar open at the top rather than covered.", "one": "The light may not be extinguished, so what is hidden is the place — a cellar, an inner room, a closed door — not the flame.", "light": "<b>A clean lamp and new wicks</b>, exactly what the Inquisition’s Edict of Faith lists as a sign of Judaising. The flame touches the wick tip at the spout, and the lamp is left to <b>burn out on its own</b>."}, "12": {"name": "Hanging kandil — glass in a metal ring", "scr": "“The <b>silver candlesticks</b>, recovered from the chest, <b>back on the table</b>”", "v": "Should be <b>a lamp hanging above the table</b>. Silver is entirely right; what is wrong is that it stands.", "one": "The object taken out of the chest goes back on its hook and burns through the night.", "light": "<b>Water first (a quarter), then oil (three quarters), then the float, and only then the flame.</b> The splint goes <b>down into the mouth of the beaker</b> to the wick in the floating cork disc. The float is never lit before it is placed."}, "13": {"name": "Moroccan kandil", "scr": "<b>Not described in the script.</b> The grandmother is the lighting figure, but the light itself is not specified", "v": "Missing. Should be <b>a brass kandil hanging or hooked on the wall</b>, not standing on the table.", "one": "Two brass candlesticks do stand on the table, but <b>the blessing is said over the kandil</b>.", "light": "The wicks, twisted during the week from strips of old cloth, soak in oil ahead of time. <b>At the sound of the shofar</b> she goes to the lamp, <b>blesses and then lights</b>, reaching up and touching <b>each spout in turn</b>. One wick on weekdays; four or six on the Sabbath."}, "14–15": {"name": "Eastern European candlesticks", "scr": "“The mother lights the <b>silver candlesticks</b>” · “in every window, <b>two candles</b>”", "v": "The form is right; three details are not. Should be <b>brass</b> rather than silver, <b>three or four</b> candles rather than two, and <b>on the table</b> rather than in the window.", "one": "Candles in the window are a Hanukkah custom; on the Sabbath the lights belong on the table, which can still be seen through the window.", "light": "A match. <b>She lights, then blesses</b>, raising her hands to her eyes <b>without pausing to look at the flames</b>; she covers her eyes until the last word, so the first thing she sees is the light. In 1840 the wick does not consume itself: snuffers on the table, trimmed every 20–30 minutes."}, "16": {"name": "Spun silver candlesticks", "scr": "“On the marble sideboard, <b>the same old candlesticks</b>. The mother <b>removes her gloves</b> to light them”", "v": "The candlesticks are right; the setting is not. They should stand <b>on the table</b>, not a sideboard, and there are no gloves indoors.", "one": "In the one verified photograph of a Viennese Jewish parlour the candlesticks are on the table, and there are four.", "light": "As in the shtetl, but by 1900 the wick is braided and consumes itself: <b>no snuffers, and the flame stands still.</b>"}, "17": {"name": "Plain tapers in simple candlesticks", "scr": "“On the crowded deck, <b>a woman strikes a match</b>, shielding the flame with her body”", "v": "Should be <b>lit ashore</b>, in an emigrant shelter, where it is also photographed.", "one": "The steerage decks were electrically lit, and open flames were not permitted on board.", "light": "The same Ashkenazi sequence: match, lighting, hands to the eyes, blessing."}, "18": {"name": "The travelled candlesticks — the same pair as scene 17", "scr": "“The mother — <b>the girl from the ship</b>, now grown — <b>lights the candles</b>”", "v": "Accurate. <b>The same pair</b> wrapped in the shawl at the port of Hamburg in 1905.", "one": "The mother in Rio is the girl from the ship, so the candlesticks she lights are the ones that crossed with her — the continuity object of the act.", "light": "Ashkenazi sequence: match, lighting, hands to the eyes without looking at the flames, blessing. <b>White paraffin candles</b> with braided wicks, on the table."}, "19": {"name": "Improvised — candlestick and drinking glass", "scr": "“On a crate, <b>two candle stubs, no candlesticks</b>”", "v": "Nearly. The documented photograph shows <b>a mix</b>: one candle in a real brass candlestick, the other in a drinking glass.", "one": "", "light": "A candle in a glass does not stand by itself: <b>stove ash, melted wax at the bottom, or paper wedges</b>. The glass blocks the draught, so the flame stands tall and still."}, "20": {"name": "Improvised — glass and tin can", "scr": "“<b>Someone has found two candles</b>; someone else, flour for a small challah”", "v": "Accurate and documented.", "one": "A photograph from Ebelsberg shows a candle in a glass, a candle in a tin can, and a bottle from a relief shipment.", "light": "The tin is opaque, so <b>all the light goes upward</b>: the face is lit, the table is not. The tin gets hot enough to need a cloth."}, "21": {"name": "Candlesticks — the pair that travelled", "scr": "“The candlesticks, unwrapped from the same shawl, <b>return to the table by the open window</b>”", "v": "Accurate.", "one": "A survivor’s watercolour of an Israeli Sabbath table from the period shows exactly this, including the open window.", "light": "The ordinary Ashkenazi sequence."}, "22": {"name": "Soviet paraffin candle in a secular holder", "scr": "“<b>Candles lit</b> on the table”", "v": "The candles are right.", "one": "Soviet law forbade manufacturing Jewish religious articles, so the right object is an ordinary secular candle holder.", "light": "An ordinary match."}, "23": {"name": "Contemporary candlesticks", "scr": "“<b>The mother lights the candles</b> and the whole room changes temperature”", "v": "Accurate.", "one": "", "light": "A match or lighter, often <b>tea-lights in glass cups</b>, frequently on the kitchen counter rather than the dining table."}, "24": {"name": "Candles on the table in the square", "scr": "“Candles flicker in the wind”", "v": "Partly. There were candles on the table.", "one": "In both verified photographs from 20 October 2023 the candles are on the table, <b>but none shows them lit</b>.", "light": null}, "25–26": {"name": "Braided Havdalah candle", "scr": "“<b>Many wicks, one flame</b>” · “extinguished in the wine”", "v": "The image is exact; the order is reversed. The candle is put out <b>in wine poured onto the plate, after drinking</b>, not in a full cup.", "one": "“Many wicks” is a halakhic requirement: a candle with two wicks is called a torch (avukah).", "light": "<b>The wicks are not lit one by one.</b> A match is swept across the top; all wicks catch within 5–10 seconds, <b>then take 10–30 seconds</b> to lean together into one flame. Extinguishing: <b>one short hiss</b>."}};
+const CONT={
+ "14–15":["<b>החפץ המורש של הענף האשכנזי.</b> אותו זוג ממשיך לסצנות 16, 17, 18, 21 ו‑25.","<b>The heirloom of the Ashkenazi branch.</b> The same pair continues into scenes 16, 17, 18, 21 and 25."],
+ "16":["<b>אותם פמוטים מסצנה 15.</b> ״אותם פמוטים ישנים, מצוחצחים״ — המשפחה עלתה במעמד, הפמוטים נשארו.","<b>The same candlesticks as scene 15.</b> “The same old candlesticks, freshly polished” — the family has risen; the candlesticks stayed."],
+ "17":["<b>אותם פמוטים מסצנה 15.</b> כאן הם נעטפים בצעיף צמר ויוצאים לדרך.","<b>The same candlesticks as scene 15.</b> Here they are wrapped in a wool shawl for the crossing."],
+ "18":["<b>אותם פמוטים מסצנה 15.</b> הגיעו לריו עם הילדה מהאונייה.","<b>The same candlesticks as scene 15.</b> They reached Rio with the girl from the ship."],
+ "21":["<b>אותם פמוטים מסצנה 15.</b> ״נפרשו מאותו צעיף של המסע״.","<b>The same candlesticks as scene 15.</b> “Unwrapped from the same shawl of the crossing.”"],
+ "8":["<b>מומלץ כחלק מהשרשרת: הפמוט שעובר בדורות של הענף הספרדי.</b> פמוט כסף ספרדי מהמאה ה‑15. אותו זוג ממשיך לסצנות 10, 12 ו‑25. <b>למה לא הקנדיל?</b> החפץ המדויק לקורדובה של המאה ה‑12 הוא מנורת שמן, אבל מנורה משתנה מדור לדור ולא נקראת כחפץ אחד על המסך. כדי שהצופה יזהה את אותו חפץ מקורדובה ועד סאו פאולו, בחרנו פמוט אחד לכל השרשרת — והוא מקדים את זמנו בכ‑300 שנה. זו בחירה עלילתית מודעת.","<b>Recommended as part of the chain: the candlestick handed down through the generations of the Sephardi branch.</b> A 15th‑century Spanish silver candlestick. The same pair continues into scenes 10, 12 and 25. <b>Why not the candil?</b> The accurate object for 12th‑century Córdoba is an oil lamp, but a lamp changes from generation to generation and does not read as one object on screen. So that the viewer recognises the same object from Córdoba to São Paulo, we chose a single candlestick for the whole chain — one that predates its own period by some 300 years. A deliberate storytelling choice."],
+ "10":["<b>אותו פמוט מסצנה 8.</b> כאן הוא נעטף בצעיף ומוחבא בתיבה. המחקר הצביע על מנורה תלויה או גביע קידוש, אבל הרגע הזה — ההחבאה — עובד רק אם זה אותו חפץ שראינו בקורדובה וייצא שוב בסלוניקי.","<b>The same candlestick as scene 8.</b> Here it is wrapped in a shawl and hidden in a chest. The research pointed to a hanging lamp or a kiddush cup, but this moment — the hiding — only works if it is the same object we saw in Córdoba and will see again in Salonika."],
+ "12":["<b>אותו פמוט מסצנה 8.</b> הוצא מן התיבה וחזר אל השולחן. בסלוניקי של המאה ה‑17 ההדלקה היא בקנדיל תלוי מעל השולחן, אבל מנורה תלויה שוברת את השרשרת: החפץ שיצא מהתיבה חייב להיות זה שנכנס אליה בטולדו.","<b>The same candlestick as scene 8.</b> Taken out of the chest and returned to the table. In 17th‑century Salonika the lighting is a hanging kandil, but a hanging lamp breaks the chain: what comes out of the chest has to be what went into it in Toledo."],
+ "25–26":["<b>אותם פמוטים מסצנות 8 ו‑15.</b> זוג הכסף הספרדי וזוג הפליז הפולני, יחד על השולחן בפעם הראשונה.","<b>The same candlesticks as scenes 8 and 15.</b> The Spanish silver pair and the Polish brass pair, together on the table for the first time."]
+};
+let RES_LANG='he';
+function renderRes(el){
+  const he = RES_LANG==='he';
+  el.setAttribute('dir', he?'rtl':'ltr');
+  const T = he
+   ? {title:'מחקר נרות שבת', intro:'לכל סצנה: חפץ ההדלקה המתאים לתקופה ולאזור, השוואה לתיאור בתסריט, ואופן ההדלקה. החפצים מתועדים באוספי מוזיאונים ובמקורות היסטוריים.', scene:'סצנה', scr:'כפי שמתואר בתסריט', real:'מה שנכון לתקופה', light:'אופן ההדלקה', key:'הסבר'}
+   : {title:'Sabbath Lights: Period Research', intro:'For each scene: the lighting object correct to its period and region, a comparison with the script, and how it was lit. Objects are documented in museum collections and historical sources.', scene:'Scene', scr:'As described in the script', real:'Correct for the period', light:'How it is lit', key:'Why'};
+
+  let h=`<div class="res-head">
+    <div class="res-top">
+      <h2>${T.title}</h2>
+      <div class="langsw" role="group">
+        <button class="lsw ${he?'on':''}" data-l="he">עברית</button>
+        <button class="lsw ${he?'':'on'}" data-l="en">English</button>
+      </div>
+    </div>
+    <p>${T.intro}</p>
+  </div>`;
+
+  RES.forEach(e=>{
+    const O = he ? OBJ[e.sc] : OBJ_EN[e.sc];
+    const E = ERA[e.sc];
+    const ACT = {"3":1,"4–6":1,"7":1,"8":2,"9":2,"10":2,"11":2,"12":2,"13":2,"14–15":2,"16":3,"17":3,"18":3,"19":3,"20":3,"21":4,"22":4,"23":4,"24":4,"25–26":4}[e.sc];
+    const ACTN = he ? ["","שורשים","שתי דרכים","מעברים","איחוד"] : ["","Roots","Two Roads","Crossings","Reunion"];
+    h+=`<section class="era act${ACT}">
+      <div class="era-head">
+        <span class="era-y">${he?E[0]:E[1]}</span>
+        <span class="era-p">${he?E[2]:E[3]}</span>
+        <span class="era-s">${ACTN[ACT]} · ${T.scene} ${e.sc}</span>
+      </div>
+      <div class="objname">${O.name}</div>
+      <div class="cmp">
+        <div class="cm"><div class="ck">${T.scr}</div><div class="cv">${O.scr}</div></div>
+        <div class="cm"><div class="ck">${T.real}</div><div class="cv">${he?O.v:O.v}</div></div>
+      </div>
+      ${O.one?`<div class="lightrow"><div class="lk2">${T.key}</div><div class="lv2">${O.one}</div></div>`:""}
+      ${O.light?`<div class="lightrow"><div class="lk2">${T.light}</div><div class="lv2">${O.light}</div></div>`:""}
+      ${e.im.length?`<div class="shots">`+e.im.map(([f])=>`
+        <figure class="shot">
+          <img src="assets/research/scene-${String(e.sc.split("–")[0]).padStart(2,"0")}/${f}" alt="" loading="lazy" onerror="this.closest('.shot').remove()">
+          <figcaption class="cap">${CAP[f]?(he?CAP[f][0]:CAP[f][1]):''}</figcaption>
+        </figure>`).join("")+`</div>`:""}
+      ${CONT[e.sc]?`<div class="controw">${he?CONT[e.sc][0]:CONT[e.sc][1]}</div>`:""}
+    </section>`;
+  });
+  el.innerHTML=h;
+
+  el.querySelectorAll('.lsw').forEach(b=>b.addEventListener('click',()=>{RES_LANG=b.dataset.l; renderRes(el);}));
+  const lb=document.getElementById("lb");
+  el.querySelectorAll(".shot img").forEach(img=>{
+    (function(){var s=img.getAttribute("src")||"";if(!img.dataset.full&&s.indexOf("assets/")===0&&s.indexOf("assets/thumb/")!==0){img.dataset.full=s;img.setAttribute("src","assets/thumb/"+s.slice(7));}})();
+    img.addEventListener("click",()=>{lb.querySelector("img").src=(img.dataset.full||img.getAttribute("src"));lb.classList.add("on")});
+  });
+  if(!lb.dataset.bound){ lb.addEventListener("click",()=>lb.classList.remove("on")); lb.dataset.bound='1'; }
+}
+renderRes(document.getElementById("p-res"));
+const WEAR=[{"sc": 1, "y": "ששת ימי בראשית", "pl": "הקוסמוס", "v": "mix", "vt": "אין לבוש", "na": "אין צורך בלבוש: אין דמויות בפריים. זו סצנת הקדמה: יקום, יצירה, אור. הדמות היחידה (אדם מול השקיעה) היא סילואטה.", "rows": [["גבר", ["סילואטה כהה מול השקיעה. בלי בד, בלי אביזר", "אם צריך ״להלביש״: רק אור: קו אור סביב הגוף (״כתנות אור״, בראשית רבה כ׳ י״ב)", "פוזה: יראה וציפייה, לא שליטה (עבודה זרה ח׳ ע״א)"]]], "key": "", "avoid": ["כל פריט לבוש", "עלה תאנה / כתנות עור", "הקב״ה כדמות או כיד מענן", "הילה או צלב", "פוזת מיכלאנג׳לו", "חוה בפריים"], "ns": 8, "deep": true, "im": [], "hero": []}, {"sc": 2, "y": "היום השביעי", "pl": "מחוץ לזמן", "v": "mix", "vt": "אין לבוש", "na": "אין צורך בלבוש: אין דמויות בפריים. זו סצנת הקדמה: העולם דומם, ומתוכו נולדת הלהבה הראשונה.", "rows": [["גבר", ["לנעול אותה לתקופה אחת ולא לערבב בין הרפרנסים", "הרפרנסים כאן קומפוזיציוניים, לא לבושיים"]]], "key": "", "avoid": ["להוסיף דמויות בלי החלטה בימויית", "לבוש ״תנכ״י״ גנרי", "לבוש אופנהיים (פרנקפורט מאה 18)", "מגן דוד", "פמוטי כסף ונר פרפין", "הילה או דמות אל סביב הלהבה", "שמש עם פנים בסגנון בית אלפא"], "ns": 8, "deep": true, "im": [], "hero": []}, {"sc": 3, "y": "מאה 13 לפנה״ס", "pl": "מדבר סיני", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["כותונת עד הקרסול על **כתף אחת** + שמלה נעטפת שהיא גם השמיכה", "צמר גס ארוג ביד · פסים אדום-לבן, מיאנדר, גדילים בשוליים", "סרט בד צר, שיער שחור פזור: **לא רעלה** · יחפה במחנה"]], ["גבר", ["אזור: חצאית-מותן עד הברך, **פלג גוף עליון חשוף** · או כותונת קצרה על כתף אחת + שמלה", "צמר גס · פסים אנכיים, שוליים משוננים", "סרט בד או מטפחת: בלי כאפייה · סנדל עור או יחף"]], ["ילד", ["חגורה אדומה קצרה בלבד, גוף חשוף", "ראש גלוי · יחף"]]], "key": "הבגדים **שחוקים ומאובקים אך שלמים**: ״לֹא בָלוּ שַׂלְמֹתֵיכֶם״ (דברים כ״ט ד׳). לא סמרטוטים, לא חדשים.", "avoid": ["טלית מודרנית", "כיפה / פאות / שטריימל", "כאפייה ועקאל", "גלימת פשתן לבנה ״תנכ״ית״", "כותנה, משי, קטיפה", "מכנסיים", "ארגמן ותכלת כצבע יומיומי", "בגדי כהונה", "בגד חדש ומגוהץ"], "ns": 10, "deep": true, "im": [["M-1.jpg", "גברים בחצאית-מותן פסים, בני חסן", 0, "מוקדם מהתקופה", "ציור קיר"], ["W-1.jpg", "נשים עאמו, בני חסן: כותונת על כתף אחת, בד מדוגם", 0, "מוקדם מהתקופה", "ציור קיר"], ["X-1.jpg", "איור מודרני של לבוש בני ישראל: ארבע דמויות: כותונת שמנת ארוכה, כותונת חומה קצרה עם מעיל פתוח, גלימה כהה עם כיסוי ראש מפוספס, אישה ברעלה כחולה", 2, "", "איור"], ["X-2.jpg", "איור מודרני: בגדי צמר ארוגים בשכבות: צעיפים עם גדילים מעל הראש, שמלות מפוספסות, גלימה רחבה, עטיפות רגליים", 2, "", "איור"]], "hero": []}, {"sc": 5, "scLabel": "4–5", "y": "מאה 1 לפנה״ס", "pl": "ירושלים: ליל שבת: ההדלקה ואחר כך בתוך הבית", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "למשפחה פשוטה: **גוון טבעי + פס clavi כהה בפינות העטיפה: לא לאורך הבגד.** ארגמן היה יקר מזהב; הבד ארוג ביד עם טלאים ותיקונים גלויים. ציצית, גדילים קצרים בגוון הבגד, **לא** טלית. **בבית:** הכותונת פשתן, העטיפה צמר, לעולם לא באותו פריט (שעטנז); העטיפה יורדת מהראש לכתפיים. **שבת מול חול:** אותו בגד, אבל נקי ובלי טלאים (שבת קי״ג ע״א), לא גזרה אחרת.", "avoid": ["טלית מודרנית", "כיפה", "שטריימל, קפוטה או כובע פרווה", "ארגמן, תכלת, כל צבע רווי", "פסי clavi רחבים", "כפתורים, רוכסנים וצווארונים מודרניים", "טוגה רומית", "תכשיטי זהב", "מגן דוד", "בגד חדש ואחיד", "פאה", "מכנסיים", "שעטנז", "נעליים בבית", "פמוטי כסף ונר שעווה", "סאטן ורקמת זהב"], "ns": 8, "deep": true, "im": [["S-1.jpg", "**The Chosen** (סדרת טלוויזיה): תלמידים בדרך: כותונת פשוטה חגורה, גלימה על כתף אחת, סנדלים. השראה לגזרה, לא מקור תיעודי", 4, "", "סטילס"], ["D-1.jpg", "דורא אירופוס: עזרא קורא בתורה: דרפינג העטיפה", 1, "מאוחר מהתקופה", "ציור קיר"], ["D-2.jpg", "דורא אירופוס: יוכבד ומרים (לפי Kraeling) מקבלות את משה התינוק: כותונת ארוכה חגורה, רעלה בהירה על הראש", 1, "מאוחר מהתקופה", "ציור קיר"]], "hero": [["H-6.jpg", "מטפחת/עטיפת ראש מפשתן דק שקוף עם פסי צמר חומים בקצה", 0, "מאוחר מהתקופה", "ממצא", "לכיסוי הראש הרך של האם בתוך הבית: פשתן דליל וכמעט שקוף באורך 67 ס\"מ, עם שני פסי צמר חום כהה: כיסוי חלקי שנשמט ומשאיר שיער גלוי, לא מטפחת אטומה. (הפריט תועד כעטיפת ראש של ילד, כלומר מתאים גם לילדה בפריים.)", "free"]]}, {"sc": 6, "y": "70 לספירה", "pl": "ירושלים: החורבן", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["**שתי שכבות בלבד**: כותונת עד הקרסול + עטיפת צמר מלבנית משוכה על הראש.", "צמר/פשתן **בלתי־צבועים**: שמנת, בז', אפור־חום. שני פסים אנכיים כהים מהצוואר. פיח, אפר, קרעים בשוליים.", "ראש מכוסה, שיער קלוע ואסוף; חגורת **אריג** מגולגלת; סנדלי עור פשוטים; תכשיטים מוסתרים מתחת לבגד."]], ["גבר", ["כותונת עד הברך/אמצע השוק + עטיפה (himation) שנמשכת על הראש בלילה; לחלקם גלימה חומה כהה.", "צמר בלתי־צבוע עם שני פסי clavi; **שכבות־יתר**: בבריחה משרפה לובשים הכול בבת אחת, צללית מנופחת.", "ראש חשוף או בקצה העטיפה; חגורת אריג עם סכין ומפתח; סנדלי עור **בלי מסמרים**."]], ["ילד", ["כותונת פשתן בהירה עד הברך: **בגד תחתון**; מעליה, אם יש, כותונת צמר קצרה בצבע חמים.", "ראש גלוי; תינוק עטוף כולו בבד וקשור לגוף האם בקצה העטיפה.", "סנדלים קטנים: במצדה נמצאו סנדלים במידות שונות. יחפות = חריג של בהלה, לא ברירת מחדל."]]], "key": "זה **אב: סוף אוגוסט**, לא חורף: אין גלימות פרווה ואין שכבות חורפיות. כל הדרמה נעשית עם פריט אחד, יריעת צמר מלבנית בלתי־צבועה שנמשכת על הראש, עוטפת תינוק, ומגינה על הלהבה. והבד שסביב הלהבה הוא **פשתן**, המשנה קובעת שרק פשתן משמש כפתילה, ופתילות עשו מקיפול בגד.", "avoid": ["בלי גלימות חורף", "בלי כיפה/שטריימל", "בלי טורבן או כאפייה", "בלי אבזם עור", "בלי סנדל מסומר", "בלי מגן דוד", "בלי ארגמן רחב", "בלי צבעים רוויים", "בלי גזרה תפורה ושרוול מחובר", "בלי שעטנז (צמר+פשתן)"], "ns": 10, "deep": true, "im": [["S-1.jpg", "**The Chosen** (סדרת טלוויזיה): תלמידים בדרך: כותונת פשוטה חגורה, גלימה על כתף אחת, סנדלים. השראה לגזרה, לא מקור תיעודי", 4, "", "סטילס"], ["D-1.jpg", "דורא אירופוס: עזרא קורא בתורה: דרפינג העטיפה", 1, "מאוחר מהתקופה", "ציור קיר"], ["D-2.jpg", "דורא אירופוס: יוכבד ומרים (לפי Kraeling) מקבלות את משה התינוק: כותונת ארוכה חגורה, רעלה בהירה על הראש", 1, "מאוחר מהתקופה", "ציור קיר"]], "hero": []}, {"sc": 7, "y": "מאה 5 לספירה", "pl": "בבל הסאסאנית (הפרת · פומבדיתא/סורא)", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["כותונת ארוכה עד קרסול, שרוולים ארוכים, **חגורה במותן**; צעיף נפרס מהכתף", "פשתן בקיץ, צמר בחורף; דגם סאסאני של שלוש-נקודות; שמנת/חום-אדמדם/אוכרה/אינדיגו", "**ראש מכוסה** לנשואה: בחצר מספיקים כבול או מטפחת; נעליים סגורות, שיער קלוע"]], ["גבר", ["**חלוק** ארוך מתחת + **גלימא/טלית** מעליו, ארבע כנפות עם **ציצית גלויה**", "**סודרא** פרוס על הראש ושני קצותיו על הפנים: סימן נשוי/ת\"ח. **לא כיפה**", "חגורה במותן, **מסאני** (נעלי עור) ו**פוזמקי**; בחורף **סרבלא**: מעיל פרסי בלי ציצית"]], ["ילד", ["**חלוק גדול מהמידה**: בגדי הורשה, זו הנורמה (שבת קמא ע\"ב)", "**ראש גלוי לגמרי**: הסודרא היא סימן נישואין, לא של ילדים", "יחפים בחצר או נעלי עור פשוטות / סנדלי סיב-דקל; בלי טלית ובלי תכשיטים"]]], "key": "החכם = שתי שכבות בד נשפכות (חלוק + גלימא עם ציצית בפינות) ועל הראש **סודרא פרוסה ששני קצותיה תלויים על הפנים**: לא כיפה ולא טלית לבנה-שחורה; הילד שלידו גלוי-ראש לגמרי, בחלוק גדול עליו.", "avoid": ["בלי כיפה", "בלי טלית לבנה-שחורה", "בלי ציציות מתחת לחולצה", "בלי שטריימל וקפוטה", "בלי טורבן עות'מאני", "בלי טוגה רומית", "בלי כתר או הילה", "בלי כפתורים ורוכסנים", "בלי כותנה מודפסת", "בלי שיער גלוי לנשואה", "בלי כתם על בגד החכם", "בלי שעטנז"], "ns": 17, "deep": false, "im": [["M-3.jpg", "דורא־אירופוס על הפרת, 244–256, חזון יחזקאל: גברים בלבוש פרתי־פרסי, כותונת חגורה עם שסע, מכנסיים ורגליות, בלי סימני מלכות", 1, "מוקדם מהתקופה", "ציור קיר"], ["W-2.jpg", "דורא־אירופוס על הפרת, 244–256: האלמנה מצרפת, אישה פשוטה בכותונת ארוכה ורדיד על הראש, מחזיקה ילד", 1, "מוקדם מהתקופה", "ציור קיר"]], "hero": []}, {"sc": 8, "y": "מאה 12: אבל למעשה מאה 10–11", "pl": "קורדובה: תור הזהב", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["שכבות: **ghilāla** כותונת פנים ← **sirwāl** ← שמלה/**jubba** בשרוול רחב פתוח ← **ridā'** על הכתפיים", "בד וצבע: משי ופשתן מפוספס, זהב מוזהב על הבד. אדום-רימון, כחול-ענן, פיסטוק, אזמרגד. **לבן אסור על נשים**", "ראש ורגליים: **mi'jar/khimār** בצבע התואם לשמלה, פנים גלויות בחצר; יחפות על השטיח"]], ["גבר", ["שכבות: **ghilāla** ← **qamīs** ← **jubba** (הגלימה התקנית בקורדובה) ← **ridā'/mitraf** ביציאה", "בד וצבע: טורקיז, ירוק בקבוק, קורל, חלודה, כחול-שחור. פסים ומשבצות, סרט **tirāz** מוזהב על אחד בלבד", "ראש ורגליים: **ראש גלוי או כומתת צמר אדומה/ירוקה (ghifāra)**, לא טורבן; יחפים בפנים"]], ["ילד", ["שכבות: **qamīs** אחד וזהו. בלי גלימה, בלי מעטפת", "בד וצבע: אותה פלטה, בד פשוט יותר, **בלי tirāz**", "ראש ורגליים: ראש גלוי תמיד, שיער עד הסנטר; יחפים"]]], "key": "המשפחה היהודית לבושה **בדיוק** כמו שכניה המוסלמים: אפס סימן מבדיל, אפס טלאי, אפס כיפה כסמל. העושר נמדד במשי מפוספס, בזהב על הבד ובשכבות, ואת הראשים משאירים **גלויים**, לא בטורבנים.", "avoid": ["טורבנים גדולים לכולם", "כיפה כסימן יהודי", "טלאי צהוב / אות קלון", "טלית על השולחן", "שמלה לבנה לאישה", "גלימות שק תנ\"כיות", "קפטן שחור אשכנזי", "גזרה גותית אירופית", "מכנסי הרמון ואלאדין", "מראה בדואי-מדברי"], "ns": 9, "deep": true, "im": [["W-4.jpg", "הגדת הזהב, קטלוניה, בערך 1320: בית יהודי לפני פסח, אם מטאטאת, נערה מנקה, ילד בכותונת קצרה ואב בודק חמץ", 1, "מאוחר מהתקופה", "כתב יד"], ["M-3.jpg", "הגדת האחות, ספרד, מאה 14: קהל יהודי בבית כנסת, גברים ונשים בגלימות ברדס חד-גוניות וילד בכותונת אדומה", 1, "מאוחר מהתקופה", "כתב יד"]], "hero": []}, {"sc": 9, "y": "מאה 13", "pl": "חבל הריין (אשכנז)", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["**שלוש שכבות**: כותונת פשתן → שמלת צמר עד הקרסול, שרוול צר → מעטפת מעל, סיכה בגרון", "**בד וצבע**: צמר ופשתן בלבד. אדום-פואה, כחול-טורקיז, אוכרה, ירוק זית, שמנת: בלי שחור ובלי צבעים רוויים", "**ראש ורגליים**: אם נשואה: צעיף פשתן לבן על ראש+צוואר; הבת, שיער גלוי. נעל עור רכה מוסתרת"]], ["גבר", ["**שלוש שכבות**: כותונת פשתן → טוניקת צמר ארוכה עד הקרסול, חגורת עור צרה → מעטפת לקור", "**בד וצבע**: אותו צמר, אותה פלטה כמו האישה. בלי כפתורים, בלי תפרים מודרניים", "**ראש ורגליים**: **Judenhut**: שוליים עגולים קשיחים + חרוט לחוד עם כפתור, לבן-שמנת או אוכרה. נעל עור מחודדת"]], ["ילד", ["**גרסה מוקטנת של המבוגרים**: אין אופנת ילדים. גלימה ארוכה לקטנים, טוניקה קצרה + פוזמקאות לנער", "**בד וצבע**: אותו צמר, אותה פלטה, בלי קישוט", "**ראש**: **לבן: בלי כובע יהודי.** לבת, שיער גלוי, בלי צעיף"]]], "key": "**אותו לבוש גותי בדיוק כמו השכנים הנוצרים באותה עיר.** ההבדל היחיד בפריים הוא הכובע המחודד על ראש האב. אל תמציאו 'תלבושת יהודית': ואל תשימו שטריימל, קפוטה או פאות.", "avoid": ["שטריימל", "קפוטה שחורה", "ציצית בחוץ", "כיפה מודרנית", "פאות מסולסלות", "פאה נוכרית", "מגן דוד", "טלאי צהוב", "טורבן / ג'לבייה", "שורות כפתורים", "שחור אחיד"], "ns": 8, "deep": false, "im": [["W-1.jpg", "נשים בצעיף לבן, גברים בכובע מחודד: מחזור משולש ~1322 (דור אחרי הסצנה)", 1, "בן התקופה", "כתב יד"], ["W-3.jpg", "אישה עטופה בצעיף פשתן מלא: מחזור לייפציג ~1310 (מעט מאוחר יותר)", 1, "בן התקופה", "כתב יד"], ["M-4.jpg", "גבר בכובע יהודי מחודד (Judenhut), גלימה כחולה עם בטנת ורוד ופרוות צווארון: כתב יד גרמני, המאה ה-13. **מקור לא אומת מלא**, לא אותר שם כתב היד או ציטוט מדויק", 1, "בן התקופה", "כתב יד"]], "hero": []}, {"sc": 10, "y": "1492", "pl": "טולדו: גירוש ספרד", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["**שכבות**: כותונת פשתן לבנה → saya עם מחוך משורשר וחצאית מלאה → מנטו לרחוב", "**בד וצבע**: צמר עמום: חום, חלוד, ירוק כהה, אפור. **בלי משי, בלי ברק, בלי זהב**", "**ראש ורגליים**: נשואה תמיד ב-toca לבנה; נערה בשיער פרוע. נעלי עור, לדרך מגפוני קרסול"]], ["גבר", ["**שכבות**: כותונת לבנה → jubón → calzas → sayo קצר (צעיר) או **ropa/tabardo ארוך** (אב)", "**בד וצבע**: צמר גס כהה; calzas אדומות או כהות. משי ו-grana אסורים בחוק ליהודים", "**ראש ורגליים**: **bonete או capirote קסטיליאני, לא כיפה חשופה**; ברדס/capuz לדרך; נעלי עור"]], ["ילד", ["**שכבות**: מבוגרים קטנים: אותה גזרה בדיוק, צמר פשוט, בלי קישוט", "**בד וצבע**: חום או ירוק כהה; כותונת לבנה נראית בצוואר ובשרוול", "**ראש ורגליים**: בן: bonete קטן. בת: שיער עם פס בד, לפעמים צעיף. נעלי עור מאובקות"]]], "key": "המשפחה היהודית בטולדו 1492 נראית **בדיוק כמו השכנים הנוצרים**: הטרגדיה היא שאי אפשר להבדיל. כל \"תלבושת יהודית\" מעבר לעיגול בד אדום קטן על הכתף הימנית היא טעות.", "avoid": ["בלי מגן דוד צהוב", "בלי כובע חרוט", "בלי טורבן אנדלוסי", "בלי שטריימל וקפוטה", "בלי כיפה חשופה", "בלי טלית ברחוב", "בלי משי וברוקד", "בלי ruff וחישוקים", "בלי מזוודות ומטבעות"], "ns": 7, "deep": false, "im": [["M-5.jpg", "כתב יד ספרדי בסגנון הגדות ספרד (קטלוניה, ~מאה 14): גבר בכובע ירוק וגלימה כחולה מרים כוס (קידוש?), ילד עם מקל לצידו. **זיהוי משוער**, כתב היד המדויק לא אומת", 1, "מוקדם מהתקופה", "כתב יד"]], "hero": []}, {"sc": 11, "y": "1540", "pl": "ליסבון: אנוסים", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["שכבות: כותונת פשתן לבנה → חזייה מוקשחת **משטחת חזה** → חצאית בקפלים → verdugado קונוס חלק → גלימה פתוחה עם שרוולי משפך תלויים", "בד וצבע: צמר ופשתן, **שחור** או חום-שחור עמום, בלי רקמה ובלי זהב; לבן רק בצוואר ובשורשי כפות הידיים", "ראש ורגליים: toucado פשתן לבן כרוך (נשואה תמיד מכוסה) + manto שחור ברחוב; נעלי עור שטוחות; **צלב או מחרוזת תפילה גלויים**"]], ["גבר", ["שכבות: כותונת פשתן עם צווארון עומד נמוך → gibão שחור צמוד → calças בנפח מלון + גרבי-ברך → **גלימה שחורה ארוכה** (roupão) או capa קצרה", "בד וצבע: צמר, **שחור מעל הכול**; פס פשתן לבן דק בצוואר ובידיים בלבד", "ראש ורגליים: **barrete** כומתה שחורה שטוחה ורכה, זקן קצר מפוצל; נעלי עור שטוחות רחבות-קצה; חגורת עור עם ארנק"]], ["ילד", ["שכבות: **מיניאטורה מדויקת של מבוגר** מגיל ~6; לפני כן שמלה ארוכה פשוטה לשני המינים", "בד וצבע: אותה פלטה כהה, בדים פשוטים יותר, אפס מותרות ואפס צבע עליז", "ראש ורגליים: הבת: שיער קלוע ומגולגל או כיסוי פשתן פשוט; בבית לעיתים יחפה"]]], "key": "המשפחה לובשת **בדיוק** מה שלובש הקהל הנוצרי ברחוב: אין ולו פרט אחד שמסגיר אותם. הסכנה היא לא בגד יהודי, אלא **כותונת פשתן נקייה בערב שישי**, שנראית בצוואר ובידיים ושעליה הלשינו.", "avoid": ["ראף מעומל (1555+)", "פרתינגייל גלגל (1580+)", "מכנסי דלעת מנופחים", "בטן מחודדת (peascod)", "כיפה, טלית, מגן דוד", "מטפחת מזרח-אירופית", "נשואה בשיער גלוי", "סנבניטו על המשפחה", "זהב ורקמה", "צבעים רוויים ועליזים"], "ns": 6, "deep": true, "im": [["M-2.jpg", "קהל גברים ליסבוני 1536-39; הקשתים בקצוות הם תליינים מסוגננים: התעלמו", 0, "בן התקופה", "ציור"], ["M-3.jpg", "רחוב ליסבוני אמיתי: קהל התהלוכה. 1570-80, צמצמו צווארונים וכובעים", 0, "מאוחר מהתקופה", "ציור"], ["W-3.jpg", "נשים פורטוגליות רגילות בבית, 1530-40: הרפרנס האמיתי לאם במרתף", 0, "בן התקופה", "ציור"], ["M-4.jpg", "\"כך הולכים הגברים בדרך כלל בפורטוגל\" – כומתה שטוחה וגלימה כהה רחבה. ויידיץ 1529, 11 שנה לפני הסצנה", 0, "מוקדם מהתקופה", "כתב יד"], ["C-2.jpg", "ילד איברי רגיל (קסטיליה 1529) – טוניקה קצרה, גרביים, ראש גלוי. לליסבון – בצבע כהה", 0, "מוקדם מהתקופה", "כתב יד"]], "hero": []}, {"sc": 12, "y": "מאה 17", "pl": "סלוניקי", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["שכבות: כותונת לבנה דקה, אנטרי פנימי סלמון, אנטרי חיצוני נייבי מכופתר, חגורת בד ארוגה", "בד וצבע: **צמר סלוניקאי כבד**; נייבי, שחור, סלמון, בורדו, חרדל. **ירוק אסור**", "ראש ורגליים: מטפחת לבנה על כיפה מחודדת + **סרט אדום יורד מאחור**, אפס שיער גלוי, נעל שטוחה כהה"]], ["גבר", ["שכבות: אנטרי ארוך מכופתר מהצוואר עד המותן, kuşak רחב, גלימה חיצונית פתוחה כהה", "בד וצבע: אינדיגו/כחול-ירקרק מתחת, חום-זית מעל; **בלי ירוק**, בלי ברק", "ראש ורגליים: **כובע אדום-בורדו קשיח עם שוליים בהירים** (צו 1599), זקן מלא, נעל שטוחה כהה"]], ["ילד", ["שכבות: מבוגרים מוקטנים: אנטרי קטן, חגורת בד. אין אופנת ילדים במאה ה-17", "בד וצבע: הבד הכי משומש בפריים; בגדים עוברים בין אחים, בלאי נראה", "ראש ורגליים: בן בכיפת בד רכה (takke) ולא בכובע האדום; בת במטפחת מגיל צעיר"]]], "key": "החוק חייב בגד כהה בפומבי, אבל **התיר צבע בשבת בתוך הרובע**: ולכן הצבע כאן חוקי; מה שלא משתנה גם בשבת הוא כיסוי הראש: **כובע אדום-בורדו לגבר, לא טורבן לבן**.", "avoid": ["טלאי צהוב", "טורבן לבן גדול", "ירוק כלשהו", "נעל צהובה", "כובע קונוס", "שטריימל ופאות", "כיפה מודרנית", "טלית בשולחן", "ruff ספרדי", "kofya מהמאה 19", "צבעי אנילין", "משי מבריק"], "ns": 9, "deep": true, "im": [["M-1.jpg", "רלאמב 1657, \"Iudeus\": הכובע האדום של צו 1599. זה הכובע לפריים", 1, "בן התקופה", "כתב יד"], ["M-2.jpg", "ניקולאי 1567, \"Marchant Juif\": לגזרת הגוף בלבד. לא להעתיק את הטורבן", 1, "מוקדם מהתקופה", "תחריט"], ["M-3.jpg", "Recueil Ferriol 1714, \"Juif\": הסבא: גלימה כהה פשוטה מעל אנטרי מפוספס וחגורת בד", 1, "מאוחר מהתקופה", "תחריט"], ["W-1.jpg", "רלאמב 1657, \"Hebrea\": אנטרי נייבי על סלמון, סרט אדום מאחור", 1, "בן התקופה", "כתב יד"], ["W-2.jpg", "רלאמב 1657, \"Iudæa\": מצנפת לבנה גבוהה, גלימה שחורה, חפתים אדומים", 1, "בן התקופה", "כתב יד"], ["W-4.jpg", "לה שאפל, בערך 1648: \"Femme Juifve\" באיסטנבול: גלימה כהה פשוטה עד הרצפה, מטפחת קשורה מעל מצנפת גבוהה. לבוש יומיומי, בלי פרווה ורקמה", 1, "בן התקופה", "תחריט"]], "hero": []}, {"sc": 13, "y": "1800", "pl": "פאס, מרוקו: המלאח", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["שכבות: כותונת פשתן בשרוולים ארוכים מאוד → קפטן עד הירך, פתוח בחזה → חצאית ירוקה → אבנט משי-זהב", "בד וצבע: **צבע חופשי**, קטיפה או צמר, **רקמת זהב בשוליים בלבד** (לא משטח זהב, זו חתונה)", "ראש ורגליים: נשואה: **מטפחת משי אדומה** + סרט; רווקה: צמה גלויה. **בלי גרביים**, בבושים אדומים רקומי זהב"]], ["גבר", ["שכבות: סרוואל רחב → כותונת לבנה → קפטן כהה הדוק במותן → **ברנוס צמר שחור עם ברדס**", "בד וצבע: **שחור בכפיית חוק.** אין צבע, אין זהב, אין דוגמה", "ראש ורגליים: **כיפה/שאשיה שחורה**, ראש מגולח, זקן ארוך; **בבושים שחורים, לא צהובים**"]], ["ילד", ["שכבות: בנים: קפטן כהה עד הקרסול + סרוואל + כותונת לבנה בצווארון. בנות: קפטן קטן צבעוני", "בד וצבע: בנים כהים כמו האב; **הבנות הן הצבע הכי חופשי בפריים**", "ראש ורגליים: בנים: כיפה שחורה קטנה. בנות: צמה גלויה. **יחפים בחצר, זה נכון, לא לתקן**"]]], "key": "**הגברים בשחור כי החוק מחייב, הנשים בצבע כי לנשים מותר: וזה מתועד מילה במילה. והכסווה אל-כבירה היא בגד חתונה: בשבת רגילה זה קפטן צבעוני עם רקמת זהב בשוליים, לא מחוך משוריין זהב.**", "avoid": ["שטריימל וקפוטה", "פס אדום על יהודי", "גבר בקפטן צבעוני", "בבושים צהובים", "כסווה בשבת רגילה", "מג'נטה אנילין", "גרביים על נשים", "טלית בסעודה", "רעלה בתוך הבית", "מחוך ויקטוריאני", "טלאי צהוב", "תפר מכונה", "פאה נוכרית"], "ns": 7, "deep": true, "im": [["C-1.jpg", "ילדים בקפטנים כהים, חלקם יחפים. 1912: אל תעתיקו גזרות", 1, "מאוחר מהתקופה", "תצלום"], ["M-1.jpg", "דלקרואה, הלובר 1839: חצר ריאד, היהודים הם הכהים, בבושים על הרצפה", 1, "מאוחר מהתקופה", "ציור"], ["M-2.jpg", "ברנוס צמר שחור עם ברדס: 'obliged to appear externally in black'", 1, "מאוחר מהתקופה", "תחריט"], ["W-3.jpg", "מלאח פאס 1913: הרגיסטר היומיומי המרוסן. פער 113 שנה", 1, "מאוחר מהתקופה", "תצלום"], ["W-4.jpg", "דלקרואה, רישום מהחיים מ-1832 (הלובר RF 10055): יהודייה מרוקאית יושבת בבגדי יום: חצאית כהה פשוטה, חזית אדומה-חומה, צעיף לבן, מטפחת. בלי זהב", 1, "מאוחר מהתקופה", "ציור"], ["W-5.jpg", "דה אמיציס 1879: שתי יהודיות בפתח בית בטנג'יר: כותונת בשרוולים רחבים, חצאית וסינר, חגורת בד, מטפחת. לבוש רגיל, לא חגיגי", 1, "מאוחר מהתקופה", "תחריט"]], "hero": []}, {"sc": 14, "y": "1840", "pl": "שטעטל: ערב שבת, שוק", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["חצאית+חולצה עד הרצפה · **סינר ארוך עד הקרקע** · צעיף/שובה לקור", "**חום** בעיקר, לפעמים שחור · פשתן, צמר, כותנה: לא משי", "**מטפחת צבעונית** על כובע צמוד · נעל עור נמוכה, גרביים כהות"]], ["גבר", ["**חלאט** ארוך עד הקרסול · **גרטל** שחור עם גדילים", "שחור **שחוק** ודהוי · כותנה/אריג גס זול", "ירמולקה + כובע פרווה/לבד · **מכנסי ברך, גרביים, נעל נמוכה: לא מגף**"]], ["ילד", ["גרסה מוקטנת של אבא · **מעיל ארוך**, גדול עליו", "בד דהוי, מפוספס, שחוק: בגד בירושה", "כובע בד רך · **פאות ארוכות פרועות** · נעל נמוכה או יחף"]]], "key": "**אף גבר לא במכנסיים ארוכים ובמגפיים**: ב-1840 זה מכנסי ברך, גרביים ונעל שטוחה נמוכה, בתוך הבוץ.", "avoid": ["מכנסיים עד הקרסול", "מגפיים גבוהים", "שטריימל בשוק", "שטרנטיכל בשוק", "משי וקטיפה", "מעיל גרמני קצר", "מראה וישניאק 1930", "בגדים נקיים", "סינר מטבח קצר"], "ns": 11, "deep": true, "im": [["C-1.jpg", "ורשה 1841 · נער: כובע רך, פאות, מעיל שחוק", 1, "בן התקופה", "תחריט"], ["C-2.jpg", "ורשה 1841 · ילד ברחוב: מעיל ארוך, כובע רך; יחף בצד", 1, "בן התקופה", "תחריט"], ["M-1.jpg", "ורשה 1841 · רוכלים: קפוטה, גרטל, נעל נמוכה: הפריים המרכזי", 1, "בן התקופה", "תחריט"], ["M-2.jpg", "ורשה 1841 · סוחרים: כובעי פרווה ולבד של יום חול", 1, "בן התקופה", "תחריט"], ["M-3.jpg", "גליציה 1821 · צבע: קפטן, מכנסי ברך, גרביים, נעל נמוכה", 1, "מוקדם מהתקופה", "תחריט"], ["W-1.jpg", "ליטא 1846 · צעיף מהראש עד הקרקע, מטפחת, פנינים", 1, "מאוחר מהתקופה", "תחריט"], ["W-2.jpg", "גליציה 1821 · סינר ארוך מעל חצאית: צבעים חגיגיים", 1, "מוקדם מהתקופה", "תחריט"], ["W-3.jpg", "ורשה 1881 (מאוחר) · מרקם שחוק, שכבות, צעיף חום", 1, "מאוחר מהתקופה", "ציור"]], "hero": []}, {"sc": 15, "y": "1840", "pl": "שטעטל: ליל שבת", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [["אישה", ["**שכבות**: שמלה ארוכה שרוול-ארוך + ברוסטוך על החזה + סינר עד הרצפה + יופה מרופד פרווה בחורף", "**בד וצבע**: חום או שחור, אבל בשבת בד יקר יותר; גרביים **לבנות** במקום שחורות; מחרוזת פנינים אחת", "**ראש ורגליים**: כופקה צמודה + הרבנד על המצח + **שלייער לבן נוקשה** נופל לאחור; נעל עור נמוכה"]], ["גבר", ["**שכבות**: כותונת + טלית קטן + קמיזלקה + קפוטה עד הקרסוליים + **גרטל** שזור מעליה", "**בד וצבע**: שחור כמו בחול, אבל **משי/סאטן מבריק** שמחזיר נרות; גרביון לבן, ירמולקה חגיגית לבנה", "**ראש ורגליים**: ירמולקה, ומעליה כובע פרווה שיוצא רק בשבת; **מכנס עד הברך**; נעל עור נמוכה, לא מגף"]], ["ילד", ["**בן**: ספנצר (ז'קט קצר עם שתי שורות כפתורים) או קפוטה מוקטנת + ירמולקה שחורה + פאות", "**בת**: **ראש גלוי, שתי צמות**, ובחג פרח שזור בשיער. ההפך המוחלט מהאם", "**הכלל**: אין 'בגדי ילדים': זו מיניאטורה של בגד המבוגר, פרט לספנצר"]]], "key": "**אותו צבע, בד אחר.** הבגד של שבת הוא אותה קפוטה שחורה: אבל ממשי או סאטן, ולכן הוא **מבריק ומחזיר את להבות הנרות**, בעוד בגד החול בולע אור. ולמי שאין בד שני, השו\"ע נותן את הפתרון: הבגד **נשמט ותלוי ארוך ורפוי**, כמידת העשירים היושבים בביתם.", "avoid": ["טלית גדול בערב", "שטריימל על כולם", "פאה נוכרית", "מגפיים גבוהים", "מכנס עד הקרסול", "עניבה או חליפה", "שטערנטיכל על ענייה", "מטפחת בסגנון ימינו", "בגד חדש ומגוהץ"], "ns": 10, "deep": true, "im": [["C-1.jpg", "late · כובע פרווה קטן ופאות: ילד במשפחה חסידית", 1, "מאוחר מהתקופה", "ציור"], ["M-1.jpg", "late ~1910 · שטריימל + קפוטת סאטן מבריקה, בלי טלית: האופציה החסידית", 1, "מאוחר מהתקופה", "ציור"], ["W-2.jpg", "late ~1920 · כיסוי ראש לבן ושלייער בהדלקת נרות: הצללית הנכונה לאם", 1, "מאוחר מהתקופה", "ציור"], ["C-2.jpg", "late · ירמולקת קטיפה שחורה: ילד בבית של בעל-בית", 1, "מאוחר מהתקופה", "ציור"], ["M-2.jpg", "exact ~1843 · כובע פרווה עגול נמוך: האופציה הלא-חסידית לאב", 1, "בן התקופה", "ציור"], ["M-3.jpg", "תיארוך לא ידוע · צללית מלאה: גרטל, מכנס עד הברך, נעל נמוכה", 1, "תיארוך לא ידוע", "תחריט"], ["W-4.jpg", "פולין 1846 · חסיד ואשתו: מטפחת כרוכה, שמלה מפוספסת, סינר ארוך; הגבר בכובע פרווה, מעיל ארוך, אבנט, גרביים ונעל נמוכה: זוג רגיל, בגדים שלמים", 1, "בן התקופה", "תחריט"], ["M-4.jpg", "ורשה 1846 · בעל-בית יהודי: כובע פרווה, מעיל ארוך מכופתר עם חגורה, גרביים ונעל נמוכה: האופציה הלא-חסידית לאב", 1, "בן התקופה", "תחריט"], ["W-5.jpg", "קרקוב 1856 · יהודייה מבוגרת בבית: כובעון לבן עם תחרה ומטפחת, שמלה כהה וסינר, צעיף על הכתפיים", 1, "מאוחר מהתקופה", "אקוורל"]], "hero": []}, {"sc": 16, "y": "1900", "pl": "וינה", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "האם הצעירה: שמלת יום בורגנית מחויטת עם חזה תחרה לבן וכפתורים, צווארון גבוה סגור, בלי תכשיטים בולטים. הסב: חליפה עירונית שלושה-חלקים כהה, זקן מטופח — אין שום סממן מזרח-אירופי (לא קפוטה, לא כובע פרווה).", "avoid": ["סימני תקופת הנאצים", "לבוש שטעטל/דתי (קפוטה, שטריימל)", "לבוש אצולה/חצרוני", "תכשיטים בולטים או משי נשפי", "כיסוי ראש מזרח-אירופי לגבר"], "ns": 3, "deep": true, "im": [["W-1.jpg", "אם בורגנית עם בתה בגינה: שמלת יום כהה, חזה תחרה לבן. משפחת Pinkau, גרמניה ~1900. לא יהודית מזוהה — רפרנס מעמד וגזרה בלבד", 0, "בן התקופה", "צילום"], ["W-2.jpg", "אם עם צווארון גבוה וברושה, מחזיקה יד ילדה. משפחת Sohn-Rethel, גרמניה ~1900. לא יהודית מזוהה", 0, "בן התקופה", "צילום"], ["M-1.jpg", "סב זקן וקרח מחבק נכדה, חליפה כהה. משפחת Sohn-Rethel, גרמניה ~1900. הכי קרוב שנמצא לתפקיד \"הסב המחייך\"", 0, "בן התקופה", "צילום"]], "hero": []}, {"sc": 17, "y": "1905", "pl": "נמל המבורג", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "בגדי מסע מעשיים, פחות אלגנטיים מסצנה 16: מעיל/חולצה כהה עם צווארון גבוה, מטפחת נגד הרוח, חצאית/שמלה כהה פשוטה, נעליים סגורות. הילדה: שמלה משובצת כהה עד הברך, גרביים כהות.", "avoid": ["בגדים אלגנטיים כמו סצנה 16", "\"תלבושת לאום\" פולקלוריסטית מוגזמת שהצלמים הלבישו מהגרים לשם הצילום — לא מה שבאמת לבשו", "תכשיטים בולטים", "מדים או סממן רשמי", "נעל עדינה"], "ns": 4, "deep": true, "im": [["W-1.jpg", "נערה יהודייה-רוסית, מטפחת כהה ומעיל מסע כהה עבה. אליס איילנד, 1905 (ייחוס לא ודאי בין לואיס הין לאוגוסטוס שרמן)", 1, "בן התקופה", "צילום"], ["W-2.jpg", "אישה צעירה, חולצה כהה עם צווארון גבוה וסיכה. משפחת קון, עלתה בהמבורג ביוני 1904, אותו קו ספנות, שנה לפני הסצנה", 1, "בן התקופה", "צילום"], ["M-1.jpg", "סב/אב זקן, מגבעת בולסר, מעיל כהה, זקן לבן מלא. משפחת קון, 1904", 1, "בן התקופה", "צילום"], ["C-1.jpg", "ילדה כבת 8-10, שמלה משובצת כהה, גרביים כהות. משפחת קון, 1904 — ההתאמה הטובה ביותר לתפקיד \"הילדה על הסיפון\"", 1, "בן התקופה", "צילום"]], "hero": []}, {"sc": 18, "y": "1935", "pl": "פראסה אונזה, ריו דה ז'ניירו", "v": "ok", "vt": "לבוש מלא (דורש הפשטה ללבוש-בית)", "na": "", "rows": [], "key": "משפחת מהגרים יהודית נוחה-אך-לא-עשירה. הרפרנסים הם לבוש-חג/יציאה קהילתי מ-1934: שמלה מודפסת + כובע קלוש לאישה, חליפה כהה או לבנה טרופית לגבר. לגרסת הבית: להסיר כובעים ושכבות חוץ ולקצר שרוולים — הסצנה מפורשת \"חום טרופי\".", "avoid": ["תכשיטים, פרוות או משי — סמני עושר", "לבוש אצולה אירופי מושתל", "בגדים אנכרוניסטיים (אחרי שנות ה-40)", "כובעי חג בתוך הבית בזמן הדלקת הנרות", "שרוולים ארוכים או בדים עבים"], "ns": 3, "deep": true, "im": [["W-1.jpg", "אישה מהקהילה היהודית בריו דה ז'ניירו, טקס בבית העלמין הישראלי באינייאאומה, 11.4.1934, צילום אוגוסטו מלטה: שמלה מודפסת וכובע קלוש — יש להסיר כובע ושכבת חוץ לגרסה הביתית", 1, "בן התקופה", "צילום"], ["M-1.jpg", "גבר בחליפה כהה ועניבה, אותו תצלום, 1934: דוגמה ללבוש-חג גברי מאופק", 1, "בן התקופה", "צילום"], ["M-2.jpg", "גבר בחליפה לבנה טרופית דו-חזייתית וכובע קש, אותו תצלום, 1934: לבוש חום סטנדרטי, לא סמן עושר", 1, "בן התקופה", "צילום"]], "hero": []}, {"sc": 19, "y": "1941", "pl": "גטו ורשה", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "האם במעיל/שכבה עליונה פשוטה מעל שמלה כהה, בלי תכשיטים. האב במעיל צמר שחוק וכובע לבד. הבן בבגד גדול עליו או עובר בירושה, שכבות מאולתרות לחום, לא מעילי חורף תפורים.", "avoid": ["טלאי צהוב על החזה (זה מערב אירופה, לא ורשה — כאן סרט זרוע לבן עם מגן דוד כחול)", "פסי מחנה ריכוז / מדי אסיר", "בגדים נקיים ומגוהצים, תפורים למידה", "תכשיטים ואיפור", "פרוות יוקרה ושטריימלים", "צבעוניות עזה"], "ns": 4, "deep": true, "im": [["M-1.jpg", "שוטר פולני בודק תעודות של תושב יהודי, גטו ורשה, פברואר 1941 (USHMM): מעיל צמר אוברקוט וכובע לבד, לבוש חורף אזרחי רגיל", 1, "בן התקופה", "צילום"], ["C-1.jpg", "שלושה ילדים עטופים בצעיפים וסינרים מטולאים, גטו ורשה, 21.6.1941 (Bundesarchiv, CC BY-SA 3.0 DE): שכבות מאולתרות לחום", 1, "בן התקופה", "צילום"], ["C-2.jpg", "שני ילדים עם קערות מרק, גטו ורשה, בערך 1940 (USHMM): כובעי פרווה/בד, חולצה עם צווארון מנוקד", 1, "בן התקופה", "צילום"]], "hero": []}, {"sc": 20, "y": "1946", "pl": "מחנה עקורים, אירופה", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "בגדים אזרחיים שנתרמו (JDC/UNRRA) — פאצ'וורק לא אחיד: ז'קט חליפה על גבר מבוגר, שמלות וסוודרים פשוטים ולא תואמים על נשים ונערות, כובעי בד גדולים מדי וז'קטים עוברים על נערים. לא מדים, לא פסי מחנה — זה אחרי השחרור.", "avoid": ["פסי מחנה ריכוז או מספר על הזרוע — שייך לפני 1945, לא למחנה עקורים 1946", "מדים צבאיים", "בגדים חדשים תואמי-מידה וסגנון אחיד", "תכשיטים ואיפור יוקרתיים", "טלאי צהוב / סרט זרוע — נכפו ע\"י הנאצים, לא רלוונטי אחרי השחרור", "שטריימל או תלבושת חצר חסידית מלאה כברירת מחדל לכולם"], "ns": 4, "deep": true, "im": [["M-1.jpg", "גבר מזוקן לומד עם שני נערים, מחנה עקורים לנדסברג, גרמניה, 1946-47 (USHMM, צלם George Kadish): ז'קט חליפה דק וכיפה", 1, "בן התקופה", "צילום"], ["C-1.jpg", "שני נערים לומדים לצידו (אותו תצלום), לנדסברג 1946-47: כובעי בד גדולים עליהם, סוודר/ז'קט טוויד — מראה טיפוסי של בגד שנתרם", 1, "בן התקופה", "צילום"], ["W-1.jpg", "נשים צעירות ונערות בשיעור חקלאות של ה-JDC, מחנה עקורים ברגן-בלזן, 1.8.1946 (USHMM/AJDC): שמלה מנוקדת, שמלת סינר, חולצות פשוטות לא אחידות", 1, "בן התקופה", "צילום"], ["M-2.jpg", "נערים וגברים צעירים סביב ערוגה (אותו תצלום), ברגן-בלזן, 1.8.1946: חולצות וסוודרים פשוטים, לא אחידים", 1, "בן התקופה", "צילום"]], "hero": []}, {"sc": 21, "y": "1952", "pl": "תל אביב", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "דירת חלוצים עירונית, לא דתית ולא צבאית. אישה בחולצה מכופתרת פשוטה עם חצאית ארוכה כהה; גבר בחולצה פשוטה ומכנסיים בלי מקטורן וכובע דתי. גוונים בהירים, כותנה קלה, בלי תכשיטים.", "avoid": ["לבוש דתי/חרדי — כיפה, ציצית גלויה, כיסוי ראש מסורתי", "מדי צה\"ל או דרגות", "ציוד וסמלי קיבוץ חקלאי מובהקים", "הידור אירופי ותכשיטים", "גוונים כהים/חורפיים — הסצנה בהירה, אור ים-תיכוני חזק"], "ns": 4, "deep": true, "im": [["W-1.jpg", "נהגת מונית בתל אביב, 1.1.1952, צילום תאודור בראונר, האוסף הלאומי לתצלומים/לע\"מ: חולצה מכופתרת פשוטה, שרוולים קצרים-בינוניים, שיער אסוף — מיקום ותאריך מאומתים", 1, "בן התקופה", "צילום"], ["W-2.jpg", "\"יש לי בית במולדת\": אשת שמואל איפקר בגינה, דצמבר 1952, צילום בנו רוטנברג, אוסף מיתר: חולצה מודפסת-פסים קצרה + חצאית ארוכה כהה", 1, "בן התקופה", "צילום"], ["M-1.jpg", "גבר בפנים ביתו הצנוע, דצמבר 1952, צילום בנו רוטנברג, אוסף מיתר: חולצה מכופתרת פשוטה, מכנסיים פשוטים, כובע-בד רך — לבוש-בית לא דתי ולא צבאי", 1, "בן התקופה", "צילום"], ["C-1.jpg", "שני פעוטות משחקים בחולות תל אביב, פברואר 1952, צילום בנו רוטנברג, אוסף מיתר: קרדיגן סרוג, מכנסי גומי, גרביים גבוהות", 1, "בן התקופה", "צילום"]], "hero": []}, {"sc": 22, "y": "1975", "pl": "מוסקבה: יהודי הדממה", "v": "ok", "vt": "לבוש מלא", "na": "", "rows": [], "key": "המשפחה לובשת בדיוק לבוש אזרחי סובייטי רגיל של 1975: חליפות/ז'קטים כהים או בהירים-חאקי לגברים, שמלות/חצאיות עד הברך ומעילים כהים לנשים, שמלת-חולצה משובצת לצעירים, בפלטה עמומה (אפור, חום, בז', כחול-אפור). בלי שום סימן יהודי או דתי גלוי — זו בדיוק הנקודה.", "avoid": ["מגן דוד, כיפה, טלית או ציצית גלויים", "מדים או תג מפלגה סובייטי", "אופנה מערבית בולטת (ג'ינס מודגש, טי-שירט עם הדפס לועזי)", "מטפחת בסגנון חסידי-יהודי", "כובע פרווה בתוך הבית", "צבעים זוהרים", "תכשיטים יקרים-נראים", "לבוש כלה או חגיגי"], "ns": 4, "deep": true, "im": [["M-1.jpg", "פארק ליד רחוב חדש-ארבט, מוסקבה 1975: גבר מבוגר עם תיק עור, מעיל כהה פשוט, מכנס ישר. Fortepan/Urbán Tamás, CC BY-SA 3.0", 0, "בן התקופה", "צילום"], ["M-2.jpg", "קפה \"מטיליצה\", רחוב חדש-ארבט, מוסקבה 1975: גבר בחליפה בהירה דו-חלקית, לבוש יום-יום מכובד. Fortepan/Urbán Tamás, CC BY-SA 3.0", 0, "בן התקופה", "צילום"], ["W-1.jpg", "תהלוכת חתונה, מוסקבה 1975 (להתעלם מהכלה עצמה): האורחות סביבה בגיוון מעילים, חצאיות ושמלות אזרחיות. Fortepan/Urbán Tamás, CC BY-SA 3.0", 0, "בן התקופה", "צילום"]], "hero": []}];
+const GEN={3:[
+  ["wardrobe-woman-model.jpg","**אישה** — כותונת צמר עד הקרסול על כתף אחת, פסים אדומים עם נקודות, חגורת בד, סרט ראש, סנדל עור","W-1 + H-1"],
+  ["wardrobe-man-model.jpg","**גבר** — בגד צמר עד הברך על כתף אחת, אדום עם פסים לבנים ושברונים, חגורה, ראש גלוי, סנדל עור","M-1 + H-3"],
+  ["wardrobe-grid-1.jpg","**גריד DNA** — 4 דמויות לפי האיור X-1: כותונות שמנת וחום, גלימה כהה, רעלה כחולה","X-1","wide"],
+  ["wardrobe-grid-2.jpg","**גריד DNA** — 4 דמויות לפי האיור X-2: צעיפים עם גדילים, שמלות מפוספסות, גלימה רחבה","X-2","wide"]
+]};
+function mdb(t){return String(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");}
+var GEN_EN={"3":[
+ "**Woman** \u2014 ankle-length wool tunic over one shoulder, red stripes with dots, cloth sash, headband, leather sandals",
+ "**Man** \u2014 knee-length wool garment over one shoulder, red with white stripes and chevrons, sash, bare head, leather sandals",
+ "**DNA grid** \u2014 4 figures after reference X-1: cream and brown tunics, dark mantle, blue veil",
+ "**DNA grid** \u2014 4 figures after reference X-2: fringed shawls, striped dresses, wide mantle"
+]};
+var LANG="en";
+var WEAR_EN={"1": {"y": "The Six Days of Creation", "pl": "The Cosmos", "vt": "No period dress", "na": "No wardrobe needed: no figures in frame. This is a prologue scene: universe, creation, light. The only figure (a man facing the sunset) is a silhouette.", "rows": [["Man", ["Dark silhouette against the sunset. No fabric, no prop", "If he must be \"dressed\": light only: a rim of light around the body (\"garments of light\", Bereshit Rabbah 20:12)", "Pose: awe and anticipation, not dominion (Avodah Zarah 8a)"]]], "key": "", "avoid": ["Any garment at all", "Fig leaf / garments of skin", "God as a figure or a hand from a cloud", "Halo or cross", "Michelangelo pose", "Eve in frame"], "im": [], "hero": []}, "2": {"y": "The Seventh Day", "pl": "Outside of Time", "vt": "No period dress", "na": "No wardrobe needed: no figures in frame. This is a prologue scene: the world falls silent, and out of it the first flame is born.", "rows": [["Man", ["Lock it to a single period and do not mix references", "The references here are compositional, not sartorial"]]], "key": "", "avoid": ["Adding figures without a directorial decision", "Generic \"biblical\" dress", "Oppenheim dress (18th-c. Frankfurt)", "Star of David", "Silver candlesticks, paraffin candle", "Halo or deity figure around the flame", "Beit Alpha-style sun with a face"], "im": [], "hero": []}, "3": {"y": "13th c. BCE", "pl": "Sinai Desert", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Ankle-length tunic over **one shoulder** + a wrap-cloth that doubles as the blanket", "Coarse hand-woven wool · red-and-white stripes, meander, fringes at the hem", "Narrow cloth headband, black hair loose: **no veil** · barefoot in camp"]], ["Man", ["Loincloth: knee-length waist-wrap, **bare upper body** · or a short tunic over one shoulder + wrap-cloth", "Coarse wool · vertical stripes, serrated hem", "Cloth headband or head-cloth: no keffiyeh · leather sandal or barefoot"]], ["Child", ["Short red belt only, body bare", "Head uncovered · barefoot"]]], "key": "The clothes are **worn and dusty but intact**: \"your garments did not wear out\" (Deuteronomy 29:4). Not rags, not new.", "avoid": ["Modern tallit", "Kippah / peyot / shtreimel", "Keffiyeh and agal", "White \"biblical\" linen robe", "Cotton, silk, velvet", "Pants", "Purple and tekhelet as everyday color", "Priestly vestments", "New, pressed garment"], "im": [["M-1.jpg", "Men in striped waist-wraps, Beni Hasan", 0, "מוקדם מהתקופה", "ציור קיר"], ["W-1.jpg", "Aamu women, Beni Hasan: tunic over one shoulder, patterned cloth", 0, "מוקדם מהתקופה", "ציור קיר"], ["X-1.jpg", "Modern illustration of Israelite dress: four figures: long cream tunic, short brown tunic with an open coat, dark mantle with a striped head covering, woman in a blue veil", 2, "", "איור"], ["X-2.jpg", "Modern illustration: layered woven wool garments: fringed shawls over the head, striped wrap-cloths, wide mantle, leg wrappings", 2, "", "איור"]], "hero": []}, "5": {"y": "1st c. BCE", "pl": "Jerusalem: Shabbat eve: the lighting, then inside the house", "vt": "Full wardrobe", "na": "", "rows": [], "key": "For a plain family: **natural tone + a dark clavi stripe at the corners of the mantle: not running the length of the garment.** Purple cost more than gold; the cloth is hand-woven, with visible patches and repairs. Tzitzit (ritual fringes), short tassels in the garment's own tone, **not** a tallit. **Indoors:** the tunic is linen, the mantle wool, never both in one item (sha'atnez, the forbidden wool-linen mix); the mantle slips from the head down to the shoulders. **Shabbat vs. weekday:** the same garment, but clean and without patches (Shabbat 113a), not a different cut.", "avoid": ["Modern tallit", "Kippah", "Shtreimel, kapote or fur hat", "Purple, tekhelet, any saturated color", "Wide clavi stripes", "Buttons, zippers, modern collars", "Roman toga", "Gold jewelry", "Star of David", "New, uniform garment", "Sheitel (wig)", "Pants", "Sha'atnez", "Shoes indoors", "Silver candlesticks, wax candle", "Satin and gold embroidery"], "im": [["S-1.jpg", "**The Chosen** (TV series): disciples on the road: plain belted tunic, mantle over one shoulder, sandals. Inspiration for the cut, not a documentary source", 4, "", "סטילס"], ["D-1.jpg", "Dura-Europos: Ezra reading the Torah: the draping of the mantle", 1, "מאוחר מהתקופה", "ציור קיר"], ["D-2.jpg", "Dura-Europos: Jochebed and Miriam (per Kraeling) receiving the infant Moses: long belted tunic, light veil over the head", 1, "מאוחר מהתקופה", "ציור קיר"]], "hero": [["H-6.jpg", "Head-cloth / head wrap of sheer fine linen with brown wool stripes at the end", 0, "מאוחר מהתקופה", "ממצא", "For the mother's soft head covering indoors: thin, almost transparent linen, 67 cm long, with two dark-brown wool stripes: a partial covering that slips back and leaves hair visible, not an opaque head-cloth. (The item is documented as a child's head wrap, so it suits the girl in frame as well.)", "free"]]}, "6": {"y": "70 CE", "pl": "Jerusalem: The Destruction", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["**Two layers only**: ankle-length tunic + a rectangular wool mantle pulled over the head.", "**Undyed** wool/linen: cream, beige, gray-brown. Two dark vertical stripes from the neckline. Soot, ash, tears at the hem.", "Head covered, hair braided and gathered; rolled **woven** sash; plain leather sandals; jewelry hidden under the garment."]], ["Man", ["Knee- to mid-calf tunic + a mantle (himation) drawn over the head at night; some in a dark brown cloak.", "Undyed wool with two clavi stripes; **over-layering**: fleeing a fire, you wear everything at once, a bulked-out silhouette.", "Head bare or under the edge of the mantle; woven sash with knife and key; leather sandals **without hobnails**."]], ["Child", ["Light knee-length linen tunic: **the undergarment**; over it, if any, a short wool tunic in a warm tone.", "Head uncovered; the infant fully swaddled in cloth and bound to the mother's body with the edge of the mantle.", "Small sandals: sandals in a range of sizes were found at Masada. Bare feet = a panic exception, not the default."]]], "key": "This is **Av: late August**, not winter: no fur cloaks and no winter layers. All the drama is carried by one item, a rectangular undyed wool sheet that is pulled over the head, wraps an infant, and shields the flame. And the cloth around the flame is **linen**: the Mishnah rules that only linen serves as a wick, and wicks were made from a folded garment.", "avoid": ["No winter cloaks", "No kippah/shtreimel", "No turban or keffiyeh", "No leather buckle", "No hobnailed sandal", "No Star of David", "No wide purple band", "No saturated colors", "No tailored cut or set-in sleeve", "No sha'atnez (wool+linen)"], "im": [["S-1.jpg", "**The Chosen** (TV series): disciples on the road: plain belted tunic, mantle over one shoulder, sandals. Inspiration for the cut, not a documentary source", 4, "", "סטילס"], ["D-1.jpg", "Dura-Europos: Ezra reading the Torah: the draping of the mantle", 1, "מאוחר מהתקופה", "ציור קיר"], ["D-2.jpg", "Dura-Europos: Jochebed and Miriam (per Kraeling) receiving the infant Moses: long belted tunic, light veil over the head", 1, "מאוחר מהתקופה", "ציור קיר"]], "hero": []}, "7": {"y": "5th century CE", "pl": "Sasanian Babylonia (the Euphrates · Pumbedita/Sura)", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Ankle-length tunic, long sleeves, **belted at the waist**; a veil draped from the shoulder", "Linen in summer, wool in winter; Sasanian three-dot motif; cream / reddish-brown / ochre / indigo", "**Head covered** if married: indoors a kavul (hairnet cap) or a kerchief is enough; closed shoes, braided hair"]], ["Man", ["Long **haluq** (undertunic) beneath + **gelima/tallit** (mantle) over it, four corners with **visible tzitzit**", "**Sudra** draped over the head with both ends hanging over the face: the mark of a married man / Torah scholar. **Not a kippah**", "Belt at the waist, **masane** (leather shoes) and **puzmakei** (stockings); in winter a **sarbala**: a Persian coat with no tzitzit"]], ["Child", ["**An oversized haluq**: hand-me-downs, and that is the norm (Shabbat 141b)", "**Head completely bare**: the sudra marks marriage, not childhood", "Barefoot in the courtyard or plain leather shoes / palm-fiber sandals; no tallit and no jewelry"]]], "key": "The sage = two layers of flowing cloth (haluq + gelima with tzitzit at the corners) and, on his head, a **draped sudra with both ends hanging over his face**: not a kippah and not a black-and-white tallit; the child beside him is entirely bare-headed, in a haluq too big for him.", "avoid": ["No kippah", "No black-and-white tallit", "No tzitzit under the shirt", "No shtreimel or kapote", "No Ottoman turban", "No Roman toga", "No crown or halo", "No buttons or zippers", "No printed cotton", "No uncovered hair on a married woman", "No stain on the sage's garment", "No sha'atnez (wool-linen mix)"], "im": [["M-3.jpg", "Dura-Europos on the Euphrates, 244–256, the Vision of Ezekiel: men in Parthian-Persian dress, belted tunic with a slit, trousers and leggings, no marks of royalty", 1, "מוקדם מהתקופה", "ציור קיר"], ["W-2.jpg", "Dura-Europos on the Euphrates, 244–256: the widow of Zarephath, a plain woman in a long tunic with a radid (head mantle), holding a child", 1, "מוקדם מהתקופה", "ציור קיר"]], "hero": []}, "8": {"y": "12th century: but in practice the 10th–11th", "pl": "Córdoba: The Golden Age", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Layers: **ghilala** (inner shift) ← **sirwal** (trousers) ← gown / **jubba** with a wide open sleeve ← **rida'** (wrap) over the shoulders", "Fabric and color: striped silk and linen, gilding worked into the cloth. Pomegranate red, cloud blue, pistachio, emerald. **White is forbidden to women**", "Head and feet: **mi'jar/khimar** (head veil) matched to the gown, face uncovered indoors; barefoot on the carpet"]], ["Man", ["Layers: **ghilala** ← **qamis** (shirt) ← **jubba** (the standard Córdoban robe) ← **rida'/mitraf** (mantle) when going out", "Fabric and color: turquoise, bottle green, coral, rust, blue-black. Stripes and checks, a gilded **tiraz** band on one garment only", "Head and feet: **bare head or a red/green wool cap (ghifara)**, not a turban; barefoot indoors"]], ["Child", ["Layers: a single **qamis**, and that's all. No robe, no wrap", "Fabric and color: the same palette, plainer cloth, **no tiraz**", "Head and feet: head always bare, hair down to the chin; barefoot"]]], "key": "The Jewish family is dressed **exactly** like its Muslim neighbors: zero distinguishing mark, zero badge, zero kippah as a symbol. Wealth is measured in striped silk, in gilding on the cloth and in layers, and the heads are left **bare**, not turbaned.", "avoid": ["Large turbans on everyone", "Kippah as a Jewish marker", "Yellow badge / badge of shame", "Tallit on the table", "White gown on the woman", "Biblical sackcloth robes", "Ashkenazi black caftan", "European Gothic silhouette", "Aladdin harem pants", "Bedouin desert look"], "im": [["W-4.jpg", "Golden Haggadah, Catalonia, ca. 1320: a Jewish home before Passover, the mother sweeping, a girl cleaning, a child in a short tunic and the father searching for hametz", 1, "מאוחר מהתקופה", "כתב יד"], ["M-3.jpg", "Sister Haggadah, Spain, 14th c.: a Jewish congregation in a synagogue, men and women in plain hooded robes and a child in a red tunic", 1, "מאוחר מהתקופה", "כתב יד"]], "hero": []}, "9": {"y": "13th century", "pl": "The Rhineland (Ashkenaz)", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["**Three layers**: linen shift → ankle-length wool gown, narrow sleeve → mantle over it, brooch at the throat", "**Fabric and color**: wool and linen only. Madder red, turquoise blue, ochre, olive green, cream: no black and no saturated colors", "**Head and feet**: if married: a white linen veil over head and neck; the daughter, hair uncovered. Soft leather shoe, hidden"]], ["Man", ["**Three layers**: linen shift → ankle-length wool tunic, narrow leather belt → mantle against the cold", "**Fabric and color**: the same wool, the same palette as the woman. No buttons, no modern seams", "**Head and feet**: **Judenhut** (pointed Jewish hat): a stiff round brim + a cone tipped with a knob, cream-white or ochre. Pointed leather shoe"]], ["Child", ["**A scaled-down version of the adults**: there is no children's fashion. A long gown for the little ones, a short tunic + hose for the boy", "**Fabric and color**: the same wool, the same palette, no ornament", "**Head**: **none: no Jewish hat.** For the girl, hair uncovered, no veil"]]], "key": "**Exactly the same Gothic dress as the Christian neighbors in the same town.** The only difference in frame is the pointed hat on the father's head. Do not invent a \"Jewish costume\": and do not add a shtreimel, a kapote or side-curls.", "avoid": ["Shtreimel", "Black kapote", "Tzitzit hanging out", "Modern kippah", "Curled side-locks", "Sheitel (wig)", "Star of David", "Yellow badge", "Turban / djellaba", "Rows of buttons", "Uniform black"], "im": [["W-1.jpg", "Women in white veils, men in pointed hats: Tripartite Mahzor, ca. 1322 (a generation after the scene)", 1, "בן התקופה", "כתב יד"], ["W-3.jpg", "A woman fully wrapped in a linen veil: Leipzig Mahzor, ca. 1310 (slightly later)", 1, "בן התקופה", "כתב יד"], ["M-4.jpg", "Man in a pointed Jewish hat (Judenhut), blue robe with pink lining and a fur collar: German manuscript, 13th c. **Source not fully verified**, the manuscript's name and an exact citation were not traced", 1, "בן התקופה", "כתב יד"]], "hero": []}, "10": {"y": "1492", "pl": "Toledo: The Expulsion from Spain", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["**Layers**: white linen shift → saya (gown) with a laced bodice and a full skirt → manto for the street", "**Fabric and color**: muted wool: brown, rust, dark green, gray. **No silk, no sheen, no gold**", "**Head and feet**: a married woman always in a white toca; a girl with loose hair. Leather shoes, ankle boots for the road"]], ["Man", ["**Layers**: white shirt → jubón (doublet) → calzas (hose) → short sayo (for the young man) or a **long ropa/tabardo** (the father)", "**Fabric and color**: coarse dark wool; red or dark calzas. Silk and grana (scarlet dye) are forbidden to Jews by law", "**Head and feet**: **a Castilian bonete or capirote, not a bare kippah**; hood/capuz for the road; leather shoes"]], ["Child", ["**Layers**: small adults: exactly the same cut, plain wool, no ornament", "**Fabric and color**: brown or dark green; the white shift shows at the neck and the sleeve", "**Head and feet**: boy: a small bonete. Girl: hair with a cloth band, sometimes a veil. Dusty leather shoes"]]], "key": "The Jewish family in Toledo 1492 looks **exactly like the Christian neighbors**: the tragedy is that you cannot tell them apart. Any \"Jewish costume\" beyond a small red cloth roundel on the right shoulder is a mistake.", "avoid": ["No yellow Star of David", "No conical hat", "No Andalusi turban", "No shtreimel or kapote", "No bare kippah", "No tallit in the street", "No silk or brocade", "No ruffs or hoops", "No suitcases or coins"], "im": [["M-5.jpg", "Spanish manuscript in the style of the Spanish haggadot (Catalonia, ca. 14th c.): a man in a green hat and blue robe raising a cup (Kiddush?), a child with a staff beside him. **Tentative identification**, the exact manuscript was not verified", 1, "מוקדם מהתקופה", "כתב יד"]], "hero": []}, "11": {"y": "1540", "pl": "Lisbon: The Conversos", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Layers: white linen shift → stiffened bodice that **flattens the chest** → pleated skirt → smooth verdugado (farthingale) cone → open gown with hanging funnel sleeves", "Fabric and color: wool and linen, **black** or muted brown-black, no embroidery and no gold; white only at the neck and the wrists", "Head and feet: a wrapped white linen toucado (a married woman is always covered) + a black manto in the street; flat leather shoes; **a visible cross or rosary**"]], ["Man", ["Layers: linen shirt with a low standing collar → close-fitting black gibão (doublet) → melon-volume calças + knee hose → **a long black robe** (roupão) or a short capa", "Fabric and color: wool, **black above all**; a thin line of white linen at the neck and the hands only", "Head and feet: a **barrete**, a soft flat black cap, short forked beard; flat broad-toed leather shoes; leather belt with a purse"]], ["Child", ["Layers: **an exact miniature of an adult** from about age 6; before that, a plain long gown for both sexes", "Fabric and color: the same dark palette, plainer fabrics, zero luxury and zero cheerful color", "Head and feet: the girl: braided and coiled hair or a simple linen covering; indoors sometimes barefoot"]]], "key": "The family wears **exactly** what the Christian crowd in the street wears: not one detail gives them away. The danger is not a Jewish garment, but **a clean linen shift on a Friday evening**, visible at the neck and the hands, which is what they were denounced for.", "avoid": ["Starched ruff (1555+)", "Wheel farthingale (1580+)", "Puffed pumpkin breeches", "Peascod belly", "Kippah, tallit, Star of David", "East European kerchief", "Married woman with bare hair", "Sanbenito on the family", "Gold and embroidery", "Saturated, cheerful colors"], "im": [["M-2.jpg", "A crowd of Lisbon men, 1536-39; the archers at the edges are stylized executioners: ignore them", 0, "בן התקופה", "ציור"], ["M-3.jpg", "A real Lisbon street: the procession crowd. 1570-80, scale down the collars and hats", 0, "מאוחר מהתקופה", "ציור"], ["W-3.jpg", "Ordinary Portuguese women at home, 1530-40: the real reference for the mother in the cellar", 0, "בן התקופה", "ציור"], ["M-4.jpg", "\"This is how the men generally go about in Portugal\" – a flat cap and a wide dark robe. Weiditz 1529, 11 years before the scene", 0, "מוקדם מהתקופה", "כתב יד"], ["C-2.jpg", "An ordinary Iberian child (Castile 1529) – short tunic, hose, bare head. For Lisbon – in a dark color", 0, "מוקדם מהתקופה", "כתב יד"]], "hero": []}, "12": {"y": "17th century", "pl": "Salonika", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Layers: thin white chemise, inner salmon entari (long buttoned robe), outer navy buttoned entari, long woven sash", "Fabric and color: **heavy Salonikan wool**; navy, black, salmon, burgundy, mustard. **No green**", "Head and feet: white kerchief over a pointed cap + **a red ribbon trailing down the back**, zero visible hair, dark flat shoe"]], ["Man", ["Layers: long entari buttoned from neck to waist, wide kuşak (sash), dark open outer robe", "Fabric and color: indigo/teal underneath, olive-brown over it; **no green**, no sheen", "Head and feet: **stiff dark-red hat with a light brim** (1599 decree), full beard, dark flat shoe"]], ["Child", ["Layers: miniature adults: a small entari, a cloth sash. There is no children's fashion in the 17th century", "Fabric and color: the most worn fabric in the frame; clothes pass from sibling to sibling, visible wear", "Head and feet: boy in a soft cloth cap (takke), not in the red hat; girl in a kerchief from a young age"]]], "key": "The law required dark dress in public, but **permitted color on Shabbat inside the quarter**: so the color here is lawful; what does not change even on Shabbat is the head covering: **a dark-red hat for the man, not a white turban**.", "avoid": ["Yellow badge", "Large white turban", "Any green", "Yellow shoe", "Cone hat", "Shtreimel and payot", "Modern yarmulke", "Tallit at the table", "Spanish ruff", "19th-century kofya", "Aniline colors", "Glossy silk"], "im": [["M-1.jpg", "Rålamb 1657, \"Iudeus\": the red hat of the 1599 decree. This is the hat for the frame", 1, "בן התקופה", "כתב יד"], ["M-2.jpg", "Nicolay 1567, \"Marchant Juif\": for the body cut only. Do not copy the turban", 1, "מוקדם מהתקופה", "תחריט"], ["M-3.jpg", "Recueil Ferriol 1714, \"Juif\": the grandfather: a plain dark robe over a striped entari and a cloth sash", 1, "מאוחר מהתקופה", "תחריט"], ["W-1.jpg", "Rålamb 1657, \"Hebrea\": navy entari over salmon, red ribbon at the back", 1, "בן התקופה", "כתב יד"], ["W-2.jpg", "Rålamb 1657, \"Iudæa\": tall white coif, black robe, red cuffs", 1, "בן התקופה", "כתב יד"], ["W-4.jpg", "La Chapelle, ca. 1648: \"Femme Juifve\" in Istanbul: a plain dark floor-length robe, a kerchief tied over a tall coif. Everyday dress, no fur and no embroidery", 1, "בן התקופה", "תחריט"]], "hero": []}, "13": {"y": "1800", "pl": "Fez, Morocco: the mellah (Jewish quarter)", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Layers: linen chemise with very long sleeves → kaftan to the hip, open at the chest → green skirt → gold-and-silk sash", "Fabric and color: **color is free**, velvet or wool, **gold embroidery on the borders only** (not a field of gold, that is a wedding)", "Head and feet: married: **red silk headscarf** + ribbon; unmarried: braid visible. **No stockings**, red gold-embroidered babouches (slippers)"]], ["Man", ["Layers: wide serwal (loose trousers) → white chemise → dark kaftan cinched at the waist → **black hooded wool burnous (cloak)**", "Fabric and color: **black by force of law.** No color, no gold, no pattern", "Head and feet: **black skullcap/chechia**, shaved head, long beard; **black babouches, not yellow**"]], ["Child", ["Layers: boys: dark ankle-length kaftan + serwal + white chemise at the collar. Girls: a small colorful kaftan", "Fabric and color: boys dark like the father; **the girls are the freest color in the frame**", "Head and feet: boys: a small black skullcap. Girls: braid visible. **Barefoot in the courtyard, that is correct, do not fix it**"]]], "key": "**The men are in black because the law requires it, the women in color because women were permitted: and this is documented word for word. And the keswa el-kbira (Moroccan ceremonial gown) is a wedding garment: on an ordinary Shabbat it is a colorful kaftan with gold embroidery on the borders, not a gold-armored bodice.**", "avoid": ["Shtreimel and kapote", "Red stripe on a Jew", "Man in a colorful kaftan", "Yellow babouches", "Keswa on an ordinary Shabbat", "Aniline magenta", "Stockings on women", "Tallit at the meal", "Veil indoors", "Victorian corset", "Yellow badge", "Machine stitching", "Sheitel (wig)"], "im": [["C-1.jpg", "Children in dark kaftans, some barefoot. 1912: do not copy the cuts", 1, "מאוחר מהתקופה", "תצלום"], ["M-1.jpg", "Delacroix, the Louvre 1839: a riad courtyard, the Jews are the ones in dark dress, babouches on the floor", 1, "מאוחר מהתקופה", "ציור"], ["M-2.jpg", "Black hooded wool burnous: 'obliged to appear externally in black'", 1, "מאוחר מהתקופה", "תחריט"], ["W-3.jpg", "Fez mellah 1913: the restrained everyday register. A 113-year gap", 1, "מאוחר מהתקופה", "תצלום"], ["W-4.jpg", "Delacroix, life drawing from 1832 (Louvre RF 10055): a Moroccan Jewish woman seated in day clothes: a plain dark skirt, a red-brown bodice, a white shawl, a headscarf. No gold", 1, "מאוחר מהתקופה", "ציור"], ["W-5.jpg", "De Amicis 1879: two Jewish women in a doorway in Tangier: a chemise with wide sleeves, skirt and apron, cloth sash, headscarf. Ordinary dress, not festive", 1, "מאוחר מהתקופה", "תחריט"]], "hero": []}, "14": {"y": "1840", "pl": "Shtetl: Shabbat Eve, Market", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["Floor-length skirt + blouse · **apron down to the ground** · shawl/shuba (fur-lined wrap) for the cold", "**Brown** mostly, sometimes black · linen, wool, cotton: no silk", "**Colorful headscarf** over a close-fitting cap · low leather shoe, dark stockings"]], ["Man", ["Ankle-length **khalat** (long robe) · black **gartel** (woven sash) with fringes", "Black, **worn** and faded · cheap cotton/coarse weave", "Yarmulke + fur/felt hat · **knee breeches, stockings, low shoe: no boots**"]], ["Child", ["A miniature version of his father · **long coat**, too big for him", "Faded, striped, worn fabric: a hand-me-down garment", "Soft cloth cap · **long, unkempt payot (sidelocks)** · low shoe or barefoot"]]], "key": "**No man in long trousers and boots**: in 1840 it is knee breeches, stockings and a low flat shoe, in the mud.", "avoid": ["Ankle-length trousers", "High boots", "Shtreimel at the market", "Shterntikhl at the market", "Silk and velvet", "Short German coat", "1930s Vishniac look", "Clean clothes", "Short kitchen apron"], "im": [["C-1.jpg", "Warsaw 1841 · boy: soft cap, payot, worn coat", 1, "בן התקופה", "תחריט"], ["C-2.jpg", "Warsaw 1841 · child in the street: long coat, soft cap; barefoot at the side", 1, "בן התקופה", "תחריט"], ["M-1.jpg", "Warsaw 1841 · peddlers: kapote, gartel, low shoe: the central frame", 1, "בן התקופה", "תחריט"], ["M-2.jpg", "Warsaw 1841 · merchants: weekday fur and felt hats", 1, "בן התקופה", "תחריט"], ["M-3.jpg", "Galicia 1821 · color: kaftan, knee breeches, stockings, low shoe", 1, "מוקדם מהתקופה", "תחריט"], ["W-1.jpg", "Lithuania 1846 · shawl from head to ground, headscarf, pearls", 1, "מאוחר מהתקופה", "תחריט"], ["W-2.jpg", "Galicia 1821 · long apron over a skirt: festive colors", 1, "מוקדם מהתקופה", "תחריט"], ["W-3.jpg", "Warsaw 1881 (late) · worn texture, layers, brown shawl", 1, "מאוחר מהתקופה", "ציור"]], "hero": []}, "15": {"y": "1840", "pl": "Shtetl: Shabbat Evening", "vt": "Full wardrobe", "na": "", "rows": [["Woman", ["**Layers**: long long-sleeved dress + brusttukh (chest panel) over the bodice + floor-length apron + fur-lined yupe (coat) in winter", "**Fabric and color**: brown or black, but on Shabbat a finer fabric; **white** stockings instead of black; a single string of pearls", "**Head and feet**: close-fitting kupke (cap) + haarband across the forehead + **a stiff white shleyer (veil)** falling back; low leather shoe"]], ["Man", ["**Layers**: chemise + tallit katan + kamizelke (vest) + ankle-length kapote + **gartel** (woven sash) wound over it", "**Fabric and color**: black as on weekdays, but **glossy silk/satin** that reflects the candles; white hose, festive white yarmulke", "**Head and feet**: yarmulke, and over it a fur hat that comes out only on Shabbat; **knee breeches**; low leather shoe, not a boot"]], ["Child", ["**Boy**: a spencer (short double-breasted jacket) or a miniature kapote + black yarmulke + payot (sidelocks)", "**Girl**: **head uncovered, two braids**, and on a festival a flower woven into the hair. The absolute opposite of the mother", "**The rule**: there are no 'children's clothes': this is a miniature of the adult garment, except for the spencer"]]], "key": "**Same color, different fabric.** The Shabbat garment is the same black kapote: but in silk or satin, so it is **glossy and reflects the candle flames**, while the weekday garment swallows light. And for anyone with no second fabric, the Shulchan Aruch gives the solution: the garment **hangs loose and long**, in the manner of the wealthy who sit at home.", "avoid": ["Tallit gadol in the evening", "Shtreimel on everyone", "Sheitel (wig)", "High boots", "Ankle-length trousers", "Necktie or suit", "Shterntikhl on a poor woman", "Present-day headscarf style", "New, pressed clothes"], "im": [["C-1.jpg", "late · small fur hat and payot: a boy in a Hasidic family", 1, "מאוחר מהתקופה", "ציור"], ["M-1.jpg", "late ~1910 · shtreimel + glossy satin kapote, no tallit: the Hasidic option", 1, "מאוחר מהתקופה", "ציור"], ["W-2.jpg", "late ~1920 · white head covering and shleyer at candle lighting: the correct silhouette for the mother", 1, "מאוחר מהתקופה", "ציור"], ["C-2.jpg", "late · black velvet yarmulke: a boy in a balebos (ordinary householder) home", 1, "מאוחר מהתקופה", "ציור"], ["M-2.jpg", "exact ~1843 · low round fur hat: the non-Hasidic option for the father", 1, "בן התקופה", "ציור"], ["M-3.jpg", "undated · full silhouette: gartel, knee breeches, low shoe", 1, "תיארוך לא ידוע", "תחריט"], ["W-4.jpg", "Poland 1846 · a Hasid and his wife: wrapped headscarf, striped dress, long apron; the man in a fur hat, long coat, sash, stockings and low shoe: an ordinary couple, complete clothes", 1, "בן התקופה", "תחריט"], ["M-4.jpg", "Warsaw 1846 · a Jewish balebos: fur hat, long buttoned coat with a belt, stockings and low shoe: the non-Hasidic option for the father", 1, "בן התקופה", "תחריט"], ["W-5.jpg", "Kraków 1856 · an older Jewish woman at home: white lace cap and headscarf, dark dress and apron, shawl over the shoulders", 1, "מאוחר מהתקופה", "אקוורל"]], "hero": []}, "16": {"y": "1900", "pl": "Vienna", "vt": "Full wardrobe", "na": "", "rows": [], "key": "The young mother: a tailored bourgeois day dress with a white lace bodice and buttons, a high closed collar, no conspicuous jewelry. The grandfather: a dark three-piece town suit, a well-groomed beard — no Eastern European marker at all (no kapote, no fur hat).", "avoid": ["Nazi-era markers", "Shtetl/religious dress (kapote, shtreimel)", "Aristocratic/court dress", "Conspicuous jewelry or evening silk", "Eastern European head covering on a man"], "im": [["W-1.jpg", "A bourgeois mother with her daughter in a garden: dark day dress, white lace bodice. Pinkau family, Germany ~1900. Not identified as Jewish — a reference for class and cut only", 0, "בן התקופה", "צילום"], ["W-2.jpg", "A mother with a high collar and a brooch, holding a girl's hand. Sohn-Rethel family, Germany ~1900. Not identified as Jewish", 0, "בן התקופה", "צילום"], ["M-1.jpg", "A bald, bearded grandfather embracing a granddaughter, dark suit. Sohn-Rethel family, Germany ~1900. The closest match found for the role of \"the smiling grandfather\"", 0, "בן התקופה", "צילום"]], "hero": []}, "17": {"y": "1905", "pl": "Port of Hamburg", "vt": "Full wardrobe", "na": "", "rows": [], "key": "Practical travel clothing, less elegant than Scene 16: dark coat/blouse with a high collar, headscarf against the wind, simple dark skirt/dress, closed shoes. The girl: dark plaid dress to the knee, dark stockings.", "avoid": ["Elegant clothing like Scene 16", "Exaggerated folkloric \"national costume\" that photographers dressed immigrants in for the shot — not what they actually wore", "Conspicuous jewelry", "Uniforms or any official insignia", "Delicate shoes"], "im": [["W-1.jpg", "Russian Jewish girl, dark headscarf and heavy dark travel coat. Ellis Island, 1905 (attribution uncertain between Lewis Hine and Augustus Sherman)", 1, "בן התקופה", "צילום"], ["W-2.jpg", "Young woman, dark blouse with a high collar and a brooch. The Cohn family, embarked at Hamburg in June 1904, same shipping line, one year before the scene", 1, "בן התקופה", "צילום"], ["M-1.jpg", "Elderly grandfather/father, bowler hat, dark coat, full white beard. The Cohn family, 1904", 1, "בן התקופה", "צילום"], ["C-1.jpg", "Girl of about 8-10, dark plaid dress, dark stockings. The Cohn family, 1904 — the best match for the role of \"the girl on deck\"", 1, "בן התקופה", "צילום"]], "hero": []}, "18": {"y": "1935", "pl": "Praça Onze, Rio de Janeiro", "vt": "Full wardrobe (requires simplification to at-home dress)", "na": "", "rows": [], "key": "A Jewish immigrant family, comfortable but not wealthy. The references are communal holiday/going-out dress from 1934: printed dress and cloche hat for the woman, a dark suit or a tropical white one for the man. For the at-home version: remove hats and outer layers and shorten the sleeves — the scene explicitly says \"tropical heat\".", "avoid": ["Jewelry, furs or silk — markers of wealth", "Transplanted European aristocratic dress", "Anachronistic clothing (post-1940s)", "Holiday hats indoors during candle lighting", "Long sleeves or heavy fabrics"], "im": [["W-1.jpg", "Woman of the Jewish community of Rio de Janeiro, ceremony at the Israelite Cemetery in Inhaúma, April 11, 1934, photo by Augusto Malta: printed dress and cloche hat — remove the hat and the outer layer for the at-home version", 1, "בן התקופה", "צילום"], ["M-1.jpg", "Man in a dark suit and tie, same photograph, 1934: an example of restrained men's holiday dress", 1, "בן התקופה", "צילום"], ["M-2.jpg", "Man in a double-breasted tropical white suit and a straw hat, same photograph, 1934: standard hot-weather dress, not a wealth marker", 1, "בן התקופה", "צילום"]], "hero": []}, "19": {"y": "1941", "pl": "Warsaw Ghetto", "vt": "Full wardrobe", "na": "", "rows": [], "key": "The mother in a simple coat/outer layer over a dark dress, no jewelry. The father in a worn wool coat and a felt hat. The son in a garment too large for him or handed down, improvised layers for warmth, not tailored winter coats.", "avoid": ["Yellow badge on the chest (that is Western Europe, not Warsaw — here a white armband with a blue Star of David)", "Concentration camp stripes / prisoner uniform", "Clean, pressed clothes, tailored to fit", "Jewelry and makeup", "Luxury furs and shtreimels", "Vivid coloring"], "im": [["M-1.jpg", "A Polish policeman checking a Jewish resident's papers, Warsaw Ghetto, February 1941 (USHMM): wool overcoat and felt hat, ordinary civilian winter dress", 1, "בן התקופה", "צילום"], ["C-1.jpg", "Three children wrapped in scarves and patched aprons, Warsaw Ghetto, June 21, 1941 (Bundesarchiv, CC BY-SA 3.0 DE): improvised layers for warmth", 1, "בן התקופה", "צילום"], ["C-2.jpg", "Two children with soup bowls, Warsaw Ghetto, circa 1940 (USHMM): fur/cloth caps, shirt with a dotted collar", 1, "בן התקופה", "צילום"]], "hero": []}, "20": {"y": "1946", "pl": "Displaced Persons camp, Europe", "vt": "Full wardrobe", "na": "", "rows": [], "key": "Donated civilian clothing (JDC/UNRRA) — an uneven patchwork: a suit jacket on an older man, simple, mismatched dresses and sweaters on women and girls, oversized cloth caps and hand-me-down jackets on boys. No uniforms, no camp stripes — this is after liberation.", "avoid": ["Concentration camp stripes or a number on the arm — that belongs before 1945, not to a 1946 DP camp", "Military uniforms", "New, well-fitted clothes in a uniform style", "Luxury jewelry and makeup", "Yellow badge / armband — imposed by the Nazis, not relevant after liberation", "A shtreimel or full Hasidic court dress as the default for everyone"], "im": [["M-1.jpg", "Bearded man studying with two boys, Landsberg DP camp, Germany, 1946-47 (USHMM, photographer George Kadish): thin suit jacket and kippah", 1, "בן התקופה", "צילום"], ["C-1.jpg", "Two boys studying beside him (same photograph), Landsberg 1946-47: oversized cloth caps, tweed sweater/jacket — the typical look of a donated garment", 1, "בן התקופה", "צילום"], ["W-1.jpg", "Young women and girls in a JDC agriculture class, Bergen-Belsen DP camp, August 1, 1946 (USHMM/AJDC): a polka-dot dress, a pinafore dress, simple mismatched blouses", 1, "בן התקופה", "צילום"], ["M-2.jpg", "Boys and young men around a garden bed (same photograph), Bergen-Belsen, August 1, 1946: simple shirts and sweaters, not matching", 1, "בן התקופה", "צילום"]], "hero": []}, "21": {"y": "1952", "pl": "Tel Aviv", "vt": "Full wardrobe", "na": "", "rows": [], "key": "An urban halutzim (pioneers) apartment, neither religious nor military. The woman in a simple button-down blouse with a long dark skirt; the man in a simple shirt and trousers, without a jacket or a religious hat. Light tones, light cotton, no jewelry.", "avoid": ["Religious/Haredi dress — kippah, visible tzitzit, traditional head covering", "IDF uniforms or ranks", "Distinctly agricultural kibbutz gear and symbols", "European refinement and jewelry", "Dark/wintry tones — the scene is bright, strong Mediterranean light"], "im": [["W-1.jpg", "Woman taxi driver in Tel Aviv, January 1, 1952, photo by Teddy Brauner, National Photo Collection / GPO: simple button-down blouse, short-to-medium sleeves, hair pulled back — location and date verified", 1, "בן התקופה", "צילום"], ["W-2.jpg", "\"I Have a Home in the Homeland\": the wife of Shmuel Ifker in the garden, December 1952, photo by Benno Rothenberg, Meitar Collection: short striped-print blouse + long dark skirt", 1, "בן התקופה", "צילום"], ["M-1.jpg", "Man inside his modest home, December 1952, photo by Benno Rothenberg, Meitar Collection: simple button-down shirt, simple trousers, soft cloth cap — at-home dress, neither religious nor military", 1, "בן התקופה", "צילום"], ["C-1.jpg", "Two toddlers playing in the Tel Aviv sands, February 1952, photo by Benno Rothenberg, Meitar Collection: knitted cardigan, elastic-waist trousers, high socks", 1, "בן התקופה", "צילום"]], "hero": []}, "22": {"y": "1975", "pl": "Moscow: Jews of Silence", "vt": "Full wardrobe", "na": "", "rows": [], "key": "The family wears exactly ordinary Soviet civilian dress of 1975: dark or light khaki suits/jackets for the men, knee-length dresses/skirts and dark coats for the women, a plaid shirtdress for the young, in a muted palette (gray, brown, beige, blue-gray). Without any visible Jewish or religious sign — that is precisely the point.", "avoid": ["Visible Star of David, kippah, tallit or tzitzit", "Uniforms or a Soviet party badge", "Conspicuous Western fashion (statement jeans, T-shirt with a foreign print)", "Hasidic-Jewish style headscarf", "Fur hat indoors", "Bright colors", "Expensive-looking jewelry", "Bridal or festive dress"], "im": [["M-1.jpg", "Park near Novy Arbat Street, Moscow 1975: older man with a leather bag, plain dark coat, straight trousers. Fortepan/Urbán Tamás, CC BY-SA 3.0", 0, "בן התקופה", "צילום"], ["M-2.jpg", "Café \"Metelitsa\", Novy Arbat Street, Moscow 1975: man in a light two-piece suit, respectable everyday dress. Fortepan/Urbán Tamás, CC BY-SA 3.0", 0, "בן התקופה", "צילום"], ["W-1.jpg", "Wedding procession, Moscow 1975 (ignore the bride herself): the women guests around her in a mix of coats, skirts and civilian dresses. Fortepan/Urbán Tamás, CC BY-SA 3.0", 0, "בן התקופה", "צילום"]], "hero": []}};
+var WL="he";
+var WT={
+ time:{"בן התקופה":"Of the period","מוקדם מהתקופה":"Earlier than the period","מאוחר מהתקופה":"Later than the period","תיארוך לא ידוע":"Date unknown"},
+ kind:{"כתב יד":"Manuscript","פסיפס":"Mosaic","ציור קיר":"Wall painting","ציור":"Painting","ממצא":"Excavated find","מטבע":"Coin","חפץ":"Object","תצוגה":"Museum display","שחזור":"Reconstruction","תחריט":"Engraving","תצלום":"Photograph","בגד שלם":"Complete garment","איור":"Illustration","אקוורל":"Watercolor","סטילס":"Film still","צילום":"Photograph","תצלום":"Photograph","ציור":"Painting","תחריט":"Engraving"},
+ jw:["Not Jewish — period and region","Jewish source","Modern illustration — not a historical source","AI-generated","Hollywood still — not a historical source","Unverified — affluent dress, use judgment"],
+ t:{
+  title:["לבוש תקופתי","Period Dress"],
+  lead:["כל תקופה נחקרה במקורות מוסדיים — מוזיאונים, דוחות חפירה, כתבי יד ומקורות ראשוניים. כל תמונה הורדה, נפתחה ואומתה ויזואלית מול התיאור הכתוב. <b>שום פריט עדיין לא אושר ולא הוכנס לתיקיות הסצנות.</b>",
+        "Every period was researched in institutional sources — museums, excavation reports, manuscripts and primary texts. Every image was downloaded, opened and visually verified against the written description. <b>No item has been approved or moved into the scene folders yet.</b>"],
+  scene:["סצנה","Scene"],
+  heroH:["בגדים שלמים מחפירות ותצוגות","Complete garments from excavations and museum displays"],
+  heroN:["פריטים","items"],
+  heroSub:["תצלומי בגדים אמיתיים מהתקופה, כדי לראות איך הבגד נראה בנפח ובבד.",
+           "Photographs of real garments from the period, to show how the garment reads in volume and in fabric."],
+  jwShort:["לא יהודי","Not Jewish"],
+  jwY:["מקור יהודי","Jewish source"],
+  licF:["רישיון חופשי","Free license"],
+  licC:["לבדוק רישוי","Check licensing"],
+  srcs:["מקורות עם ציטוטים","sourced citations"],
+  deepY:["מחקר מלא","Full research"],
+  deepN:["קובץ המחקר המלא עדיין לא נכתב","Full research file not yet written"],
+  genH:["תלבושת מאושרת","Approved costume"],
+  genOk:["מאושר","Approved"]
+ }
+};
+function wt(k){return WT.t[k][WL==="en"?1:0];}
+function wlab(map,v){return (WL==="en"&&map[v])?map[v]:v;}
+function wsc(e){ if(WL!=="en") return e; var o=WEAR_EN[e.sc]; if(!o) return e;
+  var m={}; for(var k in e) m[k]=e[k]; for(var k2 in o) m[k2]=o[k2]; return m; }
+function renderWear(el){
+  const nOk=WEAR.filter(e=>e.v==="ok").length, nIm=WEAR.reduce((a,e)=>a+e.im.length,0),
+        nSr=WEAR.reduce((a,e)=>a+e.ns,0);
+  let h=`<div class="res-head">
+    <h2>${wt("title")}</h2>
+    <p>${wt("lead")}</p>
+  </div>`;
+  WEAR.forEach(e0=>{
+    const e=wsc(e0);
+    const pad=String(e.sc).padStart(2,"0");
+    const gen=GEN[e.sc]||[];
+    if(gen.length) h+=`<div class="era-row">`;
+    h+=`<div class="era">
+      <div class="era-head">
+        <span class="era-y">${e.y}</span>
+        <span class="era-p">${e.pl}</span>
+        <span class="era-s">${wt("scene")} ${e.scLabel||e.sc}</span>
+        <span class="vd ${e.v}">${e.vt}</span>
+      </div>`;
+    if(e.na) h+=`<div class="note-row">${mdb(e.na)}</div>`;
+    h+=`<div class="shots">`+e.im.map(([f,c,jw,tm,kd])=>`
+      <figure class="shot" style="margin:0">
+        <img src="assets/wardrobe-pending/scene-${pad}/${f}" alt="" loading="lazy"
+             data-alt="assets/scenes/scene-${pad}/1-references/${f}"
+             onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt='';}else{this.closest('.shot').remove();}">
+        <figcaption class="cap">${mdb(c)}</figcaption>
+        <div class="bdg">
+          <span class="${jw===5?"nj":jw===4?"tm":jw===3?"tm ex":jw===2?"tm":jw?"jw":"nj"}">${WL==="en"?WT.jw[jw||0]:(jw===5?"לא מאומת — לבוש עשיר, לשיקול דעת":jw===4?"סטילס מהוליווד — לא מקור היסטורי":jw===3?"נוצר ב-AI":jw===2?"איור מודרני — לא מקור היסטורי":jw?"מקור יהודי":"לא יהודי — תקופה ואזור")}</span>
+          ${tm?`<span class="tm ${tm==="בן התקופה"?"ex":""}">${wlab(WT.time,tm)}</span>`:""}
+          ${kd?`<span class="tm">${wlab(WT.kind,kd)}</span>`:""}
+        </div>
+      </figure>`).join("")+`</div>`;
+    if((e.hero||[]).length) h+=`<div class="hsec">
+      <h4>${wt("heroH")} &mdash; ${e.hero.length} ${wt("heroN")}</h4>
+      <p class="sub">${wt("heroSub")}</p>
+      <div class="shots">`+e.hero.map(([f,w,jw,tm,kd,use,lic])=>`
+        <figure class="shot" style="margin:0">
+          <img src="assets/wardrobe-pending/scene-${pad}/${f}" alt="" loading="lazy"
+               data-alt="assets/scenes/scene-${pad}/1-references/${f}"
+               onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt='';}else{this.closest('.shot').remove();}">
+          <figcaption class="cap">${mdb(w)}</figcaption>
+          ${use?`<div class="use">${mdb(use)}</div>`:""}
+          <div class="bdg">
+            <span class="${jw?"jw":"nj"}">${jw?wt("jwY"):wt("jwShort")}</span>
+            ${tm?`<span class="tm ${tm==="בן התקופה"?"ex":""}">${wlab(WT.time,tm)}</span>`:""}
+            ${kd?`<span class="tm">${wlab(WT.kind,kd)}</span>`:""}
+            <span class="${lic==="free"?"lf":"lc"}">${lic==="free"?wt("licF"):wt("licC")}</span>
+          </div>
+        </figure>`).join("")+`</div></div>`;
+    h+=`<div class="note-row" style="border-bottom:0">${e.ns} ${wt("srcs")}`+
+       (e.deep?` &middot; ${wt("deepY")}: <b>assets/wardrobe-pending/scene-${pad}/research.md</b>`
+              :` &middot; <b>${wt("deepN")}</b>`)+`</div></div>`;
+    if(gen.length) h+=`<aside class="gside">
+      <h4>${wt("genH")}</h4>`+gen.map(([f,w,src,wide],gi)=>`
+      <figure class="shot${wide?" wide":""}" style="margin:0">
+        <img src="assets/scenes/scene-${pad}/2-elements/${f}" alt="" loading="lazy">
+        <figcaption class="cap">${mdb((WL==="en"&&GEN_EN[e.sc]&&GEN_EN[e.sc][gi])||w)}</figcaption>
+        <div class="bdg"><span class="tm">${src}</span><span class="lf">${wt("genOk")}</span></div>
+      </figure>`).join("")+`</aside></div>`;
+  });
+  el.innerHTML=(LANG==="en"?'<p class="langnote">This research sheet is available in Hebrew only for now.</p>':"")+h;
+  const lb=document.getElementById("lb");
+  el.querySelectorAll(".shot img").forEach(img=>{
+    (function(){var s=img.getAttribute("src")||"";if(!img.dataset.full&&s.indexOf("assets/")===0&&s.indexOf("assets/thumb/")!==0){img.dataset.full=s;img.setAttribute("src","assets/thumb/"+s.slice(7));}})();
+    img.addEventListener("click",()=>{lb.querySelector("img").src=(img.dataset.full||img.getAttribute("src"));lb.classList.add("on")});
+  });
+}
+renderWear(document.getElementById("p-wear"));
+
+
+const tabs = {script:document.getElementById("t-script"), res:document.getElementById("t-res"), wear:document.getElementById("t-wear")};
+const panes = {en:document.getElementById("p-en"), he:document.getElementById("p-he"), res:document.getElementById("p-res"), wear:document.getElementById("p-wear")};
+var VIEW="script";
+function show(v){
+  VIEW=v;
+  Object.keys(tabs).forEach(k=>{ if(tabs[k]) tabs[k].setAttribute("aria-selected", String(k===v)); });
+  panes.en.hidden   = !(v==="script" && LANG==="en");
+  panes.he.hidden   = !(v==="script" && LANG!=="en");
+  if(panes.tree) panes.tree.hidden = (v!=="tree");
+  panes.res.hidden  = (v!=="res");
+  panes.wear.hidden = (v!=="wear");
+  document.documentElement.lang = (LANG==="en"?"en":"he");
+  document.body.classList.toggle("res-mode",  v==="res");
+  document.body.classList.toggle("wear-mode", v==="wear");
+  window.scrollTo({top:0});
+}
+function setLang(l){
+  LANG=l; WL=l;
+  document.querySelectorAll("#langsw button").forEach(b=>b.classList.toggle("on", b.dataset.lang===l));
+  tabs.script.textContent = (l==="en"?"Script":"תסריט");
+  if(tabs.tree) tabs.tree.textContent = (l==="en"?"Family Tree":"עץ משפחה");
+  tabs.res.textContent  = (l==="en"?"Candle Research":"מחקר נרות");
+  tabs.wear.textContent = (l==="en"?"Period Dress":"לבוש תקופתי");
+  panes.wear.setAttribute("dir", l==="en"?"ltr":"rtl");
+  panes.wear.setAttribute("lang", l==="en"?"en":"he");
+  renderWear(panes.wear);
+  renderRes(panes.res);
+  show(VIEW);
+}
+document.querySelectorAll("#langsw button").forEach(b=>{
+  b.addEventListener("click",()=>setLang(b.dataset.lang));
+});
+tabs.script.addEventListener("click",()=>show("script"));
+tabs.res.addEventListener("click",()=>show("res"));
+tabs.wear.addEventListener("click",()=>show("wear"));
+setLang(LANG);
+</script>
+
+<style id="res-mono">
+body.res-mode{background:#F5F5F4 !important}
+#p-res{background:transparent !important;color:#3A3A3A !important;padding:0 0 60px !important;font-family:var(--f-body)}
+#p-res *{box-shadow:none !important}
+#p-res .res-head{border:0 !important;padding:36px 0 26px !important;border-bottom:1px solid #DADADA !important;margin-bottom:8px}
+#p-res .res-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+#p-res .res-head h2{font-size:28px !important;color:#111 !important;margin:0 !important;font-weight:700}
+#p-res .res-head p{font-size:14.5px !important;color:#6B6B6B !important;margin:10px 0 0 !important;max-width:74ch;line-height:1.7}
+#p-res .langsw{display:inline-flex;border:1px solid #CFCFCF;border-radius:3px;overflow:hidden}
+#p-res .lsw{background:#fff;border:0;padding:7px 16px;font:inherit;font-size:13px;color:#555;cursor:pointer}
+#p-res .lsw+.lsw{border-inline-start:1px solid #CFCFCF}
+#p-res .lsw.on{background:#111;color:#fff}
+#p-res .lsw:focus-visible{outline:2px solid #111;outline-offset:2px}
+
+#p-res .era{background:#fff !important;border:1px solid #E2E2E2 !important;border-radius:2px !important;margin-top:24px !important;overflow:hidden}
+#p-res .era-head{background:#fff !important;border-bottom:1px solid #EBEBEB !important;padding:16px 22px !important;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+#p-res .era-y{color:#111 !important;font-size:21px !important;font-weight:700;font-family:var(--f-display)}
+#p-res .era-p{color:#3A3A3A !important;font-size:15px !important;font-weight:500}
+#p-res .era-s{margin-inline-start:auto;color:#8A8A8A !important;border:0 !important;padding:0 !important;font-size:12.5px !important;background:none !important}
+#p-res .objname{background:#fff !important;border-bottom:1px solid #EBEBEB !important;padding:12px 22px !important;font-size:15.5px;font-weight:600;color:#111}
+
+#p-res .cmp{display:grid;grid-template-columns:1fr 1fr;gap:0 !important;background:none !important;border-bottom:1px solid #EBEBEB !important}
+#p-res .cm{background:#fff !important;padding:14px 22px !important}
+#p-res .cm+.cm{border-inline-start:1px solid #EBEBEB}
+#p-res .ck{color:#8A8A8A !important;font-size:11.5px !important;letter-spacing:.02em !important;text-transform:none !important;font-weight:500 !important;margin-bottom:6px}
+#p-res .cv{color:#2A2A2A !important;font-size:14px !important;line-height:1.7}
+#p-res .cv b,#p-res .lv2 b,#p-res .onebullet b{color:#111 !important;font-weight:600}
+
+#p-res .onebullet{background:#fff !important;border-bottom:1px solid #EBEBEB !important;padding:13px 22px !important;font-size:14px !important;color:#3A3A3A !important;line-height:1.7}
+#p-res .onebullet::before{display:none !important}
+#p-res .lightrow{background:#fff !important;border-bottom:1px solid #EBEBEB !important;padding:13px 22px !important;display:grid;grid-template-columns:120px 1fr;gap:16px}
+#p-res .lk2{color:#8A8A8A !important;font-size:11.5px !important;letter-spacing:.02em !important;text-transform:none !important;font-weight:500 !important;padding-top:2px}
+#p-res .lv2{color:#2A2A2A !important;font-size:14px !important;line-height:1.75}
+
+#p-res .shots{display:flex;flex-wrap:wrap;gap:14px;padding:18px 22px !important;background:#fff}
+#p-res .shot{flex:1 1 0;min-width:180px;margin:0;border:1px solid #EBEBEB !important;border-radius:2px !important;background:#fff !important;display:flex;flex-direction:column}
+#p-res .shot img{width:100%;height:200px;object-fit:contain;background:#fff;padding:10px;cursor:zoom-in;opacity:1 !important}
+#p-res .cap{padding:9px 11px !important;font-size:12px !important;color:#555 !important;line-height:1.5;background:#fff !important;border-top:1px solid #F0F0F0}
+#p-res .vd,#p-res .mk,#p-res .legend2,#p-res .tally,#p-res .lic,#p-res .note-row{display:none !important}
+@media (max-width:820px){#p-res .cmp{grid-template-columns:1fr}#p-res .cm+.cm{border-inline-start:0;border-top:1px solid #EBEBEB}#p-res .lightrow{grid-template-columns:1fr;gap:4px}}
+
+#p-res .era-head{border-bottom:0 !important}
+#p-res .era.act1 .era-head{background:#6E5238 !important}
+#p-res .era.act2 .era-head{background:#2E5558 !important}
+#p-res .era.act3 .era-head{background:#3B465C !important}
+#p-res .era.act4 .era-head{background:#643B47 !important}
+#p-res .era .era-y{color:#fff !important}
+#p-res .era .era-p{color:rgba(255,255,255,.88) !important}
+#p-res .era .era-s{color:rgba(255,255,255,.62) !important}
+#p-res .era{border-color:#DADADA !important}
+
+#p-res .controw{padding:12px 22px 16px;font-size:13.5px;color:#555;line-height:1.7;border-top:1px solid #EBEBEB;background:#FAFAFA}
+#p-res .controw b{color:#111;font-weight:600}
+</style>
