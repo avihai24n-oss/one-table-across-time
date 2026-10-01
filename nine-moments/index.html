@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One Table Across Time · Nine Moments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F6F1E8; --card:#FFFDF9; --ink:#1F1A14; --body:#4A4237; --muted:#857A6B;
+  --line:#E4DACB; --accent:#B4581C; --accent-soft:#F3E3D3; --flame:#E89A3C;
+  --f-head:"Fraunces",Georgia,serif; --f-body:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+html[lang="he"]{ --f-head:"Frank Ruhl Libre",Georgia,serif; --f-body:"Heebo",system-ui,Arial,sans-serif; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--body);font-family:var(--f-body);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:5;background:rgba(246,241,232,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{font-family:var(--f-head);font-weight:700;color:var(--ink);font-size:16px;letter-spacing:.01em}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.lang button{font:600 13px/1 var(--f-body);font-family:"Inter","Heebo",sans-serif;border:0;background:transparent;color:var(--muted);padding:9px 16px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* hero */
+.hero{padding:56px 0 28px;text-align:center}
+.kicker{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+html[lang="he"] .kicker{letter-spacing:.04em}
+h1{font-family:var(--f-head);font-weight:700;color:var(--ink);font-size:clamp(34px,8vw,52px);line-height:1.1;margin:14px 0 12px}
+.sub{font-size:clamp(17px,4.4vw,20px);color:var(--body);max-width:560px;margin:0 auto}
+.flame{display:block;width:22px;height:30px;margin:0 auto 18px}
+
+/* intro */
+.intro{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 24px;margin:20px 0 10px}
+.intro h2{font-family:var(--f-head);color:var(--ink);font-size:22px;margin:0 0 10px}
+.intro p{margin:0 0 12px}
+.intro p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:22px 0 4px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:14px 10px;text-align:center}
+.fact b{display:block;font-family:var(--f-head);font-size:26px;color:var(--accent);line-height:1.1}
+.fact span{font-size:13px;color:var(--body)}
+
+/* timeline */
+.section-title{font-family:var(--f-head);color:var(--ink);font-size:26px;margin:48px 0 6px}
+.section-sub{color:var(--muted);margin:0 0 22px}
+ol.moments{list-style:none;margin:0;padding:0;position:relative}
+ol.moments::before{content:"";position:absolute;inset-inline-start:23px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.m{position:relative;padding-inline-start:64px;margin-bottom:16px}
+.num{position:absolute;inset-inline-start:0;top:16px;width:48px;height:48px;border-radius:50%;background:var(--card);border:2px solid var(--accent);color:var(--accent);font-family:var(--f-head);font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center}
+.m.last .num{background:var(--accent);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px 20px}
+.year{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+html[lang="he"] .year{letter-spacing:0}
+.card h3{font-family:var(--f-head);color:var(--ink);font-size:22px;line-height:1.25;margin:4px 0 8px}
+.card p{margin:0}
+.tag{display:inline-block;margin-top:12px;font-size:13px;font-weight:600;color:var(--body);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+
+/* notes */
+.note{background:var(--ink);color:#EFE7DA;border-radius:14px;padding:26px 24px;margin:40px 0 0}
+.note h2{font-family:var(--f-head);color:#fff;font-size:22px;margin:0 0 10px}
+.note p{margin:0 0 12px}
+.note p:last-child{margin-bottom:0}
+.note.light{background:var(--card);color:var(--body);border:1px solid var(--line);margin-top:16px}
+.note.light h2{color:var(--ink)}
+footer{color:var(--muted);font-size:14px;text-align:center;padding:40px 0 calc(48px + env(safe-area-inset-bottom,0px))}
+
+[hidden]{display:none!important}
+@media (max-width:520px){
+  body{font-size:16px}
+  .facts{gap:8px}
+  .fact b{font-size:22px}
+  .m{padding-inline-start:52px}
+  .num{width:40px;height:40px;font-size:17px}
+  ol.moments::before{inset-inline-start:19px}
+  .card{padding:16px 16px 18px}
+  .card h3{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <span class="brand">One Table Across Time</span>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">English</button>
+      <button type="button" data-lang="he" aria-pressed="false">עברית</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= ENGLISH ================= -->
+<div data-pane="en">
+  <section class="hero">
+    <svg class="flame" viewBox="0 0 22 30" aria-hidden="true"><path d="M11 1c2 6 9 9 9 17a9 9 0 0 1-18 0c0-5 3-7 4-11 1 3 2 4 4 5 0-4-1-7 1-11z" fill="#E89A3C"/></svg>
+    <div class="kicker">Six Million Voices · New structure</div>
+    <h1>Nine Moments<br>Across Time</h1>
+    <p class="sub">A proposed structure for the Shabbat film: one continuous story of the Jewish people, told through the moments where Shabbat mattered most.</p>
+  </section>
+
+  <section class="intro">
+    <h2>Why nine moments</h2>
+    <p>We propose to focus on <b>nine key moments in Jewish history</b>. In our view these are the defining points of the story, and the places where it is easiest for the viewer to be moved and to connect with the message.</p>
+    <p>Focusing on fewer moments gives <b>each one more time</b>, so the viewer can step into the period and really understand what is happening there. Together they show how Jews kept Shabbat in every place and every era, how the tradition grew over the centuries, and how it held the Jewish people together as one.</p>
+    <div class="facts">
+      <div class="fact"><b>9</b><span>key moments</span></div>
+      <div class="fact"><b>4–5</b><span>minutes in total</span></div>
+    </div>
+  </section>
+
+  <h2 class="section-title">The nine moments</h2>
+  <p class="section-sub">In chronological order.</p>
+
+  <ol class="moments">
+    <li class="m"><span class="num">1</span><div class="card">
+      <div class="year">In the beginning</div><h3>Creation</h3>
+      <p>Six days of creation, and on the seventh, rest. Shabbat exists before there is a people to keep it.</p>
+      <span class="tag">Shabbat is born</span></div></li>
+
+    <li class="m"><span class="num">2</span><div class="card">
+      <div class="year">c. 1300 BCE</div><h3>Sinai: the manna</h3>
+      <p>In the desert, bread falls from heaven every morning, and on Friday a double portion. The people receive Shabbat, and the two loaves on every Shabbat table begin here.</p>
+      <span class="tag">Shabbat is given</span></div></li>
+
+    <li class="m"><span class="num">3</span><div class="card">
+      <div class="year">70 CE</div><h3>Jerusalem: the destruction</h3>
+      <p>A family gathers for Shabbat in Jerusalem. As it ends, the Temple goes up in flames; tradition holds it fell at the close of Shabbat. In exile in Babylon, the Shabbat table becomes the new Temple.</p>
+      <span class="tag">Shabbat survives destruction</span></div></li>
+
+    <li class="m"><span class="num">4</span><div class="card">
+      <div class="year">12th century – 1492</div><h3>Spain: Golden Age and expulsion</h3>
+      <p>Shabbat at its height in Córdoba. Generations later in Toledo, the decree of 1492 forces the Jews out of Spain. A family wraps its silver candlesticks, hides them, and takes the road into exile.</p>
+      <span class="tag">Shabbat carried into exile</span></div></li>
+
+    <li class="m"><span class="num">5</span><div class="card">
+      <div class="year">c. 1540</div><h3>Lisbon: Shabbat in secret</h3>
+      <p>Under the Inquisition, forced converts light Shabbat candles in cellars, behind closed doors, at the risk of their lives, while the Inquisition's procession passes in the street outside.</p>
+      <span class="tag">Shabbat kept in secret</span></div></li>
+
+    <li class="m"><span class="num">6</span><div class="card">
+      <div class="year" dir="ltr" style="text-align:right">1941–1945</div><h3>The Holocaust</h3>
+      <p>Stripped of their homes, their names and their dignity, in the ghettos and the camps, Jews still found a way to mark Shabbat.</p>
+      <span class="tag">Shabbat in the darkness</span></div></li>
+
+    <li class="m"><span class="num">7</span><div class="card">
+      <div class="year" dir="ltr" style="text-align:right">1946–1948</div><h3>After the war: a new home</h3>
+      <p>The first free Shabbat in a displaced persons camp. Then a new home in Israel, where Jews from every corner of the world sit down at one table.</p>
+      <span class="tag">Shabbat returns to life</span></div></li>
+
+    <li class="m"><span class="num">8</span><div class="card">
+      <div class="year">October 2023</div><h3>The empty chairs</h3>
+      <p>Shabbat tables set with empty chairs for the hostages. In a time of pain, the whole people gathers around one table.</p>
+      <span class="tag">Shabbat unites</span></div></li>
+
+    <li class="m last"><span class="num">9</span><div class="card">
+      <div class="year">Today</div><h3>Closing: every place, every Friday</h3>
+      <p>After 3,000 years of tradition, Jews still light Shabbat candles wherever they are. As the sun sets around the world, city after city, the candles are lit, and the message comes full circle.</p>
+      <span class="tag">Shabbat everywhere</span></div></li>
+  </ol>
+
+  <section class="note">
+    <h2>Narration</h2>
+    <p>A narrator will accompany the whole film, as in the opening. The narration explains what the picture alone can't, such as where we are, what is happening and why it matters, and it ties the nine moments into one story.</p>
+    <p>Each moment will also carry a small on-screen title with the place and the year.</p>
+  </section>
+
+</div>
+
+<!-- ================= HEBREW ================= -->
+<div data-pane="he" hidden>
+  <section class="hero">
+    <svg class="flame" viewBox="0 0 22 30" aria-hidden="true"><path d="M11 1c2 6 9 9 9 17a9 9 0 0 1-18 0c0-5 3-7 4-11 1 3 2 4 4 5 0-4-1-7 1-11z" fill="#E89A3C"/></svg>
+    <div class="kicker">Six Million Voices · מבנה חדש</div>
+    <h1>תשעה רגעים<br>לאורך ההיסטוריה</h1>
+    <p class="sub">הצעה למבנה חדש לסרט השבת: סיפור אחד ורציף של העם היהודי, דרך הרגעים שבהם השבת הייתה הכי חשובה.</p>
+  </section>
+
+  <section class="intro">
+    <h2>למה תשעה רגעים</h2>
+    <p>אנחנו מציעים להתמקד ב<b>תשעה רגעים מרכזיים בהיסטוריה היהודית</b>. לדעתנו אלה נקודות הדגל של הסיפור, והמקומות שבהם הכי קל לגרום לצופה להתרגש ולהתחבר למסר.</p>
+    <p>פחות רגעים נותנים <b>יותר זמן לכל אחד</b>, כך שהצופה יוכל להיכנס לתקופה ולהבין באמת מה קורה בה. יחד הם מראים איך היהודים שמרו על השבת בכל מקום ובכל זמן, איך המנהג התפתח לאורך הדורות, ואיך הוא שמר על העם היהודי כעם אחד.</p>
+    <div class="facts">
+      <div class="fact"><b>9</b><span>רגעים מרכזיים</span></div>
+      <div class="fact"><b dir="ltr">4–5</b><span>דקות בסך הכול</span></div>
+    </div>
+  </section>
+
+  <h2 class="section-title">תשעת הרגעים</h2>
+  <p class="section-sub">לפי סדר הזמנים.</p>
+
+  <ol class="moments">
+    <li class="m"><span class="num">1</span><div class="card">
+      <div class="year">בראשית</div><h3>בריאת העולם</h3>
+      <p>ששת ימי הבריאה, וביום השביעי, מנוחה. השבת קיימת עוד לפני שיש עם שישמור אותה.</p>
+      <span class="tag">השבת נולדת</span></div></li>
+
+    <li class="m"><span class="num">2</span><div class="card">
+      <div class="year">בערך 1300 לפנה"ס</div><h3>סיני: המן</h3>
+      <p>במדבר יורד לחם מן השמיים בכל בוקר, וביום שישי מנה כפולה. העם מקבל את השבת, ומכאן מגיעות שתי החלות שעל כל שולחן שבת.</p>
+      <span class="tag">השבת ניתנת לעם</span></div></li>
+
+    <li class="m"><span class="num">3</span><div class="card">
+      <div class="year">70 לספירה</div><h3>ירושלים: החורבן</h3>
+      <p>משפחה מתכנסת לשבת בירושלים. כשהשבת יוצאת, בית המקדש עולה בלהבות, ולפי המסורת הוא נחרב במוצאי שבת. בגלות בבל, שולחן השבת הופך לבית המקדש החדש.</p>
+      <span class="tag">השבת שורדת את החורבן</span></div></li>
+
+    <li class="m"><span class="num">4</span><div class="card">
+      <div class="year">המאה ה-12 עד <bdi>1492</bdi></div><h3>ספרד: תור הזהב והגירוש</h3>
+      <p>השבת בשיאה בקורדובה. דורות אחר כך, בטולדו, צו הגירוש של 1492 מגרש את היהודים מספרד. משפחה עוטפת את פמוטי הכסף שלה, מחביאה אותם ויוצאת לדרך.</p>
+      <span class="tag">השבת יוצאת לגלות</span></div></li>
+
+    <li class="m"><span class="num">5</span><div class="card">
+      <div class="year">בערך 1540</div><h3>ליסבון: שבת בסתר</h3>
+      <p>תחת האינקוויזיציה, האנוסים מדליקים נרות שבת במרתפים, מאחורי דלתות סגורות ובסכנת חיים, בזמן שתהלוכת האינקוויזיציה עוברת ברחוב.</p>
+      <span class="tag">השבת במחתרת</span></div></li>
+
+    <li class="m"><span class="num">6</span><div class="card">
+      <div class="year" dir="ltr" style="text-align:right">1941–1945</div><h3>השואה</h3>
+      <p>בגטאות ובמחנות, אחרי שנלקחו מהם הבית, השם והכבוד, היהודים עדיין מצאו דרך לציין את השבת.</p>
+      <span class="tag">השבת בחושך</span></div></li>
+
+    <li class="m"><span class="num">7</span><div class="card">
+      <div class="year" dir="ltr" style="text-align:right">1946–1948</div><h3>אחרי המלחמה: בית חדש</h3>
+      <p>השבת החופשית הראשונה במחנה עקורים. אחר כך בית חדש בישראל, שבו יהודים מכל קצוות העולם יושבים סביב שולחן אחד.</p>
+      <span class="tag">השבת חוזרת לחיים</span></div></li>
+
+    <li class="m"><span class="num">8</span><div class="card">
+      <div class="year">אוקטובר 2023</div><h3>הכיסאות הריקים</h3>
+      <p>שולחנות שבת ערוכים עם כיסאות ריקים לחטופים. בזמן של כאב, העם כולו מתכנס סביב שולחן אחד.</p>
+      <span class="tag">השבת מאחדת</span></div></li>
+
+    <li class="m last"><span class="num">9</span><div class="card">
+      <div class="year">היום</div><h3>סיום: בכל מקום, בכל יום שישי</h3>
+      <p>אחרי 3,000 שנות מסורת, יהודים עדיין מדליקים נרות שבת בכל מקום שהם נמצאים בעולם. השמש שוקעת סביב העולם, עיר אחרי עיר, הנרות נדלקים, והמסר נסגר.</p>
+      <span class="tag">השבת בכל מקום</span></div></li>
+  </ol>
+
+  <section class="note">
+    <h2>קריינות</h2>
+    <p>קריין ילווה את הסרט כולו, כמו בפתיחה. הקריינות תסביר את מה שהתמונה לבד לא יכולה להגיד: איפה אנחנו, מה קורה ולמה זה חשוב. היא גם תחבר את תשעת הרגעים לסיפור אחד.</p>
+    <p>בכל רגע יופיע גם כיתוב קטן על המסך עם המקום והשנה.</p>
+  </section>
+
+</div>
+
+<footer>Prepared for Six Million Voices by TodoAI Studio</footer>
+</main>
+
+<script>
+(function(){
+  var btns=document.querySelectorAll('.lang button');
+  function set(l){
+    document.documentElement.lang=l; document.documentElement.dir=(l==='he')?'rtl':'ltr';
+    document.querySelectorAll('[data-pane]').forEach(function(p){p.hidden=p.getAttribute('data-pane')!==l;});
+    btns.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-lang')===l?'true':'false');});
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute('data-lang'));window.scrollTo(0,0);});});
+  if(location.hash==='#he') set('he');
+})();
+</script>
+</body>
+</html>
