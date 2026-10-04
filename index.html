@@ -52,6 +52,7 @@ footer{color:var(--muted);font-size:14px;text-align:center;padding:48px 0 calc(4
   <span class="brand">One Table Across Time</span>
   <nav class="nav" aria-label="ניווט">
     <a href="#draft" data-tab="draft" class="tabbtn">📝 טיוטה</a>
+    <a href="#video" data-tab="video">🎬 סרטון</a>
     <a href="#see-hear" data-tab="plan">מה רואים ושומעים</a>
     <a href="#lamps" data-tab="plan">המנורות</a>
     <a href="#journey-map" data-tab="plan">מפה</a>
@@ -250,7 +251,7 @@ SUPER: "יותר משישראל שמרו את השבת, שמרה השבת אות
   function txt(h){var d=document.createElement('div');d.innerHTML=h;return d.innerText.replace(/\s+/g,' ').trim()}
   function esc(t){return t.replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
   cells.forEach(function(td){original[keyOf(td)]=td.innerHTML});
-  function clean(td){var c=td.cloneNode(true);[].forEach.call(c.querySelectorAll('.more,.pv'),function(b){b.remove()});return c.innerHTML}
+  function clean(td){var c=td.cloneNode(true);[].forEach.call(c.querySelectorAll('.more'),function(b){b.remove()});return c.innerHTML}
   function read(){var o={};cells.forEach(function(td){o[keyOf(td)]=clean(td)});return o}
   function apply(o){cells.forEach(function(td){var k=keyOf(td);if(o&&o[k]!=null)td.innerHTML=o[k]});if(typeof clampSetup==='function')setTimeout(clampSetup,0)}
   function getJ(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d}catch(e){return d}}
@@ -344,6 +345,22 @@ var PREV={"1.year": ["בראשית"], "1.title": ["בריאת העולם"], "1.s
 </script>
 </section>
 
+</div>
+<div data-pane="video" hidden>
+<section id="video-tab" style="padding:8px 0 24px">
+  <h2 class="section-title">סרטון</h2>
+  <p class="section-sub">בריאת העולם · מתוך העריכה הנוכחית</p>
+  <video id="creationVid" src="media/scene-01-creation.mp4" controls playsinline preload="metadata"
+    style="width:100%;max-width:1100px;aspect-ratio:16/9;background:#000;border-radius:12px;display:block"></video>
+  <button type="button" id="vidFull" style="margin-top:12px;font:inherit;padding:8px 16px;border-radius:999px;border:1px solid var(--line,#ccc);background:var(--card,#fff);cursor:pointer">⛶ מסך מלא</button>
+</section>
+<script>
+(function(){var v=document.getElementById('creationVid'),b=document.getElementById('vidFull');
+ b.addEventListener('click',function(){
+  if(v.requestFullscreen)v.requestFullscreen();else if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();else if(v.webkitRequestFullscreen)v.webkitRequestFullscreen();});
+ document.querySelectorAll('.nav a[data-tab]').forEach(function(a){a.addEventListener('click',function(){if(a.getAttribute('data-tab')!=='video')v.pause()})});
+})();
+</script>
 </div>
 <div data-pane="plan">
   <section class="hero">
@@ -1377,29 +1394,12 @@ var PREV={"1.year": ["בראשית"], "1.title": ["בריאת העולם"], "1.s
   var links=[].slice.call(document.querySelectorAll('.nav a[data-tab]')),panes={};
   [].forEach.call(document.querySelectorAll('[data-pane]'),function(p){panes[p.getAttribute('data-pane')]=p});
   function show(tab,anchor){document.body.classList.toggle('wide',tab==='draft');Object.keys(panes).forEach(function(k){panes[k].hidden=k!==tab});
-    links.forEach(function(a){a.classList.toggle('on',a.getAttribute('data-tab')===tab&&(tab==='draft'||a.getAttribute('href')==='#'+anchor))});
+    links.forEach(function(a){a.classList.toggle('on',a.getAttribute('data-tab')===tab&&(tab!=='plan'||a.getAttribute('href')==='#'+anchor))});
     setTimeout(function(){window.dispatchEvent(new Event('resize'))},0);
     if(anchor&&tab==='plan'){var el=document.getElementById(anchor);if(el)el.scrollIntoView({behavior:'smooth'})}else window.scrollTo(0,0)}
   links.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-tab'),h=a.getAttribute('href').slice(1);
     show(t,h);history.replaceState(null,'','#'+h)})});
-  var h=location.hash.slice(1);show(h==='draft'?'draft':'plan',h&&h!=='draft'?h:null);
-})();
-</script>
-<script>
-(function(){
-  var td=document.querySelector('#draft tr[data-id="1"] td[data-k="see"]'); if(!td) return;
-  var t=document.createElement('template'); t.innerHTML='<video class="pv" src="media/scene-01-creation.mp4" controls playsinline preload="metadata" contenteditable="false" style="width:100%;max-width:420px;border-radius:8px;margin-top:8px;display:block"></video>'; var v=t.content.firstChild;
-  function place(){
-    [].forEach.call(td.querySelectorAll('.pv'),function(x){if(x!==v)x.remove()});
-    var clamp=td.querySelector('.clamp');
-    if(v.parentNode!==td || (clamp && v.previousElementSibling!==clamp && clamp.nextSibling!==v)){
-      if(clamp) clamp.parentNode===td ? td.insertBefore(v, clamp.nextSibling) : td.appendChild(v);
-      else td.appendChild(v);
-    }
-  }
-  place();
-  new MutationObserver(function(){ if(v.parentNode!==td || td.querySelectorAll('.pv').length>1 || (td.querySelector('.clamp') && td.querySelector('.clamp').contains(v))) place(); })
-    .observe(td,{childList:true,subtree:true});
+  var h=location.hash.slice(1);var pt=(h&&h!=='plan'&&panes[h])?h:'plan';show(pt,pt==='plan'&&h?h:null);
 })();
 </script>
 </body>
