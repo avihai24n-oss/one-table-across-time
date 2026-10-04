@@ -52,6 +52,7 @@ footer{color:var(--muted);font-size:14px;text-align:center;padding:48px 0 calc(4
   <span class="brand">One Table Across Time</span>
   <nav class="nav" aria-label="ניווט">
     <a href="#draft" data-tab="draft" class="tabbtn">📝 טיוטה</a>
+    <a href="#script" data-tab="script" class="tabbtn">📜 תסריט</a>
     <a href="#video" data-tab="video">🎬 סרטון</a>
     <a href="#see-hear" data-tab="plan">מה רואים ושומעים</a>
     <a href="#lamps" data-tab="plan">המנורות</a>
@@ -344,6 +345,176 @@ var PREV={"1.year": ["בראשית"], "1.title": ["בריאת העולם"], "1.s
 })();
 </script>
 </section>
+
+</div>
+<div data-pane="script" hidden>
+<style>
+.scr-head{padding:40px 0 8px;text-align:center}
+.scr-head h1{margin:6px 0 6px}
+.scr-head .sub{color:var(--muted)}
+.scr-tools{display:flex;justify-content:center;gap:6px;margin:14px 0 26px}
+.scr-tools button{font:600 14px var(--f-body);color:var(--body);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer}
+.scr-tools button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.scr{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.scr th:first-child{border-start-start-radius:13px}.scr th:last-child{border-start-end-radius:13px}
+.scr th{background:var(--ink);color:#F6F1E8;font-weight:600;font-size:14px;text-align:start;padding:10px 14px}
+.scr td{vertical-align:top;padding:10px 14px;border-top:1px solid var(--line);line-height:1.6}
+.scr td.k{width:44px;color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap}
+.scr td.see{width:52%;color:var(--ink)}
+.scr td.hear{border-inline-start:1px solid var(--line)}
+.scr tr.sc td{background:var(--accent-soft);border-top:2px solid var(--accent);padding:12px 14px}
+.scr tr.sc .num{font-family:var(--f-head);font-weight:700;color:var(--accent);font-size:20px;margin-inline-end:10px}
+.scr tr.sc .ttl{font-family:var(--f-head);font-weight:700;color:var(--ink);font-size:19px}
+.scr tr.sc .yr{color:var(--muted);font-size:14px;font-weight:600;margin-inline-start:10px}
+.vo{display:block;color:var(--ink);font-weight:500}
+.vo::before{content:"קריין: ";color:var(--accent);font-weight:600;font-size:13px}
+.vo.en{direction:ltr;text-align:left;font-family:var(--f-body)}
+.vo.en::before{content:"VO: "}
+.cue{display:block;color:var(--muted);font-style:italic;font-size:15px}
+.super{display:block;margin-top:6px;color:var(--accent);font-weight:600}
+.scr .en{display:none}
+.scr.lang-en .he{display:none}
+.scr.lang-en .en{display:block}
+@media (max-width:640px){
+  .scr,.scr tbody,.scr tr,.scr td{display:block;width:auto}
+  .scr thead{display:none}
+  .scr tr{border-top:1px solid var(--line)}
+  .scr td{border-top:0;padding:4px 14px}
+  .scr td.k{padding-top:12px}
+  .scr td.see{padding-bottom:6px}
+  .scr td.hear{border-inline-start:3px solid var(--accent-soft);margin:0 14px 12px;padding:4px 10px}
+  .scr tr.sc td{margin:0;padding:12px 14px}
+}
+</style>
+
+<section class="scr-head">
+  <div class="kicker">Six Million Voices · One Table Across Time</div>
+  <h1>תסריט</h1>
+  <p class="sub">מה רואים ומה שומעים, ברצף, לפי הטיוטה.</p>
+</section>
+<div class="scr-tools" role="group" aria-label="שפת הקריינות">
+  <button type="button" data-lang="he" aria-pressed="true">קריינות בעברית</button>
+  <button type="button" data-lang="en" aria-pressed="false">Narration in English</button>
+</div>
+
+<table class="scr" id="scr">
+<thead><tr><th>#</th><th>מה רואים</th><th>מה שומעים</th></tr></thead>
+<tbody>
+
+<tr class="sc"><td colspan="3"><span class="num">1</span><span class="ttl">בריאת העולם</span><span class="yr">בראשית</span></td></tr>
+<tr><td class="k">1.1</td><td class="see">ששת ימי הבריאה.</td>
+<td class="hear"><span class="vo he">חושך, תוהו ובוהו, על פני תהום. ויאמר אלוהים: יהי אור. מים ממים, יבשה מתוך הים, הרים עולים מיסודותיהם. המאור הגדול והמאור הקטן, כוכבים לאין ספור. חיים שורצים במים, כנפיים ברקיע, כל חיה למינה. שישה מאמרות, יש מאין.</span><span class="vo en">Darkness, without form and void, upon the face of the deep. And God said: Let there be light. Waters from waters, dry land out of the sea, mountains rising from their foundations. A great light and a lesser light, stars beyond number. Life swarming in the water, wings across the sky, every beast after its kind. Six utterances, something out of nothing.</span></td></tr>
+<tr><td class="k">1.2</td><td class="see">ביום השביעי העולם נעצר ונח. אין אש ואין נר.</td>
+<td class="hear"><span class="vo he">וביום השביעי, כל הבריאה נדמת. בין ערביים, מתוך החושך, נולדת להבה אחת קטנה. לא עוד מעשה בריאה, אלא מעשה המנוחה הראשון. זו השבת.</span><span class="vo en">And on the seventh, all creation falls still. At twilight, out of the dark, one small flame is born. Not another act of creation, but the first act of rest. This is Shabbat.</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">2</span><span class="ttl">המדבר</span><span class="yr">בערך 1300 לפנה"ס</span></td></tr>
+<tr><td class="k">2.1</td><td class="see">מחנה במדבר ביום שישי. מלקטים מן כפול, ומנה אחת נשמרת לשבת.</td>
+<td class="hear"><span class="vo he">ארבעים שנה במדבר. בכל בוקר, לחם ירד מן השמיים. ביום השישי, מנה כפולה, כדי שביום השביעי יוכלו לנוח, כפי שציווה ה'.</span><span class="vo en">Forty years in the wilderness. Every morning, bread fell from the sky. On the sixth day, a double portion, so that on the seventh they could rest, as God commanded.</span></td></tr>
+<tr><td class="k">2.2</td><td class="see">מדורה שכבר דולקת, והשבת נכנסת עם השקיעה.</td>
+<td class="hear"><span class="vo he">בפעם הראשונה, עם שלם נח.</span><span class="vo en">For the first time, a nation rested.</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">3</span><span class="ttl">ירושלים</span><span class="yr">70 לספירה</span></td></tr>
+<tr><td class="k">3.1</td><td class="see">ירושלים מלמעלה בשקיעה, עשן עולה מהבתים.</td>
+<td class="hear" rowspan="3"><span class="vo he">מן המדבר, הם הגיעו הביתה. עיר של אבן, ובליבה מקדש. ובכל יום שישי, כשהשופר נשמע, השבת נכנסה לכל בית.</span><span class="vo en">From the wilderness, they came home. A city of stone, a Temple at its heart. And every Friday, as the shofar sounded, Shabbat entered every home.</span><span class="cue">קול השופר</span></td></tr>
+<tr><td class="k">3.2</td><td class="see">שופר בסמטה מכריז על כניסת השבת, יונים ממריאות.</td></tr>
+<tr><td class="k">3.3</td><td class="see">האב קונה תבלינים בשוק לפני שבת, וממהר הביתה.</td></tr>
+<tr><td class="k">3.4</td><td class="see">הוא נכנס הביתה, בדיוק כשהאם והילדה מדליקות נר חרס ומכסות את העיניים.</td>
+<td class="hear"><span class="cue">הברכה של האם</span></td></tr>
+<tr><td class="k">3.5</td><td class="see">מוצאי שבת: המשפחה ליד השולחן. רעש חזק מבחוץ, האב קם.</td>
+<td class="hear"><span class="vo he">עד הלילה שבו השבת ההיא יצאה.</span><span class="vo en">Until the night that Shabbat ended.</span><span class="cue">רעש חזק מבחוץ</span></td></tr>
+<tr><td class="k">3.6</td><td class="see">האב יוצא לסמטה הגבוהה מחוץ לבית. בקצה שלה אור כתום ועשן.</td>
+<td class="hear" rowspan="2"><span class="cue">שקט</span></td></tr>
+<tr><td class="k">3.7</td><td class="see">מול העיניים שלו: העיר נשרפת והמקדש נחרב.</td></tr>
+<tr><td class="k">3.8</td><td class="see">שיירה ארוכה של כל היהודים יוצאת מירושלים בשחר.</td>
+<td class="hear"><span class="vo he">ירושלים בערה. עד הבוקר, הם עזבו את הבית היחיד שהכירו אי פעם.</span><span class="vo en">Jerusalem was burning. By morning, they were leaving the only home they had ever known.</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">4</span><span class="ttl">בבל</span><span class="yr">בערך 500 לספירה</span></td></tr>
+<tr><td class="k">4.1</td><td class="see">אחרי שעזבו את ירושלים, הם מוצאים בית חדש. מתקבלים בטוב, עובדים ומתבססים, ויש להם נחת.</td>
+<td class="hear"><span class="vo he">אחרי החורבן, הרחק מירושלים, חיים חדשים התחילו בבבל. יהודים עבדו את האדמה, סחרו, שגשגו ושמרו את השבת בשלווה.</span><span class="vo en">After the destruction, far from Jerusalem, a new life began in Babylon. Jews worked the land, traded, prospered, and kept their Sabbaths in peace.</span></td></tr>
+<tr><td class="k">4.2</td><td class="see">חכמים בישיבה, והתלמוד הבבלי מתפתח. לומדים גם בשבת.</td>
+<td class="hear"><span class="vo he">במשך דורות, כאן נולד התלמוד.</span><span class="vo en">Over generations, here, the Talmud was born.</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">5</span><span class="ttl">ספרד: תור הזהב</span><span class="yr">בערך 1147 · קורדובה</span></td></tr>
+<tr><td class="k">5.1</td><td class="see">שישי אחר הצהריים בחצר בקורדובה: נגן פורט על עוד, המשפחה מסיימת הכנות לשבת.</td>
+<td class="hear"><span class="vo he">בספרד, השבת מצאה את קולה.</span><span class="vo en">In Spain, Shabbat found its voice.</span><span class="cue">נגינת עוד</span></td></tr>
+<tr><td class="k">5.2</td><td class="see">הגברים שרים פיוט לקבלת השבת. בסוף השוט הנגן מניח את העוד.</td>
+<td class="hear"><span class="cue">שירת הפיוט</span></td></tr>
+<tr><td class="k">5.3</td><td class="see">כבר חשוך יותר, עברו שעות. הסבתא מדליקה את פמוטי הכסף.</td>
+<td class="hear"><span class="vo he">ועכשיו, שני נרות. אחד לזכור את השבת, ואחד לשמור אותה.</span><span class="vo en">And now, two lights. One to remember the Sabbath, one to keep it.</span></td></tr>
+<tr><td class="k">5.4</td><td class="see">הילדים מביאים את האוכל לשולחן השופע.</td>
+<td class="hear"><span class="cue">הסעודה, בלי קריינות</span></td></tr>
+<tr><td class="k">5.5</td><td class="see">האב מקדש על היין.</td>
+<td class="hear"><span class="cue">הקידוש</span><span class="vo he">אבל זה לא החזיק מעמד.</span><span class="vo en">But it did not last.</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">6</span><span class="ttl">ליסבון</span><span class="yr">בערך 1540</span></td></tr>
+<tr><td class="k">6.1</td><td class="see">מפה מונפשת: קווי אור יוצאים מספרד, לפורטוגל, לסלוניקי, למרוקו ולאיטליה. הקו לפורטוגל מודגש.</td>
+<td class="hear" rowspan="2"><span class="vo he">ב-1492, היהודים גורשו מספרד. רבים ברחו לפורטוגל. שם, הוכרחו להתנצר.</span><span class="vo en">In 1492, the Jews were expelled from Spain. Many fled to Portugal. There, they were forced to become Christians.</span></td></tr>
+<tr><td class="k">6.2</td><td class="see">הזום נכנס אל ליסבון, אל הרחובות.</td></tr>
+<tr><td class="k">6.3</td><td class="see">בוקר יום שישי, בכנסייה: אישה בין המתפללים מצטלבת עם כולם. צלב על הצוואר.</td>
+<td class="hear" rowspan="2"><span class="vo he">והאינקוויזיציה רדפה כל מי שעוד חי כיהודי.</span><span class="vo en">And the Inquisition hunted anyone who still lived as a Jew.</span></td></tr>
+<tr><td class="k">6.4</td><td class="see">עוקבים אחריה ברחוב עד הבית. שכנה מסתכלת מהחלון.</td></tr>
+<tr><td class="k">6.5</td><td class="see">בבית, הדלת נסגרת. היא מורידה את שרשרת הצלב ומניחה אותה על השולחן.</td>
+<td class="hear"><span class="cue">שקט</span></td></tr>
+<tr><td class="k">6.6</td><td class="see">במרתף: מנורת שמן פשוטה, מוסתרת בתוך כד חרס, כך שהאור לא נראה מבחוץ. שתי פתילות. היא מקדשת על היין.</td>
+<td class="hear"><span class="cue">ברכה בלחש</span><span class="vo he">להיתפס פירושו היה מוות. ועדיין, מאחורי דלתות סגורות, הם הדליקו את נרות השבת.</span><span class="vo en">Discovery meant death. And still, behind closed doors, they lit the Shabbat lights.</span></td></tr>
+<tr><td class="k">6.7</td><td class="see">צעדים ברחוב מעל. הלהבות רועדות, ונשארות.</td>
+<td class="hear"><span class="cue">צעדים מעל</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">7</span><span class="ttl">השואה</span><span class="yr">1941–1945</span></td></tr>
+<tr><td class="k">7.1</td><td class="see">שוט רחב של הגטו בחורף. אנשים רזים בבגדים בלויים ודקים, עם סימן היהודי על הזרוע.</td>
+<td class="hear"><span class="vo he">ארבע מאות שנה אחר כך, כבר לא נשארו דלתות לסגור.</span><span class="vo en">Four hundred years later, there were no doors left to close.</span></td></tr>
+<tr><td class="k">7.2</td><td class="see">האם מחכה בתור ללחם. היא מקבלת חתיכה קטנה.</td>
+<td class="hear"><span class="vo he">הכול נלקח מהם.</span><span class="vo en">Everything was taken from them.</span></td></tr>
+<tr><td class="k">7.3</td><td class="see">היא עוטפת את החתיכה בבד ומוסיפה אותה לפרוסות שכבר אספה במהלך השבוע.</td>
+<td class="hear"><span class="vo he">כאן לא ירד לחם מן השמיים. אז כל השבוע, היא חסכה משלה.</span><span class="vo en">No bread fell from the sky here. So all week, she saved her own.</span></td></tr>
+<tr><td class="k">7.4</td><td class="see">ערב שבת בחדר: המנורה כבר על השולחן, והיא מדליקה את הנר.</td>
+<td class="hear"><span class="vo he">ובכל זאת, בליל שישי, היו מי שמצאו דרך להדליק.</span><span class="vo en">And still, on Friday night, some found a way to light.</span></td></tr>
+<tr><td class="k">7.5</td><td class="see">כל המשפחה יושבת סביב הנר. היא פותחת את הבד ומחלקת את הלחם ששמרה כל השבוע.</td>
+<td class="hear"><span class="cue">שקט</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">8</span><span class="ttl">ישראל</span><span class="yr">14 במאי 1948</span></td></tr>
+<tr><td class="k">8.1</td><td class="see">צילומי ארכיון של ההכרזה: בן גוריון קורא, הקהל באולם עומד.</td>
+<td class="hear"><span class="cue">קולו המקורי של בן גוריון: "...היא מדינת ישראל."</span></td></tr>
+<tr><td class="k">8.2</td><td class="see">סלון צנוע. המשפחה מצטופפת סביב מקלט הרדיו.</td>
+<td class="hear"><span class="cue">הקול ממשיך, עכשיו מסונן ברדיו</span></td></tr>
+<tr><td class="k">8.3</td><td class="see">רגע של שקט, ואז האם מחבקת את הילדים.</td>
+<td class="hear"><span class="cue">טרם הוחלט</span></td></tr>
+<tr><td class="k">8.4</td><td class="see">כמה שעות אחר כך, בשקיעה: שולחן ליד חלון פתוח, כולם בבגדי שבת לבנים. האם מדליקה פמוטי פליז.</td>
+<td class="hear" rowspan="2"><span class="cue">קידוש ושירת "שלום עליכם"</span></td></tr>
+<tr><td class="k">8.5</td><td class="see">כולם סביב השולחן. האב מקדש, וכולם שרים "שלום עליכם". האם בוצעת את החלה ונותנת לכל אחד חתיכה גדולה.</td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">9</span><span class="ttl">7 באוקטובר</span><span class="yr">2023</span></td></tr>
+<tr><td class="k">9.1</td><td class="see">שוט אווירי של העוטף, שבת בבוקר: שקט ושדות. ואז עמודי עשן עולים באופק.</td>
+<td class="hear"><span class="vo he">עד בוקר שבת אחד.</span><span class="vo en">Until one Shabbat morning.</span></td></tr>
+<tr><td class="k">9.2</td><td class="see">שחור.</td>
+<td class="hear" rowspan="3"><span class="cue">שקט</span></td></tr>
+<tr><td class="k">9.3</td><td class="see">ליל שישי בתל אביב: שולחן שבת ארוך ברחבה. על הכיסאות הריקים תמונות.</td></tr>
+<tr><td class="k">9.4</td><td class="see">אנשים מתאספים, דתיים וחילונים יחד. נרות נדלקים לאורך כל השולחן.</td></tr>
+<tr><td class="k">9.5</td><td class="see">אישה מדליקה נרות מול כיסא ריק. קידוש, וכולם עונים "אמן".<span class="super he">כיתוב: "יותר משישראל שמרו את השבת, שמרה השבת אותם." (אחד העם)</span><span class="super en" dir="ltr">SUPER: "More than the Jews have kept Shabbat, Shabbat has kept the Jews." (Ahad Ha'am)</span></td>
+<td class="hear"><span class="cue">קידוש · "אמן"</span><span class="vo he">ביום שישי הראשון אחרי, השולחן נערך לכולם. גם למי שלא היה שם.</span><span class="vo en">The first Friday after, the table was set for everyone. Even for those who were not there.</span></td></tr>
+
+<tr class="sc"><td colspan="3"><span class="num">10</span><span class="ttl">עולמי</span><span class="yr">היום</span></td></tr>
+<tr><td class="k">10.1</td><td class="see">ממשיכים מכיכר החטופים: הנרות נדלקים מול הכיסא הריק.</td>
+<td class="hear"><span class="cue">שקט</span></td></tr>
+<tr><td class="k">10.2</td><td class="see">מונטאז' מהיר ברגע ההדלקה, לפי סדר השקיעה: מלבורן, פריז, לונדון, בואנוס איירס או סאו פאולו, ניו יורק, לוס אנג'לס. בכל מקום נוף אחר ואנשים שנראים אחרת, אבל אותה תנועה של הידיים.</td>
+<td class="hear"><span class="vo he">זה התחיל בלהבה אחת קטנה. ועדיין, בכל יום שישי, היא חוצה את העולם, משקיעה לשקיעה.</span><span class="vo en">It began with one small flame. And still, every Friday, it crosses the world, from one sunset to the next.</span></td></tr>
+<tr><td class="k">10.3</td><td class="see">המצלמה עולה מהשולחן האחרון ויוצאת לחלל. כדור הארץ בלילה. קו השקיעה עובר עליו, ואחריו נדלקים אלפי אורות קטנים.</td>
+<td class="hear"><span class="vo he">שמרנו על השבת. והשבת שמרה עלינו.</span><span class="vo en">We kept Shabbat. And Shabbat kept us.</span></td></tr>
+<tr><td class="k">10.4</td><td class="see">כדור הארץ מואר. השבת נכנסת עם השקיעה, כגל שעובר ממזרח למערב.</td>
+<td class="hear"><span class="cue">שקט</span></td></tr>
+
+</tbody>
+</table>
+
+<script>
+(function(){
+  var t=document.getElementById('scr'),b=[].slice.call(document.querySelectorAll('.scr-tools button'));
+  function set(l){t.classList.toggle('lang-en',l==='en');b.forEach(function(x){x.setAttribute('aria-pressed',x.getAttribute('data-lang')===l?'true':'false')});try{localStorage.setItem('scr-lang',l)}catch(e){}}
+  b.forEach(function(x){x.addEventListener('click',function(){set(x.getAttribute('data-lang'))})});
+  var s=null;try{s=localStorage.getItem('scr-lang')}catch(e){}
+  set(s==='en'?'en':'he');
+})();
+</script>
 
 </div>
 <div data-pane="video" hidden>
